@@ -1,0 +1,23 @@
+# custom application settings that could be set externally
+settings:
+  server:
+    port: ${SJ_PORT:8080}
+  data-source:
+    postgres:
+      url: jdbc:postgresql://localhost:5432/studyjam
+      username: postgres
+      password: set_me
+
+server:
+  port: ${settings.server.port}
+
+spring:
+  datasource:
+    url: ${settings.data-source.postgres.url}
+    driver-class-name: org.postgresql.Driver
+    username: ${settings.data-source.postgres.username}
+    password: ${settings.data-source.postgres.password}
+  flyway:
+    enabled: true
+  jpa:
+    open-in-view: false
