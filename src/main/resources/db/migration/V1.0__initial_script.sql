@@ -1,1 +1,0 @@
-select 'this is initial sql to show naming pattern';
