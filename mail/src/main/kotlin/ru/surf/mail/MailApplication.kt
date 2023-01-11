@@ -1,11 +1,11 @@
-package ru.surf.core
+package ru.surf.mail
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class CoreApplication
+class MailApplication
 
 fun main(args: Array<String>) {
-    runApplication<CoreApplication>(*args)
+    runApplication<MailApplication>(*args)
 }
