@@ -8,7 +8,8 @@ create table accounts
 (
     id       integer primary key generated always as identity,
     email    text not null unique,
-    password text not null
+    password text not null,
+    role_id integer references roles(id)
 );
 
 create table surf_employees
