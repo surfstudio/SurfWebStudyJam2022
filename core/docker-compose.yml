@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  database:
+    image: postgres:14.6
+    container_name: postgres
+    network_mode: "default"
+    environment:
+      POSTGRES_DB: "surf_db"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "revan12345"
+    volumes:
+      - surf_db:/var/lib/postgresql/data
+    ports:
+      - "5444:5432"
+    restart: unless-stopped
+
+volumes:
+  surf_db:
