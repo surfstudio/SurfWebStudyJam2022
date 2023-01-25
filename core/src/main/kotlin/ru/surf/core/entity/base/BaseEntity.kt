@@ -8,7 +8,7 @@ import javax.persistence.MappedSuperclass
 @MappedSuperclass
 abstract class BaseEntity<T : Serializable> {
 
-    protected abstract val id: T?
+    abstract val id: T?
 
     override fun equals(other: Any?): Boolean {
         if (null == other) return false

@@ -26,17 +26,17 @@ class Event(
 
     @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "event_type_id", referencedColumnName = "id")
-    val eventType: EventType = EventType(),
+    var eventType: EventType = EventType(),
 
     @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "event_initiator_id", referencedColumnName = "id")
-    val eventInitiator: SurfEmployee = SurfEmployee(),
+    var eventInitiator: SurfEmployee = SurfEmployee(),
 
     @OneToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY, mappedBy = "event")
-    val trainees: List<Trainee> = emptyList(),
+    var trainees: MutableList<Trainee> = mutableListOf(),
 
     @OneToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY, mappedBy = "event")
-    val statesEvents: List<StatesEvents> = emptyList(),
+    var statesEvents: MutableList<StatesEvents> = mutableListOf(),
 
     ) : UUIDBasedEntity(id) {
 

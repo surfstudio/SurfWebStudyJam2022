@@ -1,11 +1,16 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.7.6"
-    id("io.spring.dependency-management") version "1.0.15.RELEASE"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.6.21"
-    kotlin("jvm") version "1.6.21"
-    kotlin("plugin.spring") version "1.6.21"
+
+    val kotlinVersion = "1.6.21"
+    val springBootVersion = "2.7.6"
+    val springDependencyManagementVersion = "1.0.15.RELEASE"
+
+    id("org.springframework.boot") version springBootVersion
+    id("io.spring.dependency-management") version springDependencyManagementVersion
+    id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
+    kotlin("jvm") version kotlinVersion
+    kotlin("plugin.spring") version kotlinVersion
 }
 
 allOpen {
@@ -30,7 +35,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.flywaydb:flyway-core")
     runtimeOnly("org.postgresql:postgresql")
-
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
