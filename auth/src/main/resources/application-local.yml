@@ -1,0 +1,17 @@
+server:
+  port: ${PORT:8085}
+
+keycloak:
+  host: ${KEYCLOAK_HOST:localhost:8888}
+  realm: studyjam
+  certs-id: K8aUK_QgRhBJ1mqLCXn5skBShc5PSY1lsLeKZyYboYE
+  client-id: spring
+  client-grant-type: client_credentials
+  client-secret: mjnoLPMym2ZFSkKRKXDV3vnF7yENMKTR
+  user-grant-type: password
+
+  certs-url: http://${keycloak.host}/auth/realms/${keycloak.realm}/protocol/openid-connect/certs
+  token-url: http://${keycloak.host}/auth/realms/${keycloak.realm}/protocol/openid-connect/token
+  user-info-url: http://${keycloak.host}/auth/realms/${keycloak.realm}/protocol/openid-connect/userinfo
+  users-url: http://${keycloak.host}/auth/admin/realms/${keycloak.realm}/users
+  reset-password-url: http://${keycloak.host}/auth/admin/realms/${keycloak.realm}/users/{sub}/reset-password

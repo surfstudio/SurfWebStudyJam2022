@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  db_service:
+    restart: unless-stopped
+    image: 'postgres:14.1-alpine'
+    container_name: db_service_instance
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+  
+  keycloak_service:
+    restart: unless-stopped
+    image: jboss/keycloak
+    container_name: keycloak_service_instance
+    depends_on:
+      - db_service
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: db_service_instance
+      DB_DATABASE: postgres
+      DB_USER: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+    ports:
+      - "8888:8080"
+  
+  auth_service:
+    restart: unless-stopped
+    build:
+      context: auth
+      dockerfile: Dockerfile
+    image: auth_service
+    container_name: auth_service_instance
+    depends_on:
+      - keycloak_service
+    environment:
+      PORT: 8080
+      KEYCLOAK_HOST: keycloak_service:8080
+    ports:
+      - "8085:8080"
+
+
+volumes:
+  postgres_db:
