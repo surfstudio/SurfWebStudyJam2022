@@ -15,15 +15,17 @@ import java.time.Duration
 class CacheConf : CachingConfigurerSupport() {
     @Bean
     override fun cacheManager(): CacheManager {
-        val caffeineCacheManager = CaffeineCacheManager()
-        caffeineCacheManager.setCaffeine(Caffeine.newBuilder())
-        return caffeineCacheManager
+        return CaffeineCacheManager().apply {
+            setCaffeine(Caffeine.newBuilder())
+        }
     }
 
     @Bean
     fun timeoutCacheManager(): CacheManager {
-        val caffeineCacheManager = CaffeineCacheManager()
-        caffeineCacheManager.setCaffeine(Caffeine.newBuilder().expireAfterWrite(Duration.ofMinutes(1)))
-        return caffeineCacheManager
+        return CaffeineCacheManager().apply {
+            setCaffeine(with(Caffeine.newBuilder()) {
+                expireAfterWrite(Duration.ofMinutes(1))
+            })
+        }
     }
 }

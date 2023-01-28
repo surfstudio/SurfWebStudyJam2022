@@ -12,7 +12,6 @@ import ru.surf.auth.service.AuthService
 
 @RestController
 @RequestMapping("/auth/v1")
-@CacheConfig(cacheNames = ["AuthController"])
 class AuthController(@Autowired private val authService: AuthService) {
     @PostMapping(value = ["/login"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun login(username: String?, password: String?): Any {

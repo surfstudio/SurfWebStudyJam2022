@@ -1,6 +1,5 @@
 package ru.surf.auth.service.impl
 
-import com.auth0.jwt.interfaces.DecodedJWT
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
@@ -9,7 +8,6 @@ import org.springframework.http.HttpEntity
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
-import org.springframework.util.MultiValueMap
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import ru.surf.auth.converter.ObjectConverter
@@ -99,13 +97,9 @@ class AuthServiceImpl(
     }
 
     override fun resetPassword(token: String, password: String) {
-        val jwt: DecodedJWT
-        try {
-            jwt = jwtService.validateJwt(token)
-        } catch (ex: Exception) {
-            throw UnauthorizedException()
+        val sub = jwtService.validateJwt(token).run {
+            getClaim("sub").asString()
         }
-        val sub = jwt.getClaim("sub").asString()
 
         @Suppress("unused") val request = HttpEntity(object {
             val type = "password"
@@ -130,19 +124,14 @@ class AuthServiceImpl(
     }
 
     override fun validateToken(token: String): String {
-        val jwt: DecodedJWT
-        try {
-            jwt = jwtService.validateJwt(token)
-        } catch (ex: Exception) {
-            throw UnauthorizedException()
+        return jwtService.validateJwt(token).run {
+            validateProfile(token)
+            getClaim("username").asString()
         }
-
-        validateProfile(token)
-        return jwt.getClaim("username").asString()
     }
 
     private fun validateProfile(token: String): Any {
-        val request = HttpEntity<MultiValueMap<String, String>?>(null,
+        val request = HttpEntity(null,
                 object: LinkedMultiValueMap<String, String>() {
                     init {
                         add("Authorization", "Bearer $token")
@@ -159,8 +148,8 @@ class AuthServiceImpl(
     }
 
     @Component
-    @Lazy
-    class ClientToken @Autowired constructor(private val authServiceImpl: AuthServiceImpl) {
+    class ClientToken (@Autowired
+                       private val authServiceImpl: AuthServiceImpl) {
         @get:Cacheable(cacheNames = ["ClientToken"], cacheManager="timeoutCacheManager")
         val get: String
             get() {

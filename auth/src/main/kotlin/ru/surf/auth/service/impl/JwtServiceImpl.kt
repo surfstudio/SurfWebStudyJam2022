@@ -11,6 +11,8 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
+import ru.surf.auth.exception.InvalidTokenException
+import ru.surf.auth.exception.TokenExpiredException
 import ru.surf.auth.service.JwtService
 import java.net.URL
 import java.security.interfaces.RSAPublicKey
@@ -28,14 +30,19 @@ class JwtServiceImpl(@Autowired
                      @Value("\${keycloak.certs-id}")
                      private val certsId: String) : JwtService {
     override fun validateJwt(token: String): DecodedJWT {
-        val jwt = JWT.decode(token)
-        Algorithm.RSA256(keycloakJwk.get.publicKey as RSAPublicKey).verify(jwt)
-        return if (jwt.expiresAt.before(Date())) throw Exception("token is expired") else jwt
+        return JWT.decode(token).also {
+            try {
+                Algorithm.RSA256(keycloakJwk.get.publicKey as RSAPublicKey).verify(it)
+            } catch (e: Exception) {
+                throw InvalidTokenException()
+            }
+            if (it.expiresAt.before(Date())) throw TokenExpiredException()
+        }
     }
 
     @Component
-    @Lazy
-    class KeycloakJwk @Autowired constructor(private val jwtServiceImpl: JwtServiceImpl) {
+    class KeycloakJwk (@Autowired
+                       private val jwtServiceImpl: JwtServiceImpl) {
         @get:Cacheable(cacheNames = ["KeycloakJwk"])
         val get: Jwk
             get() {
