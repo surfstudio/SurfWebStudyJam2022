@@ -14,30 +14,30 @@ class Test(
     override val id: UUID = UUID.randomUUID(),
 
     @Column(name = "link")
-    val link: String? = null,
+    var link: String? = null,
 
     @Column(name = "score")
-    val score: Int? = null,
+    var score: Int? = null,
 
     @Column(name = "start_date")
-    val startDate: LocalDateTime = LocalDateTime.now(),
+    var startDate: LocalDateTime = LocalDateTime.now(),
 
     @Column(name = "end_date")
-    val endDate: LocalDateTime = LocalDateTime.now(),
+    var endDate: LocalDateTime = LocalDateTime.now(),
 
     @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id", referencedColumnName = "id")
-    val candidate: Candidate = Candidate(),
+    var candidate: Candidate = Candidate(),
 
     @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", referencedColumnName = "id")
-    val event: Event = Event(),
+    var event: Event = Event(),
 
     @ManyToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinTable(name = "tests_questions",
         joinColumns = [JoinColumn(name = "test_id")],
         inverseJoinColumns = [JoinColumn(name = "question_id")])
-    val questions: Set<Question> = mutableSetOf()
+    var questions: MutableSet<Question> = mutableSetOf()
 
 ) : UUIDBasedEntity(id) {
 

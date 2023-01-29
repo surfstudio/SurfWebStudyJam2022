@@ -15,14 +15,14 @@ class StatesEvents(
 
     @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "state_id")
-    val stateType: StateType = StateType(),
+    var stateType: StateType = StateType(),
 
     @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
-    val event: Event = Event(),
+    var event: Event = Event(),
 
     @Column(name = "date")
-    val date: LocalDate = LocalDate.now(),
+    var date: LocalDate = LocalDate.now(),
 
     ) : UUIDBasedEntity(id) {
 

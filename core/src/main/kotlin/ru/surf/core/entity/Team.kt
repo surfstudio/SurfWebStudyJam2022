@@ -16,17 +16,17 @@ class Team(
     var description: String? = null,
 
     @Column(name = "project_git_link")
-    val projectGitLink: String? = null,
+    var projectGitLink: String? = null,
 
     @Column(name = "project_miro_link")
-    val projectMiroLink: String? = null,
+    var projectMiroLink: String? = null,
 
     @OneToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.EAGER)
     @JoinColumn(name = "mentor_id", referencedColumnName = "id")
-    val mentor: SurfEmployee = SurfEmployee(),
+    var mentor: SurfEmployee = SurfEmployee(),
 
     @OneToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY, mappedBy = "team")
-    val feedbacks: List<TeamFeedback> = emptyList(),
+    var feedbacks: MutableList<TeamFeedback> = mutableListOf(),
 
     ) : UUIDBasedEntity(id) {
 
