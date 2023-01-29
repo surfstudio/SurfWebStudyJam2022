@@ -1,7 +1,6 @@
 package ru.surf.auth.controller.v1
 
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cache.annotation.CacheConfig
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -14,11 +13,11 @@ import ru.surf.auth.service.AuthService
 @RequestMapping("/auth/v1")
 class AuthController(@Autowired private val authService: AuthService) {
     @PostMapping(value = ["/login"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun login(username: String?, password: String?): Any {
-        username?.let {
-            password?.let {
+    fun login(identity: String?, passphrase: String?): Any {
+        identity?.let {
+            passphrase?.let {
                 @Suppress("unused") return object {
-                    val accessToken = authService.login(username, password)
+                    val accessToken = authService.login(identity, passphrase)
                 }
             }
         }
@@ -26,10 +25,10 @@ class AuthController(@Autowired private val authService: AuthService) {
     }
 
     @PostMapping(value = ["/register"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun register(username: String?, password: String?): Any {
-        username?.let {
-            password?.let {
-                authService.register(username, password)
+    fun register(identity: String?, passphrase: String?): Any {
+        identity?.let {
+            passphrase?.let {
+                authService.register(identity, passphrase)
                 @Suppress("unused") return object {
                     val status = "success"
                 }
@@ -39,10 +38,10 @@ class AuthController(@Autowired private val authService: AuthService) {
     }
 
     @PostMapping(value = ["/resetPassword"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun resetPassword(token: String?, password: String?): Any {
+    fun resetPassword(token: String?, newPassphrase: String?): Any {
         token?.let {
-            password?.let {
-                authService.resetPassword(token, password)
+            newPassphrase?.let {
+                authService.resetPassword(token, newPassphrase)
                 @Suppress("unused") return object {
                     val status = "success"
                 }

@@ -56,10 +56,10 @@ class AuthServiceImpl(
         @Value("\${keycloak.reset-password-url}")
         private val keycloakResetPasswordUrl: String,
 ) : AuthService {
-    override fun login(username: String, password: String): String {
+    override fun login(identity: String, passphrase: String): String {
         @Suppress("unused") val request = HttpEntity(object {
-            val username = username
-            val password = password
+            val username = identity
+            val password = passphrase
             val grant_type = userGrantType
             val client_id = clientId
             val client_secret = clientSecret
@@ -67,19 +67,19 @@ class AuthServiceImpl(
 
         try {
             val response = restTemplate.postForObject(keycloakTokenUrl, request, Map::class.java)
-            return response?.get("access_token") as String? ?: throw UnknownError()
+            return response!!["access_token"] as String
         } catch (ex: HttpClientErrorException.Unauthorized) {
             throw UnauthorizedException()
         }
     }
 
-    override fun register(username: String, password: String) {
+    override fun register(identity: String, passphrase: String) {
         @Suppress("unused") val request = HttpEntity(object {
-            val username = username
+            val username = identity
             val enabled = true
             val credentials = listOf(object {
                 val type = "password"
-                val value = password
+                val value = passphrase
                 val temporary = false
             })
         }, object : LinkedMultiValueMap<String, String>() {
@@ -90,20 +90,20 @@ class AuthServiceImpl(
         })
 
         try {
-            restTemplate.postForObject(keycloakUsersUrl, request, Any::class.java)
+            restTemplate.postForObject(keycloakUsersUrl, request, Void::class.java)
         } catch (ex: HttpClientErrorException.Conflict) {
             throw ConflictException()
         }
     }
 
-    override fun resetPassword(token: String, password: String) {
+    override fun resetPassword(token: String, newPassphrase: String) {
         val sub = jwtService.validateJwt(token).run {
             getClaim("sub").asString()
         }
 
         @Suppress("unused") val request = HttpEntity(object {
             val type = "password"
-            val value = password
+            val value = newPassphrase
             val temporary = false
         }, object : LinkedMultiValueMap<String, String>() {
             init {
@@ -112,15 +112,11 @@ class AuthServiceImpl(
             }
         })
 
-        try {
-            restTemplate.put(keycloakResetPasswordUrl, request, object : HashMap<String, String>() {
-                init {
-                    put("sub", sub)
-                }
-            })
-        } catch (ex: Exception) {
-            throw Exception("Bad response")
-        }
+        restTemplate.put(keycloakResetPasswordUrl, request, object : HashMap<String, String>() {
+            init {
+                put("sub", sub)
+            }
+        })
     }
 
     override fun validateToken(token: String): String {
@@ -130,7 +126,7 @@ class AuthServiceImpl(
         }
     }
 
-    private fun validateProfile(token: String): Any {
+    private fun validateProfile(token: String) {
         val request = HttpEntity(null,
                 object: LinkedMultiValueMap<String, String>() {
                     init {
@@ -140,8 +136,7 @@ class AuthServiceImpl(
         )
 
         try {
-            return restTemplate.postForObject(keycloakUserInfoUrl, request, Any::class.java)
-                    ?: Exception("Bad response")
+            restTemplate.postForObject(keycloakUserInfoUrl, request, Any::class.java)
         } catch (ex: HttpClientErrorException.Unauthorized) {
             throw UnauthorizedException()
         }
@@ -160,7 +155,7 @@ class AuthServiceImpl(
                         val client_secret = clientSecret
                     }.let { objectConverter.convert(it) }, null)
                     val response = restTemplate.postForObject(keycloakTokenUrl, request, Map::class.java)
-                    return response?.get("access_token") as String? ?: throw Exception("Bad response")
+                    return response!!["access_token"] as String
                 }
             }
     }

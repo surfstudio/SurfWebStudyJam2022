@@ -23,13 +23,9 @@ class ExceptionHandler {
     fun handleClientExceptions(exception: Exception): ResponseEntity<Error> =
             ResponseEntity<Error>(Error(exception::class.simpleName, exception.message), HttpStatus.BAD_REQUEST)
 
-    @ExceptionHandler(InternalException::class)
-    fun handleServerExceptions(exception: Exception): ResponseEntity<Error> =
-            ResponseEntity<Error>(Error(exception::class.simpleName, exception.message), HttpStatus.INTERNAL_SERVER_ERROR)
-
     @ExceptionHandler(Exception::class)
-    fun handleOtherExceptions(exception: Exception): ResponseEntity<Error> {
-        logger.error("Unknown error", exception)
+    fun handleServerExceptions(exception: Exception): ResponseEntity<Error> {
+        logger.error("An exception during processing request", exception)
         return ResponseEntity<Error>(Error("unknown error", "something went wrong"),
                 HttpStatus.INTERNAL_SERVER_ERROR)
     }
