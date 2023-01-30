@@ -21,8 +21,8 @@ services:
       DB_VENDOR: POSTGRES
       DB_ADDR: db_service_instance
       DB_DATABASE: postgres
-      DB_USER: ${POSTGRES_USER:-postgres}
-      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
     ports:
@@ -38,8 +38,15 @@ services:
     depends_on:
       - keycloak_service
     environment:
+      SPRING_PROFILES_ACTIVE: prod
       PORT: 8080
       KEYCLOAK_HOST: keycloak_service:8080
+      KEYCLOAK_CERTS: K8aUK_QgRhBJ1mqLCXn5skBShc5PSY1lsLeKZyYboYE
+      KEYCLOAK_SECRET: mjnoLPMym2ZFSkKRKXDV3vnF7yENMKTR
+      DB_HOST: db_service_instance
+      DB_NAME: studyjam_auth
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "8085:8080"
 

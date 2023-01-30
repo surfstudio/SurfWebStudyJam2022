@@ -2,7 +2,7 @@ server:
   port: ${PORT:8085}
 
 keycloak:
-  host: ${HOST:172.17.0.1:8888}
+  host: ${KEYCLOAK_HOST:localhost:8888}
   realm: studyjam
   certs-id: K8aUK_QgRhBJ1mqLCXn5skBShc5PSY1lsLeKZyYboYE
   client-id: spring
@@ -15,3 +15,16 @@ keycloak:
   user-info-url: http://${keycloak.host}/auth/realms/${keycloak.realm}/protocol/openid-connect/userinfo
   users-url: http://${keycloak.host}/auth/admin/realms/${keycloak.realm}/users
   reset-password-url: http://${keycloak.host}/auth/admin/realms/${keycloak.realm}/users/{sub}/reset-password
+
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:file:./auth_db;DB_CLOSE_DELAY=-1
+    username: sa
+    password: sa
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+  h2:
+    console.enabled: true

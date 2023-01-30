@@ -1,4 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
 
 plugins {
     id("org.springframework.boot") version "2.7.6"
@@ -28,6 +30,18 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("com.github.ben-manes.caffeine:caffeine")
 
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    runtimeOnly("org.postgresql:postgresql")
+
+    devDependencies {
+        runtimeOnly("com.h2database:h2")
+    }
+}
+
+fun devDependencies(configuration: DependencyHandlerScope.() -> Unit) {
+    if (project.hasProperty("dev")) {
+        DependencyHandlerScope.of(dependencies).configuration()
+    }
 }
 
 tasks.withType<KotlinCompile> {
@@ -39,4 +53,12 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.withType<BootJar> {
+    doLast {
+        archiveFile.get().asFile.apply {
+            copyTo(target=File(parent, "app.jar"), overwrite=true)
+        }
+    }
 }
