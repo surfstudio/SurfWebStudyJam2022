@@ -10,6 +10,19 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - postgres_db:/var/lib/postgresql/data
+
+  pgadmin_service:
+    restart: unless-stopped
+    image: dpage/pgadmin4
+    container_name: pgadmin_service_instance
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "80:80"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
   
   keycloak_service:
     restart: unless-stopped
@@ -21,8 +34,8 @@ services:
       DB_VENDOR: POSTGRES
       DB_ADDR: db_service_instance
       DB_DATABASE: postgres
-      DB_USER: ${POSTGRES_USER}
-      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_USER: postgres
+      DB_PASSWORD: postgres
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
     ports:
@@ -45,11 +58,12 @@ services:
       KEYCLOAK_SECRET: mjnoLPMym2ZFSkKRKXDV3vnF7yENMKTR
       DB_HOST: db_service_instance
       DB_NAME: studyjam_auth
-      DB_USER: ${POSTGRES_USER}
-      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_USER: postgres
+      DB_PASSWORD: postgres
     ports:
       - "8085:8080"
 
 
 volumes:
   postgres_db:
+  pgadmin:

@@ -3,60 +3,45 @@ package ru.surf.auth.controller.v1
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import ru.surf.auth.exception.RequestException
+import ru.surf.auth.dto.AccountCredentialsDto
+import ru.surf.auth.dto.ResetPassphraseDto
+import ru.surf.auth.dto.AccessTokenDto
+import ru.surf.auth.dto.ResponseAccountIdentityDto
 import ru.surf.auth.service.AuthService
 
 
 @RestController
 @RequestMapping("/auth/v1")
-class AuthController(@Autowired private val authService: AuthService) {
+class AuthController(
+        @Autowired private val authService: AuthService
+) {
     @PostMapping(value = ["/login"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun login(identity: String?, passphrase: String?): Any {
-        identity?.let {
-            passphrase?.let {
-                @Suppress("unused") return object {
-                    val accessToken = authService.login(identity, passphrase)
-                }
-            }
-        }
-        throw RequestException()
+    fun login(@RequestBody dto: AccountCredentialsDto): AccessTokenDto {
+        return authService.login(dto)
     }
 
     @PostMapping(value = ["/register"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun register(identity: String?, passphrase: String?): Any {
-        identity?.let {
-            passphrase?.let {
-                authService.register(identity, passphrase)
-                @Suppress("unused") return object {
-                    val status = "success"
-                }
-            }
+    fun register(@RequestBody dto: AccountCredentialsDto): Any {
+        authService.register(dto)
+        @Suppress("unused") return object {
+            val status = "success"
+            val identity = dto.identity
         }
-        throw RequestException()
     }
 
     @PostMapping(value = ["/resetPassword"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun resetPassword(token: String?, newPassphrase: String?): Any {
-        token?.let {
-            newPassphrase?.let {
-                authService.resetPassword(token, newPassphrase)
-                @Suppress("unused") return object {
-                    val status = "success"
-                }
-            }
+    fun resetPassword(@RequestBody dto: ResetPassphraseDto): Any {
+        authService.resetPassword(dto)
+        @Suppress("unused") return object {
+            val status = "success"
         }
-        throw RequestException()
     }
 
     @PostMapping(value = ["/validate"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun validate(token: String?): Any {
-        token?.let {
-            @Suppress("unused") return object {
-                val id = authService.validateToken(token)
-            }
-        }
-        throw RequestException()
+    fun validate(@RequestBody dto: AccessTokenDto): ResponseAccountIdentityDto {
+        return authService.validateToken(dto)
     }
 }

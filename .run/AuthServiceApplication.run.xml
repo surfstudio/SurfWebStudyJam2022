@@ -7,7 +7,7 @@
       <env name="SPRING_PROFILES_ACTIVE" value="dev" />
     </envs>
     <method v="2">
-      <option name="Gradle.BeforeRunTask" enabled="true" tasks="bootJar" externalProjectPath="$PROJECT_DIR$/auth" vmOptions="" scriptParameters="-Pdev" />
+      <option name="Gradle.BeforeRunTask" enabled="true" tasks=":auth:bootJar" externalProjectPath="$PROJECT_DIR$" vmOptions="" scriptParameters="-Pdev" />
     </method>
   </configuration>
 </component>

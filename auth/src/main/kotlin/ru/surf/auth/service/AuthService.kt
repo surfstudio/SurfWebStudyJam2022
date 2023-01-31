@@ -1,9 +1,14 @@
 package ru.surf.auth.service
 
+import ru.surf.auth.dto.AccountCredentialsDto
+import ru.surf.auth.dto.ResetPassphraseDto
+import ru.surf.auth.dto.AccessTokenDto
+import ru.surf.auth.dto.ResponseAccountIdentityDto
+
 
 interface AuthService {
-    fun login(identity: String, passphrase: String): String
-    fun register(identity: String, passphrase: String)
-    fun resetPassword(token: String, newPassphrase: String)
-    fun validateToken(token: String): String
+    fun login(accountCredentialsDto: AccountCredentialsDto): AccessTokenDto
+    fun register(accountCredentialsDto: AccountCredentialsDto)
+    fun resetPassword(resetPassphraseDto: ResetPassphraseDto)
+    fun validateToken(accessTokenDto: AccessTokenDto): ResponseAccountIdentityDto
 }

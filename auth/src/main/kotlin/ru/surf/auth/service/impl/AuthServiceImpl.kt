@@ -11,10 +11,16 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import ru.surf.auth.converter.ObjectConverter
+import ru.surf.auth.dto.AccountCredentialsDto
+import ru.surf.auth.dto.ResetPassphraseDto
+import ru.surf.auth.dto.AccessTokenDto
+import ru.surf.auth.dto.ResponseAccountIdentityDto
 import ru.surf.auth.exception.ConflictException
 import ru.surf.auth.exception.UnauthorizedException
 import ru.surf.auth.service.AuthService
 import ru.surf.auth.service.JwtService
+import java.util.*
+import kotlin.collections.HashMap
 
 
 @Service
@@ -56,10 +62,10 @@ class AuthServiceImpl(
         @Value("\${keycloak.reset-password-url}")
         private val keycloakResetPasswordUrl: String,
 ) : AuthService {
-    override fun login(identity: String, passphrase: String): String {
+    override fun login(accountCredentialsDto: AccountCredentialsDto): AccessTokenDto {
         @Suppress("unused") val request = HttpEntity(object {
-            val username = identity
-            val password = passphrase
+            val username = accountCredentialsDto.identity
+            val password = accountCredentialsDto.passphrase
             val grant_type = userGrantType
             val client_id = clientId
             val client_secret = clientSecret
@@ -67,19 +73,19 @@ class AuthServiceImpl(
 
         try {
             val response = restTemplate.postForObject(keycloakTokenUrl, request, Map::class.java)
-            return response!!["access_token"] as String
+            return AccessTokenDto(accessToken = response!!["access_token"] as String)
         } catch (ex: HttpClientErrorException.Unauthorized) {
             throw UnauthorizedException()
         }
     }
 
-    override fun register(identity: String, passphrase: String) {
+    override fun register(accountCredentialsDto: AccountCredentialsDto) {
         @Suppress("unused") val request = HttpEntity(object {
-            val username = identity
+            val username = accountCredentialsDto.identity
             val enabled = true
             val credentials = listOf(object {
                 val type = "password"
-                val value = passphrase
+                val value = accountCredentialsDto.passphrase
                 val temporary = false
             })
         }, object : LinkedMultiValueMap<String, String>() {
@@ -96,14 +102,14 @@ class AuthServiceImpl(
         }
     }
 
-    override fun resetPassword(token: String, newPassphrase: String) {
-        val sub = jwtService.validateJwt(token).run {
+    override fun resetPassword(resetPassphraseDto: ResetPassphraseDto) {
+        val sub = jwtService.validateJwt(resetPassphraseDto.accessToken).run {
             getClaim("sub").asString()
         }
 
         @Suppress("unused") val request = HttpEntity(object {
             val type = "password"
-            val value = newPassphrase
+            val value = resetPassphraseDto.newPassphrase
             val temporary = false
         }, object : LinkedMultiValueMap<String, String>() {
             init {
@@ -119,11 +125,11 @@ class AuthServiceImpl(
         })
     }
 
-    override fun validateToken(token: String): String {
-        return jwtService.validateJwt(token).run {
-            validateProfile(token)
+    override fun validateToken(accessTokenDto: AccessTokenDto): ResponseAccountIdentityDto {
+        return jwtService.validateJwt(accessTokenDto.accessToken).run {
+            validateProfile(accessTokenDto.accessToken)
             getClaim("username").asString()
-        }
+        }.let { ResponseAccountIdentityDto(identity = UUID.fromString(it)) }
     }
 
     private fun validateProfile(token: String) {

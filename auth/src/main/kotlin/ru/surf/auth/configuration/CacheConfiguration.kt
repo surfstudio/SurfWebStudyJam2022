@@ -12,7 +12,7 @@ import java.time.Duration
 
 @Configuration
 @EnableCaching
-class CacheConf : CachingConfigurerSupport() {
+class CacheConfiguration : CachingConfigurerSupport() {
     @Bean
     override fun cacheManager(): CacheManager {
         return CaffeineCacheManager().apply {

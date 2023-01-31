@@ -22,19 +22,19 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     implementation("com.auth0:jwks-rsa:0.21.3")
     implementation("com.auth0:java-jwt:4.2.2")
+    implementation("com.caucho:hessian:4.0.66")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.1.2")
 
-    implementation("org.springframework.boot:spring-boot-starter-cache")
-    implementation("com.github.ben-manes.caffeine:caffeine")
-
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("org.postgresql:postgresql:42.5.1")
 
     devDependencies {
-        runtimeOnly("com.h2database:h2")
+        runtimeOnly("com.h2database:h2:2.1.214")
     }
 }
 
