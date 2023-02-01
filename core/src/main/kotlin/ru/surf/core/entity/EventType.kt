@@ -15,9 +15,6 @@ class EventType(
     @Column(name = "type")
     var description: String = "",
 
-    @OneToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY, mappedBy = "eventType")
-    val events: List<Event> = emptyList(),
-
     ) : UUIDBasedEntity(id) {
 
     @Override

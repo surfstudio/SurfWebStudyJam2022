@@ -16,14 +16,11 @@ class Answer(
     @Column(name = "answer")
     var text: String = "",
 
-    @ManyToMany(mappedBy = "answers", fetch = FetchType.LAZY)
-    val questions: Set<Question> = mutableSetOf()
-
     ) : UUIDBasedEntity(id) {
 
     @Override
     override fun toString(): String {
         return this::class.simpleName + "(id = $id , text = $text )"
     }
-    
+
 }

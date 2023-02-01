@@ -24,11 +24,11 @@ class TraineeFeedback(
 
     @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "surf_employee_id")
-    val ownerFeedback: SurfEmployee = SurfEmployee(),
+    var ownerFeedback: SurfEmployee = SurfEmployee(),
 
     @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "trainee_id")
-    val traineeReceiver: Trainee = Trainee()
+    var traineeReceiver: Trainee = Trainee()
 
     ) : UUIDBasedEntity(id) {
 

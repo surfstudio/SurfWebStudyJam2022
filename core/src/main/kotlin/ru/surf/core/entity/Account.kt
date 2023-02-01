@@ -22,6 +22,7 @@ class Account(
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     val role: Role? = null,
 
+
     ) : UUIDBasedEntity(id) {
 
     @Override

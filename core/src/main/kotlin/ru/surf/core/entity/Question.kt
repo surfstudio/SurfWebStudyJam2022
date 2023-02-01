@@ -1,6 +1,5 @@
 package ru.surf.core.entity
 
-import org.hibernate.Hibernate
 import ru.surf.core.entity.base.UUIDBasedEntity
 import java.util.*
 import javax.persistence.*
@@ -18,20 +17,19 @@ class Question(
 
     @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "question_type_id")
-    val type: QuestionType = QuestionType(),
-
-    @ManyToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY, mappedBy = "questions")
-    val tests: List<Answer> = mutableListOf(),
+    var type: QuestionType = QuestionType(),
 
     @ManyToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
-    @JoinTable(name = "questions_answers",
+    @JoinTable(
+        name = "questions_answers",
         joinColumns = [JoinColumn(name = "answer_id")],
-        inverseJoinColumns = [JoinColumn(name = "question_id")])
-    val answers: List<Answer> = mutableListOf(),
+        inverseJoinColumns = [JoinColumn(name = "question_id")]
+    )
+    var answers: MutableList<Answer> = mutableListOf(),
 
     @OneToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.EAGER)
     @JoinColumn(name = "right_answer_id", referencedColumnName = "id")
-    val rightAnswer: Answer = Answer(),
+    var rightAnswer: Answer = Answer(),
 
     ) : UUIDBasedEntity(id) {
 

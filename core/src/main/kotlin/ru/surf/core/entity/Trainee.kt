@@ -20,11 +20,11 @@ class Trainee(
 
     @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
-    val candidate: Candidate = Candidate(),
+    var candidate: Candidate = Candidate(),
 
     @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
-    val event: Event = Event(),
+    var event: Event = Event(),
 
     @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
@@ -32,10 +32,7 @@ class Trainee(
 
     @OneToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
-    val account: Account = Account(),
-
-    @OneToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY, mappedBy = "traineeReceiver")
-    val trainees: List<TraineeFeedback> = emptyList(),
+    var account: Account = Account(),
 
     ) : UUIDBasedEntity(id) {
 
