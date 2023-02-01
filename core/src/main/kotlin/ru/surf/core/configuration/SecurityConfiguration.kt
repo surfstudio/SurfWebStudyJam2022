@@ -20,7 +20,7 @@ import javax.servlet.Filter
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-class SecurityConfig(
+class SecurityConfiguration(
         @Autowired
         private val candidateAuthenticationManager: CandidateAuthenticationManager,
         @Autowired

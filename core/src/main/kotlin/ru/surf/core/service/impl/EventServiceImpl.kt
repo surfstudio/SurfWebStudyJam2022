@@ -6,6 +6,7 @@ import ru.surf.core.dto.FullResponseEventDto
 import ru.surf.core.dto.PostRequestEventDto
 import ru.surf.core.dto.PutRequestEventDto
 import ru.surf.core.dto.ShortResponseEventDto
+import ru.surf.core.exception.event.EventNotFoundByIdException
 import ru.surf.core.mapper.event.EventMapper
 import ru.surf.core.repository.EventRepository
 import ru.surf.core.service.EventService
