@@ -1,4 +1,4 @@
-package ru.surf.core.mapper
+package ru.surf.core.mapper.event
 
 import org.springframework.stereotype.Component
 import ru.surf.core.dto.FullResponseEventDto

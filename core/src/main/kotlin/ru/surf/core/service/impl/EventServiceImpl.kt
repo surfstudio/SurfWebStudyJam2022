@@ -6,7 +6,7 @@ import ru.surf.core.dto.FullResponseEventDto
 import ru.surf.core.dto.PostRequestEventDto
 import ru.surf.core.dto.PutRequestEventDto
 import ru.surf.core.dto.ShortResponseEventDto
-import ru.surf.core.mapper.EventMapper
+import ru.surf.core.mapper.event.EventMapper
 import ru.surf.core.repository.EventRepository
 import ru.surf.core.service.EventService
 import ru.surf.core.service.EventTypeService
@@ -16,18 +16,18 @@ import java.util.*
 
 @Service
 class EventServiceImpl(
-    private val eventMapper: EventMapper,
-    private val eventRepository: EventRepository,
-    private val eventTypeService: EventTypeService,
-    private val surfEmployeeService: SurfEmployeeService,
+        private val eventMapper: EventMapper,
+        private val eventRepository: EventRepository,
+        private val eventTypeService: EventTypeService,
+        private val surfEmployeeService: SurfEmployeeService,
 ) : EventService {
 
     override fun createEvent(postRequestEventDto: PostRequestEventDto): ShortResponseEventDto {
         val initiatorId = postRequestEventDto.initiatorId
         val eventTypeId = postRequestEventDto.eventTypeId
         val transientEntity = eventMapper.convertFromPostRequestEventDtoToEventEntity(postRequestEventDto).apply {
-            eventInitiator = surfEmployeeService.getSurfEmployee(initiatorId)
-            eventType = eventTypeService.getEventType(eventTypeId)
+            eventInitiator = initiatorId?.let { surfEmployeeService.getSurfEmployee(it) }
+            eventType = eventTypeId?.let { eventTypeService.getEventType(it) }
         }
         val persistedEvent = eventRepository.save(transientEntity)
         return eventMapper.convertFromEventEntityToShortResponseEventDto(persistedEvent)

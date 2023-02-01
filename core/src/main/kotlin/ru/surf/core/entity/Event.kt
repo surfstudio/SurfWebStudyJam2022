@@ -26,11 +26,11 @@ class Event(
 
     @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "event_type_id", referencedColumnName = "id")
-    var eventType: EventType = EventType(),
+    var eventType: EventType? = null,
 
     @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "event_initiator_id", referencedColumnName = "id")
-    var eventInitiator: SurfEmployee = SurfEmployee(),
+    var eventInitiator: SurfEmployee? = null,
 
     @OneToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY, mappedBy = "event")
     var trainees: MutableList<Trainee> = mutableListOf(),

@@ -40,7 +40,7 @@ class CredentialsServiceImpl(
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class], timeout = 2)
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])
     override fun promoteCandidate(candidateId: UUID, accountCredentialsDto: AccountCredentialsDto) {
         getCredentialsByCandidateId(candidateId).apply {
             identity = identityRepository.run {

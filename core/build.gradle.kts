@@ -33,6 +33,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-ui:1.6.9")
     implementation("org.springdoc:springdoc-openapi-kotlin:1.6.9")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.flywaydb:flyway-core")
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
