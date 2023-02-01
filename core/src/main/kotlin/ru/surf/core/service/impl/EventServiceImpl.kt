@@ -25,6 +25,7 @@ class EventServiceImpl(
     override fun createEvent(postRequestEventDto: PostRequestEventDto): ShortResponseEventDto {
         val initiatorId = postRequestEventDto.initiatorId
         val eventTypeId = postRequestEventDto.eventTypeId
+        // TODO заглушка, убрать nullable когда будут готовы сервисы для связанных сущностей
         val transientEntity = eventMapper.convertFromPostRequestEventDtoToEventEntity(postRequestEventDto).apply {
             eventInitiator = initiatorId?.let { surfEmployeeService.getSurfEmployee(it) }
             eventType = eventTypeId?.let { eventTypeService.getEventType(it) }

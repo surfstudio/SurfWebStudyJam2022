@@ -2,6 +2,7 @@ package ru.surf.auth.controller.v1
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -26,18 +27,13 @@ class AuthController(
     @PostMapping(value = ["/register"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun register(@RequestBody dto: AccountCredentialsDto): Any {
         authService.register(dto)
-        @Suppress("unused") return object {
-            val status = "success"
-            val identity = dto.identity
-        }
+        return ResponseEntity.ok()
     }
 
     @PostMapping(value = ["/resetPassword"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun resetPassword(@RequestBody dto: ResetPassphraseDto): Any {
         authService.resetPassword(dto)
-        @Suppress("unused") return object {
-            val status = "success"
-        }
+        return ResponseEntity.ok()
     }
 
     @PostMapping(value = ["/validate"], produces = [MediaType.APPLICATION_JSON_VALUE])
