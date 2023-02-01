@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="AuthServiceApplication" type="JarApplication" activateToolWindowBeforeRun="false">
+    <option name="JAR_PATH" value="$PROJECT_DIR$/auth/build/libs/app.jar" />
+    <option name="WORKING_DIRECTORY" value="$ProjectFileDir$" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <envs>
+      <env name="SPRING_PROFILES_ACTIVE" value="dev" />
+    </envs>
+    <method v="2">
+      <option name="Gradle.BeforeRunTask" enabled="true" tasks=":auth:bootJar" externalProjectPath="$PROJECT_DIR$" vmOptions="" scriptParameters="-Pdev" />
+    </method>
+  </configuration>
+</component>

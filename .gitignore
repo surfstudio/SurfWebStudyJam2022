@@ -35,3 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+/gradlew
+/gradlew.bat
+gradle-wrapper.jar
+
+*.db

@@ -36,10 +36,22 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-ui:$springDocVersion")
     implementation("org.springdoc:springdoc-openapi-kotlin:$springDocVersion")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.flywaydb:flyway-core")
     runtimeOnly("org.postgresql:postgresql")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    implementation(project(":auth"))
+
+    devDependencies {
+        runtimeOnly("com.h2database:h2:2.1.214")
+    }
+}
+
+fun devDependencies(configuration: DependencyHandlerScope.() -> Unit) {
+    if (project.hasProperty("dev")) {
+        DependencyHandlerScope.of(dependencies).configuration()
+    }
 }
 
 tasks.withType<KotlinCompile> {
@@ -51,4 +63,12 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
+    doLast {
+        archiveFile.get().asFile.apply {
+            copyTo(target=File(parent, "app.jar"), overwrite=true)
+        }
+    }
 }

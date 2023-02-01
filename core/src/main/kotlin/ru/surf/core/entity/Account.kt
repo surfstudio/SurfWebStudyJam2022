@@ -20,7 +20,8 @@ class Account(
 
     @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", referencedColumnName = "id")
-    var role: Role = Role(),
+    val role: Role? = null,
+
 
     ) : UUIDBasedEntity(id) {
 

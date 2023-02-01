@@ -1,0 +1,28 @@
+server:
+  port: ${PORT}
+
+keycloak:
+  host: ${HOST}
+  realm: studyjam
+  certs-id: ${KEYCLOAK_CERTS}
+  client-id: spring
+  client-grant-type: client_credentials
+  client-secret: ${KEYCLOAK_SECRET}
+  user-grant-type: password
+
+  certs-url: http://${keycloak.host}/auth/realms/${keycloak.realm}/protocol/openid-connect/certs
+  token-url: http://${keycloak.host}/auth/realms/${keycloak.realm}/protocol/openid-connect/token
+  user-info-url: http://${keycloak.host}/auth/realms/${keycloak.realm}/protocol/openid-connect/userinfo
+  users-url: http://${keycloak.host}/auth/admin/realms/${keycloak.realm}/users
+  reset-password-url: http://${keycloak.host}/auth/admin/realms/${keycloak.realm}/users/{sub}/reset-password
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update

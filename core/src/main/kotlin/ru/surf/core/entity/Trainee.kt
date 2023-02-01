@@ -1,6 +1,5 @@
 package ru.surf.core.entity
 
-import org.hibernate.Hibernate
 import ru.surf.core.entity.base.UUIDBasedEntity
 import java.util.*
 import javax.persistence.*
@@ -29,7 +28,7 @@ class Trainee(
 
     @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
-    var team: Team = Team(),
+    val team: Team? = null,
 
     @OneToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
