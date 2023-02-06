@@ -37,6 +37,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-kotlin:$springDocVersion")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.kafka:spring-kafka")
     implementation("org.flywaydb:flyway-core")
     runtimeOnly("org.postgresql:postgresql")
 
@@ -68,7 +69,7 @@ tasks.withType<Test> {
 tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
     doLast {
         archiveFile.get().asFile.apply {
-            copyTo(target=File(parent, "app.jar"), overwrite=true)
+            copyTo(target = File(parent, "app.jar"), overwrite = true)
         }
     }
 }

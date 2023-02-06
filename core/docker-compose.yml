@@ -1,7 +1,8 @@
 version: "3.9"
+
 services:
   database:
-    image: postgres:14.6
+    image: postgres:14.6-alpine
     container_name: postgres
     network_mode: "default"
     environment:
@@ -14,5 +15,107 @@ services:
       - "5444:5432"
     restart: unless-stopped
 
+  zookeeper1:
+    image: confluentinc/cp-zookeeper:latest
+    hostname: zookeeper1
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: "zookeeper1:2888:3888;zookeeper2:2888:3888"
+    volumes:
+      - zoo1:/var/lib/zookeeper/data
+
+  zookeeper2:
+    image: confluentinc/cp-zookeeper:latest
+    hostname: zookeeper2
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_SERVER_ID: 2
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: "zookeeper1:2888:3888;zookeeper2:2888:3888"
+    volumes:
+      - zoo2:/var/lib/zookeeper/data
+
+  kafka1:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka1
+    restart: unless-stopped
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:2181,zookeeper2:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+    volumes:
+      - broker1:/var/lib/kafka/data
+
+  kafka2:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka2
+    restart: unless-stopped
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:2181,zookeeper2:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:29092,PLAINTEXT_HOST://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+    volumes:
+      - broker2:/var/lib/kafka/data
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    depends_on:
+      - kafka1
+      - kafka2
+    ports:
+      - "9094:9094"
+    restart: unless-stopped
+    environment:
+      KAFKA_CLUSTERS_0_NAME: surf
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka1:29092;kafka2:29092"
+      SERVER_PORT: 9094
+
+  init-kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - kafka1
+      - kafka2
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      echo -e 'List topics from broker1...'
+      kafka-topics --bootstrap-server kafka1:29092 --list
+      
+      echo -e 'Creating kafka topics on broker1...'
+      kafka-topics --bootstrap-server kafka1:29092 --create --if-not-exists --topic notification-topic --replication-factor 2 --partitions 3
+  
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server kafka1:29092 --list
+      "
+
 volumes:
   surf_db:
+  zoo1:
+  zoo2:
+  broker1:
+  broker2:
