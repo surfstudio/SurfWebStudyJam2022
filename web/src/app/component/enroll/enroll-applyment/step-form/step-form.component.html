@@ -1,0 +1,30 @@
+<tui-stepper
+	[(activeItemIndex)]="currentStepIndex"
+	class="stepper"
+>
+	<div
+		*ngIf="disableStepsTab"
+		class="stepper__tabs_disabler"
+		(click)="clickOnDisabledTab()"
+	>
+	</div>
+	<button
+		*ngFor="let step of steps; index as i; last as isLast"
+		tuiStep
+		[stepState]="step.state == 'pass' ? 'pass' : 'normal'"
+		[icon]="isLast ? 'tuiIconMail' : ''"
+		[disabled]="step.state == 'not_pass' || disableStepsTab"
+		class="stepper__step"
+	>
+		<progress
+			tuiProgressBar
+			size="s"
+			[value]="step.state == 'pass' ? 1 : 0"
+			[color]="'linear-gradient(to right, var(--tui-support-02), var(--tui-support-14), var(--tui-support-12))'"
+			class="step__progress"
+		></progress>
+		<p class="step__text">{{step.title}}</p>
+	</button>
+</tui-stepper>
+<ng-container [ngTemplateOutlet]="getCurrentStepTemplate()"></ng-container>
+<ng-content select=":not(app-step)"></ng-content>

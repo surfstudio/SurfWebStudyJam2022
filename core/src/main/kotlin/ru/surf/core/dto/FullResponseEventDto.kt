@@ -1,3 +1,5 @@
 package ru.surf.core.dto
 
-data class FullResponseEventDto(val description: String)
+import java.util.*
+
+data class FullResponseEventDto(val id: UUID, val description: String)

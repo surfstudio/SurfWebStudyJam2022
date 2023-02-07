@@ -1,0 +1,47 @@
+@import '~@taiga-ui/core/styles/taiga-ui-local';
+
+
+.app-root {
+  display: flex;
+  flex-flow: column;
+  background: #fcffff;
+};
+
+.header {
+  @media (max-width:699px) {
+    padding-left: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-right: 1rem;
+  };
+
+  @media (min-width:700px) {
+    padding-left: 2rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    padding-right: 2rem;
+  };
+
+  color: var(--tui-text-01);
+  background: var(--tui-base-02);
+  .shadow(1)
+};
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+};
+
+.surf-icon {
+  width: auto;
+  height: auto;
+};
+
+.content {
+  flex-grow: 1;
+};
+
+.footer {
+  display: flex;
+  justify-content: center;
+}
