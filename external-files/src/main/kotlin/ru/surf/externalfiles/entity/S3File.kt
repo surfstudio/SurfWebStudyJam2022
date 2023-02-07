@@ -2,7 +2,7 @@ package ru.surf.externalfiles.entity
 
 
 import org.hibernate.envers.Audited
-import ru.surf.externalfiles.entity.base.UUIDBasedEntity
+import ru.surf.core.entity.base.UUIDBasedEntity
 import java.util.*
 import javax.persistence.Column
 import javax.persistence.Entity
