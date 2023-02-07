@@ -14,10 +14,34 @@ class Candidate(
     override val id: UUID = UUID.randomUUID(),
 
     @Column(name = "name")
-    var name: String = "",
+    var firstName: String = "",
+
+    @Column(name = "lastName")
+    val lastName: String = "",
+
+    @Column(name = "university")
+    val university: String = "",
+
+    @Column(name = "faculty")
+    val faculty: String = "",
+
+    @Column(name = "course")
+    val course: String = "",
+
+    @Column(name = "experience")
+    val experience: String = "",
+
+    @Column(name = "vcs")
+    val vcs: String = "",
 
     @Column(name = "email")
     var email: String = "",
+
+    @Column(name = "telegram")
+    val telegram: String = "",
+
+    @Column(name = "feedback")
+    val feedback: String = "",
 
     @Column(name = "is_new")
     var isNew: Boolean? = null,
@@ -41,10 +65,22 @@ class Candidate(
     val trainees: List<Trainee> = emptyList(),
 
     ) : UUIDBasedEntity(id) {
-
-    @Override
     override fun toString(): String {
-        return this::class.simpleName + "(id = $id , name = $name , email = $email , isNew = $isNew )"
+        return "Candidate(" +
+                "id=$id, " +
+                "firstName='$firstName', " +
+                "lastName='$lastName', " +
+                "university='$university', " +
+                "faculty='$faculty', " +
+                "course='$course', " +
+                "experience='$experience', " +
+                "vcs='$vcs', " +
+                "email='$email', " +
+                "telegram='$telegram', " +
+                "feedback='$feedback', " +
+                "isNew=$isNew, " +
+                "isApproved=$isApproved" +
+                ")"
     }
 
 }

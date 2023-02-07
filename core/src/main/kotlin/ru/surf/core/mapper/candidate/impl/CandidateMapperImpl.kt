@@ -9,8 +9,16 @@ import ru.surf.core.mapper.candidate.CandidateMapper
 class CandidateMapperImpl : CandidateMapper {
 
     override fun convertFromCandidateDtoToCandidateEntity(candidateDto: CandidateDto): Candidate = Candidate(
-            name = candidateDto.name,
-            email = candidateDto.email
+            firstName = candidateDto.firstName,
+            lastName = candidateDto.lastName,
+            university = candidateDto.university,
+            faculty = candidateDto.faculty,
+            course = candidateDto.course,
+            experience = candidateDto.experience,
+            vcs = candidateDto.vcs,
+            email = candidateDto.email,
+            telegram = candidateDto.telegram,
+            feedback = candidateDto.feedback,
     )
 
 }

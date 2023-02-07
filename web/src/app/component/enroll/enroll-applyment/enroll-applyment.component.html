@@ -1,0 +1,277 @@
+<app-step-form
+	[disableStepsTab]="!stepForm || !stepForm.getCurrentStep() || candidateForm[stepForm.getCurrentStep()!.name].invalid"
+>
+	<app-step name="personal" title="О себе">
+		<tui-island class="container">
+			<form [formGroup]="candidateForm['personal']">
+				<h3 class="tui-island__title">Представьтесь, пожалуйста</h3>
+				<p class="tui-island__paragraph">
+					<tui-input
+						formControlName="firstNameControl"
+						[(ngModel)]="candidate.firstName"
+					>
+						Имя&nbsp;<span class="tui-required"></span>
+					</tui-input>
+					<tui-error
+						formControlName="firstNameControl"
+						[error]="[] | tuiFieldError | async"
+					></tui-error>
+				</p>
+				<p class="tui-island__paragraph">
+					<tui-input
+						formControlName="lastNameControl"
+						[(ngModel)]="candidate.lastName"
+					>
+						Фамилия&nbsp;<span class="tui-required"></span>
+					</tui-input>
+					<tui-error
+						formControlName="lastNameControl"
+						[error]="[] | tuiFieldError | async"
+					></tui-error>
+				</p>
+				<p class="tui-island__paragraph">
+					<button
+						tuiButton
+						(click)="stepForm!.moveToNextStep()"
+						[disabled]="candidateForm['personal'].invalid"
+						class="enroll_apply"
+						type="button"
+					>
+						Дальше
+					</button>
+				</p>
+			</form>
+		</tui-island>
+	</app-step>
+	<app-step name="education" title="Образование">
+		<tui-island class="container">
+			<form [formGroup]="candidateForm['education']">
+				<h3 class="tui-island__title">Расскажите о вашем образовании</h3>
+				<p class="tui-island__paragraph">
+					<tui-input
+						formControlName="universityControl"
+						[(ngModel)]="candidate.university"
+					>
+						ВУЗ&nbsp;<span class="tui-required"></span>
+					</tui-input>
+					<tui-error
+						formControlName="universityControl"
+						[error]="[] | tuiFieldError | async"
+					></tui-error>
+				</p>
+				<p class="tui-island__paragraph">
+					<tui-input
+						formControlName="facultyControl"
+						[(ngModel)]="candidate.faculty"
+					>
+						Факультет&nbsp;<span class="tui-required"></span>
+					</tui-input>
+					<tui-error
+						formControlName="facultyControl"
+						[error]="[] | tuiFieldError | async"
+					></tui-error>
+				</p>
+				<p class="tui-island__paragraph">
+					<tui-input
+						formControlName="courseControl"
+						[(ngModel)]="candidate.course"
+					>
+						Курс&nbsp;<span class="tui-required"></span>
+					</tui-input>
+					<tui-error
+						formControlName="courseControl"
+						[error]="[] | tuiFieldError | async"
+					></tui-error>
+				</p>
+				<p class="tui-island__paragraph enroll_buttons_row">
+					<button
+						tuiButton
+						appearance="outline"
+						(click)="stepForm!.moveToPrevStep()"
+						class="enroll_apply"
+						type="button"
+					>
+						Назад
+					</button>
+					<button
+						tuiButton
+						(click)="stepForm!.moveToNextStep()"
+						[disabled]="candidateForm['education'].invalid"
+						class="enroll_apply"
+						type="button"
+					>
+						Дальше
+					</button>
+				</p>
+			</form>
+		</tui-island>
+	</app-step>
+	<app-step name="experience" title="Опыт">
+		<tui-island class="container">
+			<form [formGroup]="candidateForm['experience']">
+				<h3 class="tui-island__title">Напишите немного о вашем опыте</h3>
+				<p class="tui-island__paragraph">
+					<tui-text-area
+						formControlName="experienceControl"
+						[(ngModel)]="candidate.experience"
+						[expandable]="true"
+						class="enroll_big_input"
+					>
+						Печатайте здесь<span class="tui-required"></span>
+					</tui-text-area>
+					<tui-error
+						formControlName="experienceControl"
+						[error]="[] | tuiFieldError | async"
+					></tui-error>
+				</p>
+				<p class="tui-island__paragraph">
+					<tui-input
+						formControlName="vcsControl"
+						[(ngModel)]="candidate.vcs"
+					>
+						Ваш github/gitlab профиль &nbsp;<span class="tui-required"></span>
+					</tui-input>
+					<tui-error
+						formControlName="vcsControl"
+						[error]="[] | tuiFieldError | async"
+					></tui-error>
+				</p>
+				<p class="tui-island__paragraph">
+					<tui-input-files
+						*ngIf="!candidateForm['experience'].controls['cvControl'].value"
+						size="l"
+						[multiple]="false"
+						accept="application/pdf"
+						link="Прикрепите резюме"
+						label="или перетащите его сюда"
+						formControlName="cvControl"
+					></tui-input-files>
+					<tui-files>
+						<tui-file
+							*ngIf="candidateForm['experience'].controls['cvControl'].value"
+							[file]="candidateForm['experience'].controls['cvControl'].value"
+							[showDelete]="true"
+							(removed)="removeFile()"
+						></tui-file>
+					</tui-files>
+					<tui-error
+						formControlName="cvControl"
+						[error]="[] | tuiFieldError | async"
+					></tui-error>
+				</p>
+				<p class="tui-island__paragraph enroll_buttons_row">
+					<button
+						tuiButton
+						appearance="outline"
+						(click)="stepForm!.moveToPrevStep()"
+						class="enroll_apply"
+						type="button"
+					>
+						Назад
+					</button>
+					<button
+						tuiButton
+						(click)="stepForm!.moveToNextStep()"
+						[disabled]="candidateForm['experience'].invalid"
+						class="enroll_apply"
+						type="button"
+					>
+						Дальше
+					</button>
+				</p>
+			</form>
+		</tui-island>
+	</app-step>
+	<app-step name="contacts" title="Контакты">
+		<tui-island class="container">
+			<form [formGroup]="candidateForm['contacts']">
+				<h3 class="tui-island__title">Оставьте контактную информацию<br/>для связи с вами</h3>
+				<p class="tui-island__paragraph">
+					<tui-input
+						formControlName="emailControl"
+						[(ngModel)]="candidate.email"
+					>
+						Email&nbsp;<span class="tui-required"></span>
+					</tui-input>
+					<tui-error
+						formControlName="emailControl"
+						[error]="[] | tuiFieldError | async"
+					></tui-error>
+				</p>
+				<p class="tui-island__paragraph">
+					<tui-input
+						formControlName="telegramControl"
+						[(ngModel)]="candidate.telegram"
+					>
+						Telegram&nbsp;<span class="tui-required"></span>
+					</tui-input>
+					<tui-error
+						formControlName="telegramControl"
+						[error]="[] | tuiFieldError | async"
+					></tui-error>
+				</p>
+				<p class="tui-island__paragraph enroll_buttons_row">
+					<button
+						tuiButton
+						appearance="outline"
+						(click)="stepForm!.moveToPrevStep()"
+						class="enroll_apply"
+						type="button"
+					>
+						Назад
+					</button>
+					<button
+						tuiButton
+						(click)="stepForm!.moveToNextStep()"
+						[disabled]="candidateForm['contacts'].invalid"
+						class="enroll_apply"
+						type="button"
+					>
+						Дальше
+					</button>
+				</p>
+			</form>
+		</tui-island>
+	</app-step>
+	<app-step name="feedback" title="" disabledMessage="Расскажите, как вы узнали о Surf?">
+		<tui-island class="container">
+			<form [formGroup]="candidateForm['feedback']">
+				<h3 class="tui-island__title">Расскажите,<br/>как вы узнали о Surf?</h3>
+				<p class="tui-island__paragraph">
+					<tui-text-area
+						formControlName="feedbackControl"
+						[(ngModel)]="candidate.feedback"
+						[expandable]="true"
+						class="enroll_big_input"
+					>
+						Печатайте здесь<span class="tui-required"></span>
+					</tui-text-area>
+					<tui-error
+						formControlName="feedbackControl"
+						[error]="[] | tuiFieldError | async"
+					></tui-error>
+				</p>
+				<p class="tui-island__paragraph enroll_buttons_row">
+					<button
+						tuiButton
+						appearance="outline"
+						(click)="stepForm!.moveToPrevStep()"
+						class="enroll_apply"
+						type="button"
+					>
+						Назад
+					</button>
+					<button
+						tuiButton
+						(click)="submit()"
+						[disabled]="candidateForm['feedback'].invalid"
+						class="enroll_apply"
+						type="button"
+					>
+						Подать
+					</button>
+				</p>
+			</form>
+		</tui-island>
+	</app-step>
+</app-step-form>
