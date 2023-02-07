@@ -13,10 +13,10 @@ class Candidate(
     @Column(name = "id")
     override val id: UUID = UUID.randomUUID(),
 
-    @Column(name = "name")
+    @Column(name = "first_name")
     var firstName: String = "",
 
-    @Column(name = "lastName")
+    @Column(name = "last_name")
     val lastName: String = "",
 
     @Column(name = "university")
