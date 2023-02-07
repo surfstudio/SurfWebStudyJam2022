@@ -26,7 +26,6 @@ repositories {
 }
 
 dependencies {
-
     val springDocVersion = "1.6.9"
 
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -40,8 +39,8 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
     implementation("org.flywaydb:flyway-core")
     runtimeOnly("org.postgresql:postgresql")
-
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    implementation(project(":domain"))
     implementation(project(":auth"))
 
     devDependencies {
