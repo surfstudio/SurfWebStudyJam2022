@@ -14,20 +14,19 @@ class KafkaTopicConfiguration(private val kafkaProducerConfiguration: KafkaProdu
     }
 
     @Bean
-    fun kafkaAdmin(): KafkaAdmin {
-        return KafkaAdmin(
+    fun kafkaAdmin(): KafkaAdmin =
+        KafkaAdmin(
             mapOf(
                 AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaProducerConfiguration.bootstrapServers,
                 AdminClientConfig.CLIENT_ID_CONFIG to kafkaProducerConfiguration.clientId
             )
         )
-    }
 
     @Bean
     fun notificationTopic() =
         TopicBuilder.name(TopicConfiguration.notificationTopic)
             .partitions(3)
-            .replicas(2)
+            .replicas(1)
             .build()
 
 }
