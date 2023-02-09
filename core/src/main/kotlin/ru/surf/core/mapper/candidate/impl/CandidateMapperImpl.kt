@@ -16,6 +16,7 @@ class CandidateMapperImpl : CandidateMapper {
             course = candidateDto.course,
             experience = candidateDto.experience,
             vcs = candidateDto.vcs,
+            cvFileId = candidateDto.cv.fileId,
             email = candidateDto.email,
             telegram = candidateDto.telegram,
             feedback = candidateDto.feedback,

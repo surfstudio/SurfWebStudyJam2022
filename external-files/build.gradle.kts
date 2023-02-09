@@ -37,6 +37,7 @@ dependencies {
     implementation(platform("software.amazon.awssdk:bom:$awssdkBomVersion"))
     implementation("software.amazon.awssdk:s3")
     implementation("org.apache.poi:poi-ooxml:$apachePoiVersion")
+    implementation("com.caucho:hessian:4.0.66")
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation(project(":domain"))

@@ -34,6 +34,9 @@ class Candidate(
         @Column(name = "vcs")
         val vcs: String = "",
 
+        @Column(name = "cv_file_id", columnDefinition = "uuid")
+        var cvFileId: UUID = UUID.randomUUID(),
+
         @Column(name = "email")
         var email: String = "",
 

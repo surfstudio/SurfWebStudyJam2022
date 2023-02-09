@@ -17,6 +17,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import software.amazon.awssdk.services.s3.model.S3Exception
 import java.sql.SQLException
+import java.util.*
 
 
 @Service
@@ -99,4 +100,7 @@ class S3FileServiceImpl(
             }
         }
     }
+
+    override fun claimFile(fileId: UUID): UUID? =
+            s3DatabaseService.persistS3File(fileId)?.id
 }

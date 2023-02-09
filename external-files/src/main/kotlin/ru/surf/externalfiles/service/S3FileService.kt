@@ -2,6 +2,7 @@ package ru.surf.externalfiles.service
 
 import org.springframework.web.multipart.MultipartFile
 import ru.surf.externalfiles.entity.S3File
+import java.util.UUID
 
 interface S3FileService {
 
@@ -10,6 +11,8 @@ interface S3FileService {
     fun getObject(objectName: String): ByteArray
 
     fun deleteObject(multipartFile: MultipartFile)
+
+    fun claimFile(fileId: UUID): UUID?
 
 }
 

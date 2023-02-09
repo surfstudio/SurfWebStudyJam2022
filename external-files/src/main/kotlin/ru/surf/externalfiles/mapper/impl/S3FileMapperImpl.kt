@@ -1,11 +1,12 @@
-package ru.surf.externalfiles.mapper
+package ru.surf.externalfiles.mapper.impl
 
 import org.apache.commons.codec.digest.DigestUtils
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import ru.surf.externalfiles.dto.PostResponseResumeDto
 import ru.surf.externalfiles.entity.S3File
-import ru.surf.externalfiles.mapper.S3FileMapperImpl.FILENAME.unknown
+import ru.surf.externalfiles.mapper.S3FileMapper
+import ru.surf.externalfiles.mapper.impl.S3FileMapperImpl.FILENAME.unknown
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 
 @Component

@@ -42,6 +42,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation(project(":domain"))
     implementation(project(":auth"))
+    implementation(project(":external-files"))
 
     devDependencies {
         runtimeOnly("com.h2database:h2:2.1.214")

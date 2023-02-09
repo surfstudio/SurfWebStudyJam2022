@@ -3,6 +3,8 @@ package ru.surf.externalfiles.service.impl
 
 import org.apache.commons.codec.digest.DigestUtils
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Isolation
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import ru.surf.externalfiles.entity.S3File
 import ru.surf.externalfiles.exception.S3FileNotFoundException
@@ -10,6 +12,7 @@ import ru.surf.externalfiles.mapper.S3FileMapper
 import ru.surf.externalfiles.repository.S3FileRepository
 import ru.surf.externalfiles.service.S3DatabaseService
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
+import java.util.*
 
 @Service
 class S3DatabaseServiceImpl(
@@ -34,6 +37,14 @@ class S3DatabaseServiceImpl(
             it.also { s3FileRepository.deleteById(it.id) }
         } ?: throw S3FileNotFoundException(filename)
     }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    override fun persistS3File(id: UUID): S3File? = s3FileRepository.findById(id).or {
+            null
+        }.get().run {
+            expireAt = null
+            s3FileRepository.save(this)
+        }
 
     private fun synchronizeS3File(lastVersion: S3File, newVersion: S3File) =
         lastVersion.apply {

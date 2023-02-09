@@ -34,6 +34,9 @@ class S3File(
     @Column(name = "checksum")
     var checksum: String = "",
 
+    @Column(name = "expire_at")
+    var expireAt: Date? = Date(),
+
     ) : UUIDBasedEntity(id) {
 
     @Override
