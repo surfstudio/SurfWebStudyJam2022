@@ -32,6 +32,3 @@ spring:
 springdoc:
   swagger-ui:
     enabled: true
-
-
-

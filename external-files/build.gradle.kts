@@ -29,10 +29,6 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
-    runtimeOnly("org.postgresql:postgresql")
-    runtimeOnly("com.h2database:h2:2.1.214")
-
     implementation("org.flywaydb:flyway-core")
     implementation("org.springdoc:springdoc-openapi-ui:$springDocVersion")
     implementation("org.springdoc:springdoc-openapi-kotlin:$springDocVersion")
@@ -41,9 +37,19 @@ dependencies {
     implementation(platform("software.amazon.awssdk:bom:$awssdkBomVersion"))
     implementation("software.amazon.awssdk:s3")
     implementation("org.apache.poi:poi-ooxml:$apachePoiVersion")
+    runtimeOnly("org.postgresql:postgresql")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation(project(":domain"))
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    devDependencies {
+        runtimeOnly("com.h2database:h2:2.1.214")
+    }
+}
+
+fun devDependencies(configuration: DependencyHandlerScope.() -> Unit) {
+    if (project.hasProperty("dev")) {
+        DependencyHandlerScope.of(dependencies).configuration()
+    }
 }
 
 tasks.withType<KotlinCompile> {
@@ -55,4 +61,12 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
+    doLast {
+        archiveFile.get().asFile.apply {
+            copyTo(target = File(parent, "app.jar"), overwrite = true)
+        }
+    }
 }

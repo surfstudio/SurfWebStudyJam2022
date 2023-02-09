@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, HostBinding, Output, EventEmitter, ViewChild, Inject } from '@angular/core';
 import { FormControl, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms'
 
-import { Observable, of, Subject, timer } from 'rxjs';
-import { map, switchMap, finalize } from 'rxjs/operators';
+import { Observable, of, Subject } from 'rxjs';
+import { map, catchError, switchMap, finalize } from 'rxjs/operators';
 
 import { TuiAlertService, TuiNotification } from '@taiga-ui/core';
 import { TuiFileLike } from '@taiga-ui/kit';
@@ -79,14 +79,15 @@ export class EnrollApplymentComponent implements OnInit {
 
   private uploadFile(file: TuiFileLike): Observable<TuiFileLike | null> {
     this.loadingFiles$.next(file);
-    const bFile = this.candidateForm['experience'].controls['cvControl'].value;
-    return this.resourceService.uploadResume(bFile).pipe(
-      map(() => {
-        this.candidateForm['experience'].controls['cvUploadedControl'].setValue(file);
-        return file;
-
-        /*this.rejectedFiles$.next(file);
-        return null;*/
+    return this.resourceService.uploadResume(<File>file).pipe(
+      map(uploadedFile => {
+        this.candidateForm['experience'].controls['cvUploadedControl'].setValue(uploadedFile);
+        return uploadedFile;
+      }),
+      catchError(error => {
+        console.log(error);
+        this.rejectedFiles$.next(file);
+        return of(null);
       }),
       finalize(() => this.loadingFiles$.next(null)),
     );
