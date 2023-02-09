@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
+import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -18,6 +19,9 @@ import {TuiFieldErrorPipeModule} from '@taiga-ui/kit';
 import {TuiScrollbarModule} from '@taiga-ui/core';
 import {TuiAlertModule} from '@taiga-ui/core';
 import {TuiInputFilesModule} from '@taiga-ui/kit';
+import {TuiThemeNightModule} from '@taiga-ui/core';
+import {TuiModeModule} from '@taiga-ui/core';
+import {TuiToggleModule} from '@taiga-ui/kit';
 
 import {TUI_SANITIZER} from '@taiga-ui/core';
 import {NgDompurifySanitizer} from '@tinkoff/ng-dompurify';
@@ -45,6 +49,7 @@ import { EnrollSuccessComponent } from './component/enroll/enroll-success/enroll
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
+    FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
 
@@ -61,6 +66,9 @@ import { EnrollSuccessComponent } from './component/enroll/enroll-success/enroll
     TuiScrollbarModule,
     TuiAlertModule,
     TuiInputFilesModule,
+    TuiThemeNightModule,
+    TuiModeModule,
+    TuiToggleModule,
   ],
   providers: [
     {

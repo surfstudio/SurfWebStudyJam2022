@@ -1,3 +1,4 @@
+<tui-theme-night *ngIf="darkTheme"></tui-theme-night>
 <tui-root>
 	<div class="app-root">
 		<header class="header">
@@ -6,6 +7,14 @@
 						src="assets/logo.svg"
 						class="surf-icon"
 					></tui-svg>
+          <label>
+            <tui-toggle
+              size="l"
+              class="tui-space_right-1"
+              [(ngModel)]="darkTheme"
+            ></tui-toggle>
+            🌙
+          </label>
 			</nav>
 		</header>
 		<div class="content">
