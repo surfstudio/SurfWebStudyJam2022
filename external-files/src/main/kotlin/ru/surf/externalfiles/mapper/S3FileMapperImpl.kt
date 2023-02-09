@@ -28,6 +28,6 @@ class S3FileMapperImpl : S3FileMapper {
         )
 
     override fun convertFromS3ResumeEntityToPostResponseResumeDto(s3ResumeFile: S3File): PostResponseResumeDto =
-        PostResponseResumeDto(fileId = s3ResumeFile.id, sizeInBytes = s3ResumeFile.sizeInBytes, s3Filename = s3ResumeFile.s3Filename)
+        PostResponseResumeDto(fileId = s3ResumeFile.id, size = s3ResumeFile.sizeInBytes, name = s3ResumeFile.s3Filename)
 
 }

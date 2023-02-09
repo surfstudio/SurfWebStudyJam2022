@@ -31,6 +31,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("com.h2database:h2:2.1.214")
 
     implementation("org.flywaydb:flyway-core")
     implementation("org.springdoc:springdoc-openapi-ui:$springDocVersion")
