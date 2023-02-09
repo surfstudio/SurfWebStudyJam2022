@@ -15,11 +15,11 @@ class S3DatabaseServiceImpl(
     private val s3FileMapper: S3FileMapper,
 ) : S3DatabaseService {
 
-    override fun saveS3FileData(putObjectRequest: PutObjectRequest, multipartFile: MultipartFile) {
+    override fun saveS3FileData(putObjectRequest: PutObjectRequest, multipartFile: MultipartFile): S3File {
         val s3FileFromRequest =
             s3FileMapper.convertFromS3PutRequestToS3FileEntity(putObjectRequest, multipartFile)
         val s3FileFromDb = multipartFile.originalFilename?.let { s3FileRepository.getS3FileByS3Filename(it) }
-        s3FileFromDb?.let { synchronizeS3File(it, s3FileFromRequest) }
+        return s3FileFromDb?.let { synchronizeS3File(it, s3FileFromRequest) }
             ?: run { s3FileRepository.save(s3FileFromRequest) }
     }
 

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import ru.surf.externalfiles.configuration.S3PropertiesConfiguration
+import ru.surf.externalfiles.entity.S3File
 import ru.surf.externalfiles.service.S3DatabaseService
 import ru.surf.externalfiles.service.S3FileService
 import ru.surf.externalfiles.util.getS3Path
@@ -27,7 +28,7 @@ class S3FileServiceImpl(
     private val bucketName = s3PropertiesConfiguration.bucketName
 
     @Transactional(rollbackFor = [SdkClientException::class, SQLException::class])
-    override fun putObjectIntoS3Storage(multipartFile: MultipartFile) {
+    override fun putObjectIntoS3Storage(multipartFile: MultipartFile): S3File {
         val file = multipartFile.inputStream
         val folder = getS3Path(multipartFile)
         val putObjectRequest = PutObjectRequest.builder()
@@ -45,7 +46,7 @@ class S3FileServiceImpl(
                 is SQLException -> throw RuntimeException()
             }
         }
-        s3DatabaseService.saveS3FileData(putObjectRequest, multipartFile)
+        return s3DatabaseService.saveS3FileData(putObjectRequest, multipartFile)
     }
 
     override fun getObject(objectName: String): ByteArray {
