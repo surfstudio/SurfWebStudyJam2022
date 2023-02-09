@@ -9,7 +9,9 @@ interface S3DatabaseService {
 
     fun saveS3FileData(putObjectRequest: PutObjectRequest, multipartFile: MultipartFile): S3File
 
-    fun deleteS3FileData(filename: String)
+    fun deleteS3FileData(fileId: UUID)
+
+    fun getS3FileData(fileId: UUID): S3File
 
     fun persistS3File(id: UUID): S3File?
 

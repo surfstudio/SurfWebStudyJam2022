@@ -10,7 +10,7 @@ interface S3FileService {
 
     fun getObject(objectName: String): ByteArray
 
-    fun deleteObject(multipartFile: MultipartFile)
+    fun deleteObject(fileId: UUID)
 
     fun claimFile(fileId: UUID): UUID?
 

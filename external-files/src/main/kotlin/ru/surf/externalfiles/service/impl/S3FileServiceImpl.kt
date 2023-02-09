@@ -83,11 +83,12 @@ class S3FileServiceImpl(
     }
 
     @Transactional(rollbackFor = [SdkClientException::class, SQLException::class])
-    override fun deleteObject(multipartFile: MultipartFile) {
-        val folder = getS3Path(multipartFile)
+    override fun deleteObject(fileId: UUID) {
+        val s3Key = s3DatabaseService.getS3FileData(fileId).s3Key
+        s3DatabaseService.deleteS3FileData(fileId)
         val deleteObjectRequest = DeleteObjectRequest.builder()
             .bucket(bucketName)
-            .key(folder)
+            .key(s3Key)
             .build()
         try {
             s3Client.deleteObject(deleteObjectRequest)
@@ -102,5 +103,5 @@ class S3FileServiceImpl(
     }
 
     override fun claimFile(fileId: UUID): UUID? =
-            s3DatabaseService.persistS3File(fileId)?.id
+        s3DatabaseService.persistS3File(fileId)?.id
 }

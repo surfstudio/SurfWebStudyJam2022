@@ -2,6 +2,7 @@ package ru.surf.externalfiles.service.impl
 
 
 import org.apache.commons.codec.digest.DigestUtils
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
@@ -32,19 +33,20 @@ class S3DatabaseServiceImpl(
             ?: run { s3FileRepository.save(s3FileFromRequest) }
     }
 
-    override fun deleteS3FileData(filename: String) {
-        s3FileRepository.getS3FileByS3Filename(filename)?.let {
-            it.also { s3FileRepository.deleteById(it.id) }
-        } ?: throw S3FileNotFoundException(filename)
+    override fun deleteS3FileData(fileId: UUID) {
+        getS3FileData(fileId).also { s3FileRepository.delete(it) }
     }
+
+    override fun getS3FileData(fileId: UUID): S3File =
+        s3FileRepository.findByIdOrNull(fileId) ?: throw S3FileNotFoundException(fileId)
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     override fun persistS3File(id: UUID): S3File? = s3FileRepository.findById(id).or {
-            null
-        }.get().run {
-            expiresAt = null
-            s3FileRepository.save(this)
-        }
+        null
+    }.get().run {
+        expiresAt = null
+        s3FileRepository.save(this)
+    }
 
     private fun synchronizeS3File(lastVersion: S3File, newVersion: S3File) =
         lastVersion.apply {
