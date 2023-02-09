@@ -42,7 +42,7 @@ class S3DatabaseServiceImpl(
     override fun persistS3File(id: UUID): S3File? = s3FileRepository.findById(id).or {
             null
         }.get().run {
-            expireAt = null
+            expiresAt = null
             s3FileRepository.save(this)
         }
 
