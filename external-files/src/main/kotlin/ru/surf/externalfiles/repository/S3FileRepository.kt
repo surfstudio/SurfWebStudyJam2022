@@ -8,4 +8,6 @@ interface S3FileRepository : JpaRepository<S3File, UUID> {
 
     fun getS3FileByS3Filename(filename: String): S3File?
 
+    fun getS3FileByChecksum(checksum: String): S3File?
+
 }

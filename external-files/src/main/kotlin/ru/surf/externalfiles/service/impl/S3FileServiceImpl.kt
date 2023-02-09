@@ -15,6 +15,7 @@ import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest
 import software.amazon.awssdk.services.s3.model.GetObjectRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
+import software.amazon.awssdk.services.s3.model.S3Exception
 import java.sql.SQLException
 
 
@@ -42,6 +43,7 @@ class S3FileServiceImpl(
         } catch (e: Exception) {
             //TODO: поменять исключение
             when (e) {
+                is S3Exception -> throw RuntimeException()
                 is SdkClientException -> throw RuntimeException()
                 is SQLException -> throw RuntimeException()
             }
@@ -59,6 +61,10 @@ class S3FileServiceImpl(
         } catch (e: Exception) {
             //TODO: поменять исключение
             when (e) {
+                is S3Exception -> {
+                    e.printStackTrace()
+                    throw RuntimeException()
+                }
                 is SdkClientException -> {
                     e.printStackTrace()
                     throw RuntimeException()
@@ -87,6 +93,7 @@ class S3FileServiceImpl(
         } catch (e: Exception) {
             //TODO: поменять исключение
             when (e) {
+                is S3Exception -> throw RuntimeException()
                 is SdkClientException -> throw RuntimeException()
                 is SQLException -> throw RuntimeException()
             }

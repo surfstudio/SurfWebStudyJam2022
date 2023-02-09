@@ -1,9 +1,11 @@
 package ru.surf.externalfiles.service.impl
 
 
+import org.apache.commons.codec.digest.DigestUtils
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import ru.surf.externalfiles.entity.S3File
+import ru.surf.externalfiles.exception.S3FileNotFoundException
 import ru.surf.externalfiles.mapper.S3FileMapper
 import ru.surf.externalfiles.repository.S3FileRepository
 import ru.surf.externalfiles.service.S3DatabaseService
@@ -18,16 +20,19 @@ class S3DatabaseServiceImpl(
     override fun saveS3FileData(putObjectRequest: PutObjectRequest, multipartFile: MultipartFile): S3File {
         val s3FileFromRequest =
             s3FileMapper.convertFromS3PutRequestToS3FileEntity(putObjectRequest, multipartFile)
-        val s3FileFromDb = multipartFile.originalFilename?.let { s3FileRepository.getS3FileByS3Filename(it) }
+        val s3FileFromDb = multipartFile.originalFilename?.let {
+            s3FileRepository.getS3FileByChecksum(
+                DigestUtils.sha256Hex(multipartFile.inputStream)
+            )
+        }
         return s3FileFromDb?.let { synchronizeS3File(it, s3FileFromRequest) }
             ?: run { s3FileRepository.save(s3FileFromRequest) }
     }
 
     override fun deleteS3FileData(filename: String) {
-        //TODO: поменять исключение
         s3FileRepository.getS3FileByS3Filename(filename)?.let {
             it.also { s3FileRepository.deleteById(it.id) }
-        } ?: throw Exception("NoFile")
+        } ?: throw S3FileNotFoundException(filename)
     }
 
     private fun synchronizeS3File(lastVersion: S3File, newVersion: S3File) =

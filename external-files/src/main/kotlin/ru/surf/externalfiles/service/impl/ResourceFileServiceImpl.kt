@@ -17,6 +17,8 @@ class ResourceFileServiceImpl(
     private val s3FileMapper: S3FileMapper
 ) : ResourceFileService {
 
+    // TODO: 09.02.2023  Уточнить позже вид excel файла у HR
+
     override fun parseHrExcelFile(): List<Candidate> {
         //TODO: сделать рефакторинг хардкода
         val bytes = s3FileService.getObject("documents/Кандидаты (2).xlsx")
@@ -32,7 +34,6 @@ class ResourceFileServiceImpl(
     }
 
     override fun saveResume(resume: MultipartFile): PostResponseResumeDto {
-
         val s3ResumeFile = s3FileService.putObjectIntoS3Storage(resume)
         return s3FileMapper.convertFromS3ResumeEntityToPostResponseResumeDto(s3ResumeFile)
     }

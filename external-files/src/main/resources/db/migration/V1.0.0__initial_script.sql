@@ -189,7 +189,7 @@ create table if not exists s3files
     content_type  varchar(255),
     s3_key        varchar(255) unique,
     size_in_bytes bigint,
-    s3_filename   varchar(300) unique,
+    s3_filename   varchar(300),
     checksum      varchar(255) unique
 );
 
