@@ -33,3 +33,6 @@ springdoc:
 
 authService:
   credentialsServiceApi: http://localhost:8085/credentialsServiceApi
+
+externalFiles:
+  s3FileServiceApi: http://localhost:8081/api/s3FileServiceApi

@@ -1,11 +1,18 @@
-import { Component, OnInit, Input, HostBinding, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, HostBinding, Output, EventEmitter, ViewChild, Inject } from '@angular/core';
 import { FormControl, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms'
+
+import { Observable, of, Subject } from 'rxjs';
+import { map, catchError, switchMap, finalize } from 'rxjs/operators';
+
+import { TuiAlertService, TuiNotification } from '@taiga-ui/core';
+import { TuiFileLike } from '@taiga-ui/kit';
 
 import {TUI_VALIDATION_ERRORS} from '@taiga-ui/kit';
 
 import { StepFormComponent } from './step-form/step-form.component';
 
 import { CandidateService } from 'service/candidate.service';
+import { ResourceService } from 'service/resource.service';
 import { Candidate } from 'entity/candidate';
 
 
@@ -28,7 +35,7 @@ const telegramUsername = /^[A-Za-z][A-Za-z0-9_]{3,}[A-Za-z0-9]$/
         required: 'Нужно заполнить это поле',
         email: 'Введите корректный email',
       }
-    }
+    },
   ],
 })
 export class EnrollApplymentComponent implements OnInit {
@@ -44,14 +51,57 @@ export class EnrollApplymentComponent implements OnInit {
 
   protected readonly candidate = new Candidate();
 
-  constructor(private candidateService: CandidateService) { }
+  constructor(
+    @Inject(TuiAlertService)
+    private readonly alertService: TuiAlertService,
+
+    @Inject(CandidateService)
+    private candidateService: CandidateService,
+
+    @Inject(ResourceService)
+    private resourceService: ResourceService,
+  ) { }
 
   ngOnInit() {
     this.candidate.eventId = this.eventId;
   }
 
+  protected onInputFileReject(file: TuiFileLike | readonly TuiFileLike[]): void {
+    this.alertService.open('Пожалуйста, прикрепите файл в формате pdf', {
+       status: TuiNotification.Warning,
+       autoClose: 1000,
+       hasCloseButton: false,
+     }).subscribe();
+  }
+
+  protected readonly rejectedFiles$ = new Subject<TuiFileLike | null>();
+  protected readonly loadingFiles$ = new Subject<TuiFileLike | null>();
+
+  private uploadFile(file: TuiFileLike): Observable<TuiFileLike | null> {
+    this.loadingFiles$.next(file);
+    return this.resourceService.uploadResume(<File>file).pipe(
+      map(uploadedFile => {
+        this.candidateForm['experience'].controls['cvUploadedControl'].setValue(uploadedFile);
+        return uploadedFile;
+      }),
+      catchError(error => {
+        console.log(error);
+        this.rejectedFiles$.next(file);
+        return of(null);
+      }),
+      finalize(() => this.loadingFiles$.next(null)),
+    );
+  }
+
+
   protected removeFile(): void {
+    this.candidateForm['experience'].controls['cvUploadedControl'].setValue(null);
     this.candidateForm['experience'].controls['cvControl'].setValue(null);
+  }
+
+  protected clearRejected(): void {
+      this.removeFile();
+      this.rejectedFiles$.next(null);
   }
 
   protected submit(): void {
@@ -114,6 +164,9 @@ export class EnrollApplymentComponent implements OnInit {
       cvControl: new FormControl('', [
         Validators.required,
       ]),
+      cvUploadedControl: new FormControl('', [
+        Validators.required,
+      ]),
     }),
     contacts: new FormGroup({
       emailControl: new FormControl('', [
@@ -131,4 +184,12 @@ export class EnrollApplymentComponent implements OnInit {
       ]),
     }),
   };
+
+  protected readonly loadedFiles$ = this.
+    candidateForm['experience'].
+    controls['cvControl'].
+    valueChanges.
+    pipe(
+      switchMap(file => (file ? this.uploadFile(file) : of(null))),
+  );
 }

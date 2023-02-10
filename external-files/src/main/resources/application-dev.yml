@@ -1,12 +1,19 @@
 server:
-  port: 8080
+  port: 8081
   servlet:
     context-path: /api
+
+s3:
+  access-key: surf
+  secret-key: surfpassword
+  bucket-name: surf
+  url: http://localhost
+  host: 9000
 
 spring:
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:file:./core_db;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:file:./ext_db;DB_CLOSE_DELAY=-1
     username: sa
     password: sa
   jpa:
@@ -17,13 +24,14 @@ spring:
     console.enabled: true
   flyway:
     enabled: false
+  servlet:
+    multipart:
+      max-file-size: 1GB
+      max-request-size: 1GB
 
 springdoc:
   swagger-ui:
     enabled: true
 
-authService:
-  credentialsServiceApi: http://localhost:8085/credentialsServiceApi
-
-externalFiles:
-  s3FileServiceApi: http://localhost:8081/api/s3FileServiceApi
+external-files:
+  claim-interval-seconds: ${CLAIM_INTERVAL_SECONDS}

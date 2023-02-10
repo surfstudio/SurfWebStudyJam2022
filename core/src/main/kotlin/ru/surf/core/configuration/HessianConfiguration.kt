@@ -5,18 +5,32 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.remoting.caucho.HessianProxyFactoryBean
 import ru.surf.auth.service.CredentialsService
+import ru.surf.externalfiles.service.S3FileService
 
 
 @Configuration
 class HessianConfiguration(
         @Value("\${authService.credentialsServiceApi}")
-        private val hessianApi: String
+        private val credentialsServiceApi: String,
+
+        @Value("\${externalFiles.s3FileServiceApi}")
+        private val s3FileServiceApi: String
 ) {
+
     @Bean(name = ["credentialsServiceApiInvoker"])
-    fun hessianInvoker(): HessianProxyFactoryBean {
+    fun credentialsServiceHessianInvoker(): HessianProxyFactoryBean {
         val invoker = HessianProxyFactoryBean()
-        invoker.serviceUrl = hessianApi
+        invoker.serviceUrl = credentialsServiceApi
         invoker.serviceInterface = CredentialsService::class.java
         return invoker
     }
+
+    @Bean(name = ["s3FileServiceApiHessianInvoker"])
+    fun s3FileServiceHessianInvoker(): HessianProxyFactoryBean {
+        val invoker = HessianProxyFactoryBean()
+        invoker.serviceUrl = s3FileServiceApi
+        invoker.serviceInterface = S3FileService::class.java
+        return invoker
+    }
+
 }

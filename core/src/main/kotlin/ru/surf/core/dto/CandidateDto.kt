@@ -11,7 +11,12 @@ data class CandidateDto(
         val course: String,
         val experience: String,
         val vcs: String,
+        val cv: CandidateCV,
         val email: String,
         val telegram: String,
         val feedback: String,
-)
+) {
+    data class CandidateCV(
+        val fileId: UUID
+    )
+}

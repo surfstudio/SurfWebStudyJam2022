@@ -19,12 +19,14 @@ import ru.surf.core.repository.CandidateRepository
 import ru.surf.core.repository.EventRepository
 import ru.surf.core.repository.TraineeRepository
 import ru.surf.core.service.CandidateService
+import ru.surf.externalfiles.service.S3FileService
 import java.util.*
 
 @Service
-@DependsOn(value = ["credentialsServiceApiInvoker"])
+@DependsOn(value = ["credentialsServiceApiInvoker", "s3FileServiceApiHessianInvoker"])
 class CandidateServiceImpl(
         @Autowired private val credentialsService: CredentialsService,
+        @Autowired private val s3FileService: S3FileService,
         @Autowired private val candidateRepository: CandidateRepository,
         @Autowired private val eventRepository: EventRepository,
         @Autowired private val accountRepository: AccountRepository,
@@ -32,6 +34,7 @@ class CandidateServiceImpl(
         @Autowired private val candidateMapper: CandidateMapper,
 ) : CandidateService {
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])
     override fun createCandidate(candidateDto: CandidateDto): Candidate =
             candidateMapper.convertFromCandidateDtoToCandidateEntity(candidateDto).apply {
                 events.add(
@@ -43,8 +46,12 @@ class CandidateServiceImpl(
                             statesEvents.any{ it.stateType.type == "CLOSED" } && throw Exception("Event closed")
                         }
                 )
-            }.let {
-                candidateRepository.save(it)
+            }.also {
+                candidateRepository.run {
+                    save(it)
+                    flush()
+                }
+                it.cvFileId = s3FileService.claimFile(candidateDto.cv.fileId) ?: throw Exception("cv file expired")
             }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])

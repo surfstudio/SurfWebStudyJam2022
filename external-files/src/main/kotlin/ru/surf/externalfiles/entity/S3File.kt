@@ -3,6 +3,7 @@ package ru.surf.externalfiles.entity
 
 import org.hibernate.envers.Audited
 import ru.surf.core.entity.base.UUIDBasedEntity
+import java.time.ZonedDateTime
 import java.util.*
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -15,26 +16,29 @@ import javax.persistence.Table
 @Entity
 class S3File(
 
-    @Id
-    @Column(name = "id")
-    override var id: UUID = UUID.randomUUID(),
+        @Id
+        @Column(name = "id")
+        override var id: UUID = UUID.randomUUID(),
 
-    @Column(name = "content_type")
-    var contentType: String = "",
+        @Column(name = "content_type")
+        var contentType: String = "",
 
-    @Column(name = "s3_key")
-    var s3Key: String = "",
+        @Column(name = "s3_key")
+        var s3Key: String = "",
 
-    @Column(name = "size_in_bytes")
-    var sizeInBytes: Long = 0,
+        @Column(name = "size_in_bytes")
+        var sizeInBytes: Long = 0,
 
-    @Column(name = "s3_filename")
-    var s3Filename: String = "",
+        @Column(name = "s3_filename")
+        var s3Filename: String = "",
 
-    @Column(name = "checksum")
-    var checksum: String = "",
+        @Column(name = "checksum")
+        var checksum: String = "",
 
-    ) : UUIDBasedEntity(id) {
+        @Column(name = "expires_at")
+        var expiresAt: ZonedDateTime? = null,
+
+        ) : UUIDBasedEntity(id) {
 
     @Override
     override fun toString(): String {
