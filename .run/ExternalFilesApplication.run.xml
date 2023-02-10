@@ -4,6 +4,7 @@
     <option name="WORKING_DIRECTORY" value="$ProjectFileDir$" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <envs>
+      <env name="CLAIM_INTERVAL_SECONDS" value="3600" />
       <env name="SPRING_PROFILES_ACTIVE" value="dev" />
     </envs>
     <method v="2">

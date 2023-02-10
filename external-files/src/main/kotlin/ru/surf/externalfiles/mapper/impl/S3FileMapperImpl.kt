@@ -1,6 +1,7 @@
 package ru.surf.externalfiles.mapper.impl
 
 import org.apache.commons.codec.digest.DigestUtils
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import ru.surf.externalfiles.dto.PostResponseResumeDto
@@ -8,9 +9,13 @@ import ru.surf.externalfiles.entity.S3File
 import ru.surf.externalfiles.mapper.S3FileMapper
 import ru.surf.externalfiles.mapper.impl.S3FileMapperImpl.FILENAME.unknown
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
+import java.time.ZonedDateTime
 
 @Component
-class S3FileMapperImpl : S3FileMapper {
+class S3FileMapperImpl(
+        @Value("\${external-files.claim-interval-seconds}")
+        private val claimIntervalSeconds: Long
+) : S3FileMapper {
 
     object FILENAME {
         const val unknown: String = "Unknown file"
@@ -25,7 +30,8 @@ class S3FileMapperImpl : S3FileMapper {
             s3Key = putObjectRequest.key(),
             sizeInBytes = multipartFile.bytes.size.toLong(),
             s3Filename = multipartFile.originalFilename ?: unknown,
-            checksum = DigestUtils.sha256Hex(multipartFile.inputStream)
+            checksum = DigestUtils.sha256Hex(multipartFile.inputStream),
+            expiresAt = ZonedDateTime.now().plusSeconds(claimIntervalSeconds)
         )
 
     override fun convertFromS3ResumeEntityToPostResponseResumeDto(s3ResumeFile: S3File): PostResponseResumeDto =

@@ -13,6 +13,7 @@ import ru.surf.externalfiles.mapper.S3FileMapper
 import ru.surf.externalfiles.repository.S3FileRepository
 import ru.surf.externalfiles.service.S3DatabaseService
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
+import java.time.ZonedDateTime
 import java.util.*
 
 @Service
@@ -41,11 +42,19 @@ class S3DatabaseServiceImpl(
         s3FileRepository.findByIdOrNull(fileId) ?: throw S3FileNotFoundException(fileId)
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    override fun persistS3File(id: UUID): S3File? = s3FileRepository.findById(id).or {
-        null
-    }.get().run {
+    override fun persistS3File(id: UUID): S3File? = s3FileRepository.
+    findById(id).
+    orElse(null)?.run {
         expiresAt = null
         s3FileRepository.save(this)
+    }
+
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    override fun processExpiredFiles(zonedDateTime: ZonedDateTime, applyFn: (UUID) -> Unit) {
+        s3FileRepository.
+        findByExpiresAtLessThan(zonedDateTime).
+        map { it.id }.
+        forEach(applyFn)
     }
 
     private fun synchronizeS3File(lastVersion: S3File, newVersion: S3File) =

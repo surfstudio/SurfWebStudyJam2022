@@ -1,6 +1,7 @@
 package ru.surf.externalfiles.service.impl
 
 import org.springframework.http.MediaType
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -17,14 +18,16 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import software.amazon.awssdk.services.s3.model.S3Exception
 import java.sql.SQLException
+import java.time.ZonedDateTime
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 @Service
 class S3FileServiceImpl(
     s3PropertiesConfiguration: S3PropertiesConfiguration,
     private val s3DatabaseService: S3DatabaseService,
-    private val s3Client: S3Client,
+    private val s3Client: S3Client
 ) : S3FileService {
 
     private val bucketName = s3PropertiesConfiguration.bucketName
@@ -103,5 +106,11 @@ class S3FileServiceImpl(
     }
 
     override fun claimFile(fileId: UUID): UUID? =
-        s3DatabaseService.persistS3File(fileId)?.id
+            s3DatabaseService.persistS3File(fileId)?.id
+
+    @Scheduled(fixedDelayString = "\${external-files.claim-interval-seconds}", timeUnit = TimeUnit.SECONDS)
+    override fun cleanUnclaimedFiles() {
+        s3DatabaseService.processExpiredFiles(ZonedDateTime.now(), this::deleteObject)
+    }
+
 }

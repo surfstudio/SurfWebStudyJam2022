@@ -32,3 +32,6 @@ spring:
 springdoc:
   swagger-ui:
     enabled: true
+
+external-files:
+  claim-interval-seconds: ${CLAIM_INTERVAL_SECONDS}

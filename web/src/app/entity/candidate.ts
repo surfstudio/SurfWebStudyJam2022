@@ -1,3 +1,6 @@
+import { SFile } from 'entity/s-file'
+
+
 export class Candidate {
   eventId: string = '';
   firstName: string = '';
@@ -6,7 +9,7 @@ export class Candidate {
   faculty: string = '';
   course: string = '';
   experience: string = '';
-  cv?: File;
+  cv?: SFile;
   vcs: string = '';
   email: string = '';
   telegram: string = '';

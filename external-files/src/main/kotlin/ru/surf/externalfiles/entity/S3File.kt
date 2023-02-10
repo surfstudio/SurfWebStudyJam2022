@@ -36,7 +36,7 @@ class S3File(
         var checksum: String = "",
 
         @Column(name = "expires_at")
-        var expiresAt: ZonedDateTime? = ZonedDateTime.now(),
+        var expiresAt: ZonedDateTime? = null,
 
         ) : UUIDBasedEntity(id) {
 

@@ -1,5 +1,5 @@
 export class SFile {
   fileId: string = '';
   name: string = '';
-  sizze: number = 0;
+  size: number = 0;
 }
