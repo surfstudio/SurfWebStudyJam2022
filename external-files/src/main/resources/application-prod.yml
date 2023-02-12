@@ -1,0 +1,43 @@
+server:
+  port: ${PORT:8081}
+  servlet:
+    context-path: /api
+
+s3:
+  url: ${S3_URL}
+  host: ${S3_HOST}
+  bucket-name: ${S3_BUCKET_NAME}
+  access-key: ${S3_ACCESS_KEY}
+  secret-key: ${S3_SECRET_KEY}
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+      org.hibernate.envers:
+        audit_table_suffix: _audit
+        revision_type_field_name: revision_type
+        revision_field_name: revision_id
+  flyway:
+    enabled: true
+    locations: db/migration/external-files
+  servlet:
+    multipart:
+      max-file-size: ${MAX_FILE_SIZE}
+      max-request-size: ${MAX_REQ_SIZE}
+
+springdoc:
+  swagger-ui:
+    enabled: true
+
+external-files:
+  claim-interval-seconds: ${CLAIM_INTERVAL_SECONDS}

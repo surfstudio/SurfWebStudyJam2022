@@ -1,20 +1,26 @@
 version: "3.9"
 
+x-db-cred: &db-cred
+  DB_HOST: db-service
+  DB_ADDR: db-service
+  DB_USER: postgres
+  DB_PASSWORD: postgres
+
 services:
-  db_service:
+  db-service:
     restart: unless-stopped
     image: 'postgres:14.1-alpine'
-    container_name: db_service_instance
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
     volumes:
       - postgres_db:/var/lib/postgresql/data
 
-  pgadmin_service:
+  pgadmin-service:
     restart: unless-stopped
     image: dpage/pgadmin4
-    container_name: pgadmin_service_instance
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.local
       PGADMIN_DEFAULT_PASSWORD: admin
@@ -24,112 +30,251 @@ services:
     volumes:
       - pgadmin:/var/lib/pgadmin
   
-  keycloak_service:
+  keycloak-service:
     restart: unless-stopped
     image: jboss/keycloak
-    container_name: keycloak_service_instance
     depends_on:
-      - db_service
+      - db-service
     environment:
       DB_VENDOR: POSTGRES
-      DB_ADDR: db_service_instance
+      <<: *db-cred
       DB_DATABASE: postgres
-      DB_USER: postgres
-      DB_PASSWORD: postgres
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
     ports:
       - "8888:8080"
-  
-  auth_service:
+
+  zookeeper-service:
     restart: unless-stopped
-    build:
-      context: auth
-      dockerfile: Dockerfile
-    image: auth_service
-    container_name: auth_service_instance
-    depends_on:
-      - keycloak_service
-    environment:
-      SPRING_PROFILES_ACTIVE: prod
-      PORT: 8080
-      KEYCLOAK_HOST: keycloak_service:8080
-      KEYCLOAK_CERTS: K8aUK_QgRhBJ1mqLCXn5skBShc5PSY1lsLeKZyYboYE
-      KEYCLOAK_SECRET: mjnoLPMym2ZFSkKRKXDV3vnF7yENMKTR
-      DB_HOST: db_service_instance
-      DB_NAME: studyjam_auth
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-    ports:
-      - "8085:8080"
-
-  # Kafka-dev configuration with one broker and one zookeeper
-
-  zookeeper:
     image: confluentinc/cp-zookeeper:latest
-    hostname: zookeeper
-    restart: unless-stopped
     environment:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: "zookeeper:2888:3888"
+      ZOOKEEPER_SERVERS: "zookeeper-service:2888:3888"
     volumes:
       - zookeeper:/var/lib/zookeeper/data
 
-  kafka:
-    image: confluentinc/cp-kafka:latest
-    hostname: kafka
+  kafka-service:
     restart: unless-stopped
+    image: confluentinc/cp-kafka:latest
     depends_on:
-      - zookeeper
-    ports:
-      - "9092:9092"
+      - zookeeper-service
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-service:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-service:29092,PLAINTEXT_HOST://kafka-service:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_MIN_INSYNC_REPLICAS: 2
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - "9092:9092"
     volumes:
       - kafka:/var/lib/kafka/data
 
-  kafka-ui:
+  kafka-ui-service:
+    restart: unless-stopped
     image: provectuslabs/kafka-ui
-    container_name: kafka-ui
     depends_on:
-      - kafka
-   ports:
+      - kafka-service
+    environment:
+       KAFKA_CLUSTERS_0_NAME: surf
+       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka-service:29092"
+       SERVER_PORT: 9094
+    ports:
       - "9094:9094"
-   restart: unless-stopped
-   environment:
-     KAFKA_CLUSTERS_0_NAME: surf
-     KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:29092"
-     SERVER_PORT: 9094
 
-  init-kafka:
+  kafka-init-service:
     image: confluentinc/cp-kafka:latest
     depends_on:
-      - kafka
+      - kafka-service
     entrypoint: [ '/bin/sh', '-c' ]
     command: |
       "
       echo -e 'List topics from broker...'
-      kafka-topics --bootstrap-server kafka:29092 --list
+      kafka-topics --bootstrap-server kafka-service:29092 --list
       
       echo -e 'Creating kafka topics on broker...'
-      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic notification-topic --replication-factor 2 --partitions 3
+      kafka-topics --bootstrap-server kafka-service:29092 --create --if-not-exists --topic notification-topic --replication-factor 1 --partitions 3
       
       echo -e 'Successfully created the following topics:'
-      kafka-topics --bootstrap-server kafka:29092 --list
+      kafka-topics --bootstrap-server kafka-service:29092 --list
       "
+
+  minio-service:
+    restart: unless-stopped
+    image: minio/minio:latest
+    command: 
+      server --console-address ":9001" /data/
+    environment:
+      MINIO_ROOT_USER: surf
+      MINIO_ROOT_PASSWORD: surfpassword
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio:/data
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  quiz-service:
+    restart: unless-stopped
+    build:
+      context: quiz
+      dockerfile: Dockerfile
+    image: quiz
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      PORT: 8080
+    ports:
+      - "8087:8080"
+
+  defence-service:
+    restart: unless-stopped
+    build:
+      context: defenceOfProject
+      dockerfile: Dockerfile
+    image: defence
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      PORT: 8080
+    ports:
+      - "8086:8080"
+
+  auth-service:
+    restart: unless-stopped
+    build:
+      context: auth
+      dockerfile: Dockerfile
+    image: auth
+    depends_on:
+      - keycloak-service
+      - db-service
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      PORT: 80
+      KEYCLOAK_HOST: keycloak-service:8080
+      KEYCLOAK_REALM: studyjam
+      KEYCLOAK_CLIENT_ID: spring
+      KEYCLOAK_CERTS: K8aUK_QgRhBJ1mqLCXn5skBShc5PSY1lsLeKZyYboYE
+      KEYCLOAK_SECRET: mjnoLPMym2ZFSkKRKXDV3vnF7yENMKTR
+      <<: *db-cred
+      DB_NAME: studyjam_auth
+    ports:
+      - "8085:80"
+
+  testing-service:
+    restart: unless-stopped
+    build:
+      context: testing
+      dockerfile: Dockerfile
+    image: testing
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      PORT: 8080
+    ports:
+      - "8084:8080"
+
+  mail-service:
+    restart: unless-stopped
+    build:
+      context: mail
+      dockerfile: Dockerfile
+    image: mail
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      PORT: 8080
+    ports:
+      - "8083:8080"
+
+  report-service:
+    restart: unless-stopped
+    build:
+      context: report
+      dockerfile: Dockerfile
+    image: report
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      PORT: 8080
+    ports:
+      - "8082:8080"
+
+  external-files-service:
+    restart: unless-stopped
+    build:
+      context: external-files
+      dockerfile: Dockerfile
+    image: external_files
+    depends_on:
+      - minio-service
+      - db-service
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      PORT: 80
+      <<: *db-cred
+      DB_NAME: studyjam
+      S3_URL: http://minio-service
+      S3_HOST: 9000
+      S3_BUCKET_NAME: surf
+      S3_ACCESS_KEY: surf
+      S3_SECRET_KEY: surfpassword
+      MAX_FILE_SIZE: 30MB
+      MAX_REQ_SIZE: 30MB
+      CLAIM_INTERVAL_SECONDS: 3600
+    ports:
+      - "8081:80"
+
+  core-service:
+    restart: unless-stopped
+    build:
+      context: core
+      dockerfile: Dockerfile
+    image: core
+    depends_on:
+      - db-service
+#      - quiz-service
+#      - defence-service
+#      - auth-service
+#      - testing-service
+#      - mail-service
+#      - report-service
+#      - external-files-service
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      PORT: 80
+      <<: *db-cred
+      DB_NAME: studyjam
+      KAFKA_HOST: kafka-service:9092
+      AUTH_API: http://auth-service/credentialsServiceApi
+      EXI_FILES_API: http://external-files-service/api/s3FileServiceApi
+    ports:
+      - "8080:80"
+
+  gateway-service:
+    restart: unless-stopped
+    build:
+      context: api-gateway
+      dockerfile: Dockerfile
+    image: gateway
+    depends_on:
+      - core-service
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      PORT: 8080
+      CORE_URL: http://core-service:8080
+      EXT_FILES_URL: http://external-files-service:8080
+    ports:
+      - "8088:8080"
 
 volumes:
   postgres_db:
   pgadmin:
   zookeeper:
   kafka:
-
+  minio:

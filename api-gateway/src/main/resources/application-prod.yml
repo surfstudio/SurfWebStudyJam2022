@@ -1,0 +1,12 @@
+server:
+  port: ${PORT}
+
+management:
+  endpoint:
+    gateway:
+      enabled: true
+
+application:
+  ports:
+    service-core-port: ${CORE_URL}
+    external-files-port: ${EXT_FILES_URL}

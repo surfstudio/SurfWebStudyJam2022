@@ -13,10 +13,20 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
+    show-sql: true
   h2:
     console.enabled: true
   flyway:
     enabled: false
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      client-id: service-core
+      properties:
+        spring.json.add.type.headers: false
 
 springdoc:
   swagger-ui:

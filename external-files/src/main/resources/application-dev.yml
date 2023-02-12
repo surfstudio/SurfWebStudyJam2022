@@ -4,11 +4,11 @@ server:
     context-path: /api
 
 s3:
-  access-key: surf
-  secret-key: surfpassword
-  bucket-name: surf
   url: http://localhost
   host: 9000
+  bucket-name: surf
+  access-key: surf
+  secret-key: surfpassword
 
 spring:
   datasource:
@@ -20,18 +20,25 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+      org.hibernate.envers:
+        audit_table_suffix: _audit
+        revision_type_field_name: revision_type
+        revision_field_name: revision_id
   h2:
     console.enabled: true
   flyway:
     enabled: false
   servlet:
     multipart:
-      max-file-size: 1GB
-      max-request-size: 1GB
+      max-file-size: 30MB
+      max-request-size: 30MB
 
 springdoc:
   swagger-ui:
     enabled: true
 
 external-files:
-  claim-interval-seconds: ${CLAIM_INTERVAL_SECONDS}
+  claim-interval-seconds: 30
