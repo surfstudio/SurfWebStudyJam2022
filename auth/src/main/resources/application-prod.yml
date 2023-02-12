@@ -3,11 +3,11 @@ server:
 
 keycloak:
   host: ${HOST}
-  realm: studyjam
+  realm: ${KEYCLOAK_REALM}
   certs-id: ${KEYCLOAK_CERTS}
-  client-id: spring
-  client-grant-type: client_credentials
+  client-id: ${KEYCLOAK_CLIENT_ID}
   client-secret: ${KEYCLOAK_SECRET}
+  client-grant-type: client_credentials
   user-grant-type: password
 
   certs-url: http://${keycloak.host}/auth/realms/${keycloak.realm}/protocol/openid-connect/certs
@@ -26,3 +26,4 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
+    show-sql: true

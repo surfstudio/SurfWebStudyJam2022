@@ -58,8 +58,8 @@ class Candidate(
 
         @ManyToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.EAGER)
         @JoinTable(name = "candidates_events",
-                joinColumns = [JoinColumn(name = "event_id")],
-                inverseJoinColumns = [JoinColumn(name = "candidate_id")])
+                joinColumns = [JoinColumn(name = "candidate_id", referencedColumnName = "id")],
+                inverseJoinColumns = [JoinColumn(name = "event_id", referencedColumnName = "id")])
         @JsonIgnore
         val events: MutableSet<Event> = mutableSetOf(),
 

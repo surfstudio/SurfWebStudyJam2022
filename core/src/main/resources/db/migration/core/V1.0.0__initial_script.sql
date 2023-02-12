@@ -191,3 +191,14 @@ create table if not exists tests_questions
         constraint tests_questions_questions_question_id_fk references questions (id),
     primary key (test_id, question_id)
 );
+
+create table if not exists s3files
+(
+    id            uuid default gen_random_uuid() primary key,
+    content_type  varchar(255),
+    s3_key        varchar(255) unique,
+    size_in_bytes bigint,
+    s3_filename   varchar(300),
+    checksum      varchar(255) unique,
+    expires_at    date
+);

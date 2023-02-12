@@ -61,11 +61,20 @@ create table if not exists states_events
 
 create table if not exists candidates
 (
-    id         uuid default gen_random_uuid() primary key,
-    fio        text not null,
-    email      text not null unique,
-    is_new     boolean,
-    hr_from_id uuid
+    id          uuid default gen_random_uuid() primary key,
+    first_name  text not null,
+    last_name   text not null,
+    university  text not null,
+    faculty     text not null,
+    course      text not null,
+    experience  text not null,
+    vcs         text not null unique,
+    email       text not null unique,
+    telegram    text not null unique,
+    feedback    text not null,
+    is_new      boolean,
+    is_approved boolean,
+    hr_from_id  uuid
         constraint candidates_surf_employees_hr_from_id_fk references surf_employees (id)
 
 );
