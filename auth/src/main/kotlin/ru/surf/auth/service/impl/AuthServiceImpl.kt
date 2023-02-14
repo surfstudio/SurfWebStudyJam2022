@@ -1,7 +1,6 @@
 package ru.surf.auth.service.impl
 
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.HttpEntity
@@ -10,69 +9,47 @@ import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
+import ru.surf.auth.configuration.KeycloakConfiguration
 import ru.surf.auth.converter.ObjectConverter
+import ru.surf.auth.dto.AccessTokenDto
 import ru.surf.auth.dto.AccountCredentialsDto
 import ru.surf.auth.dto.ResetPassphraseDto
-import ru.surf.auth.dto.AccessTokenDto
 import ru.surf.auth.dto.ResponseAccountIdentityDto
 import ru.surf.auth.exception.ConflictException
 import ru.surf.auth.exception.UnauthorizedException
 import ru.surf.auth.service.AuthService
 import ru.surf.auth.service.JwtService
 import java.util.*
-import kotlin.collections.HashMap
 
 
 @Service
-class AuthServiceImpl(
-        @Autowired
-        private val restTemplate: RestTemplate,
+class AuthServiceImpl(@Autowired
+                      private val keycloakConfiguration: KeycloakConfiguration,
 
-        @Autowired
-        private val jwtService: JwtService,
+                      @Autowired
+                      private val restTemplate: RestTemplate,
 
-        @Autowired
-        private val objectConverter: ObjectConverter,
+                      @Autowired
+                      private val jwtService: JwtService,
 
-        @Autowired
-        @Lazy
-        private val clientToken: ClientToken,
+                      @Autowired
+                      private val objectConverter: ObjectConverter,
 
-        @Value("\${keycloak.client-id}")
-        private val clientId: String,
-
-        @Value("\${keycloak.client-grant-type}")
-        private val clientGrantType: String,
-
-        @Value("\${keycloak.client-secret}")
-        private val clientSecret: String,
-
-        @Value("\${keycloak.user-grant-type}")
-        private val userGrantType: String,
-
-        @Value("\${keycloak.token-url}")
-        private val keycloakTokenUrl: String,
-
-        @Value("\${keycloak.user-info-url}")
-        private val keycloakUserInfoUrl: String,
-
-        @Value("\${keycloak.users-url}")
-        private val keycloakUsersUrl: String,
-
-        @Value("\${keycloak.reset-password-url}")
-        private val keycloakResetPasswordUrl: String,
+                      @Autowired
+                      @Lazy
+                      private val clientToken: ClientToken
 ) : AuthService {
     override fun login(accountCredentialsDto: AccountCredentialsDto): AccessTokenDto {
         @Suppress("unused") val request = HttpEntity(object {
             val username = accountCredentialsDto.identity
             val password = accountCredentialsDto.passphrase
-            val grant_type = userGrantType
-            val client_id = clientId
-            val client_secret = clientSecret
+            val grant_type = keycloakConfiguration.userGrantType
+            val client_id = keycloakConfiguration.clientId
+            val client_secret = keycloakConfiguration.clientSecret
         }.let { objectConverter.convert(it) }, null)
 
         try {
-            val response = restTemplate.postForObject(keycloakTokenUrl, request, Map::class.java)
+            val response = restTemplate.postForObject(keycloakConfiguration.tokenUrl, request, Map::class.java)
             return AccessTokenDto(accessToken = response!!["access_token"] as String)
         } catch (ex: HttpClientErrorException.Unauthorized) {
             throw UnauthorizedException()
@@ -96,7 +73,7 @@ class AuthServiceImpl(
         })
 
         try {
-            restTemplate.postForObject(keycloakUsersUrl, request, Void::class.java)
+            restTemplate.postForObject(keycloakConfiguration.usersUrl, request, Void::class.java)
         } catch (ex: HttpClientErrorException.Conflict) {
             throw ConflictException()
         }
@@ -104,6 +81,7 @@ class AuthServiceImpl(
 
     override fun resetPassword(resetPassphraseDto: ResetPassphraseDto) {
         val sub = jwtService.validateJwt(resetPassphraseDto.accessToken).run {
+            validateProfile(resetPassphraseDto.accessToken)
             getClaim("sub").asString()
         }
 
@@ -118,7 +96,7 @@ class AuthServiceImpl(
             }
         })
 
-        restTemplate.put(keycloakResetPasswordUrl, request, object : HashMap<String, String>() {
+        restTemplate.put(keycloakConfiguration.resetPasswordUrl, request, object : HashMap<String, String>() {
             init {
                 put("sub", sub)
             }
@@ -142,7 +120,7 @@ class AuthServiceImpl(
         )
 
         try {
-            restTemplate.postForObject(keycloakUserInfoUrl, request, Any::class.java)
+            restTemplate.postForObject(keycloakConfiguration.userInfoUrl, request, Any::class.java)
         } catch (ex: HttpClientErrorException.Unauthorized) {
             throw UnauthorizedException()
         }
@@ -156,11 +134,11 @@ class AuthServiceImpl(
             get() {
                 with(authServiceImpl) {
                     @Suppress("unused") val request = HttpEntity(object {
-                        val client_id = clientId
-                        val grant_type = clientGrantType
-                        val client_secret = clientSecret
+                        val client_id = keycloakConfiguration.clientId
+                        val grant_type = keycloakConfiguration.clientGrantType
+                        val client_secret = keycloakConfiguration.clientSecret
                     }.let { objectConverter.convert(it) }, null)
-                    val response = restTemplate.postForObject(keycloakTokenUrl, request, Map::class.java)
+                    val response = restTemplate.postForObject(keycloakConfiguration.tokenUrl, request, Map::class.java)
                     return response!!["access_token"] as String
                 }
             }

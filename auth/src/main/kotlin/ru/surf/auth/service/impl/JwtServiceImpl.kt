@@ -7,11 +7,11 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.DecodedJWT
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
+import ru.surf.auth.configuration.KeycloakConfiguration
 import ru.surf.auth.exception.InvalidTokenException
 import ru.surf.auth.exception.TokenExpiredException
 import ru.surf.auth.service.JwtService
@@ -22,14 +22,12 @@ import java.util.*
 
 @Service
 class JwtServiceImpl(@Autowired
+                     private val keycloakConfiguration: KeycloakConfiguration,
+
+                     @Autowired
                      @Lazy
                      private val keycloakJwk: KeycloakJwk,
-
-                     @Value("\${keycloak.certs-url}")
-                     private val jwkUrl: String,
-
-                     @Value("\${keycloak.certs-id}")
-                     private val certsId: String) : JwtService {
+) : JwtService {
     override fun validateJwt(token: String): DecodedJWT {
         return try {
             JWT.decode(token).also {
@@ -48,7 +46,7 @@ class JwtServiceImpl(@Autowired
         val get: Jwk
             get() {
                 with(jwtServiceImpl) {
-                    return UrlJwkProvider(URL(jwkUrl))[certsId]
+                    return UrlJwkProvider(URL(keycloakConfiguration.certsUrl))[keycloakConfiguration.certsId]
                 }
             }
     }
