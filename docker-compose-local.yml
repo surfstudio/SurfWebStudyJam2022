@@ -16,7 +16,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_db:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
 
   pgadmin-service:
     restart: unless-stopped
@@ -38,7 +38,7 @@ services:
     environment:
       DB_VENDOR: POSTGRES
       <<: *db-cred
-      DB_DATABASE: postgres
+      DB_DATABASE: studyjam_keycloak
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
     ports:
@@ -55,7 +55,9 @@ services:
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SERVERS: "zookeeper-service:2888:3888"
     volumes:
-      - zookeeper:/var/lib/zookeeper/data
+      - zookeeper_data:/var/lib/zookeeper/data
+      - zookeeper_logs:/var/lib/zookeeper/log
+      - zookeeper_secrets:/etc/zookeeper/secrets
 
   kafka-service:
     restart: unless-stopped
@@ -73,7 +75,8 @@ services:
     ports:
       - "9092:9092"
     volumes:
-      - kafka:/var/lib/kafka/data
+      - kafka_data:/var/lib/kafka/data
+      - kafka_secrets:/etc/kafka/secrets
 
   kafka-ui-service:
     restart: unless-stopped
@@ -81,7 +84,7 @@ services:
     depends_on:
       - kafka-service
     environment:
-       KAFKA_CLUSTERS_0_NAME: surf
+       KAFKA_CLUSTERS_0_NAME: surfwebstudyjam
        KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka-service:29092"
        SERVER_PORT: 9094
     ports:
@@ -110,8 +113,8 @@ services:
     command: 
       server --console-address ":9001" /data/
     environment:
-      MINIO_ROOT_USER: surf
-      MINIO_ROOT_PASSWORD: surfpassword
+      MINIO_ROOT_USER: surfwebstudyjam
+      MINIO_ROOT_PASSWORD: surfwebstudyjam
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -160,10 +163,10 @@ services:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 80
       KEYCLOAK_HOST: keycloak-service:8080
-      KEYCLOAK_REALM: studyjam
-      KEYCLOAK_CLIENT_ID: spring
-      KEYCLOAK_CERTS: K8aUK_QgRhBJ1mqLCXn5skBShc5PSY1lsLeKZyYboYE
-      KEYCLOAK_SECRET: mjnoLPMym2ZFSkKRKXDV3vnF7yENMKTR
+      KEYCLOAK_REALM_NAME: surfwebstudyjam
+      KEYCLOAK_REALM_CERTS_RS256: 8mCgZB6wVhhS3SiI7BPczlWX_co1c5AjrsxnYzT2EBM
+      KEYCLOAK_CLIENT_ID: authservice
+      KEYCLOAK_CLIENT_SECRET: enmVuQ9WRO0VpUIqSLDPB7llRK2YbkrY
       <<: *db-cred
       DB_NAME: studyjam_auth
     ports:
@@ -218,12 +221,12 @@ services:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 80
       <<: *db-cred
-      DB_NAME: studyjam
+      DB_NAME: studyjam_core
       S3_URL: http://minio-service
       S3_HOST: 9000
-      S3_BUCKET_NAME: surf
-      S3_ACCESS_KEY: surf
-      S3_SECRET_KEY: surfpassword
+      S3_BUCKET_NAME: surfwebstudyjam
+      S3_ACCESS_KEY: surfwebstudyjam
+      S3_SECRET_KEY: surfwebstudyjam
       MAX_FILE_SIZE: 30MB
       MAX_REQ_SIZE: 30MB
       CLAIM_INTERVAL_SECONDS: 3600
@@ -249,10 +252,10 @@ services:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 80
       <<: *db-cred
-      DB_NAME: studyjam
+      DB_NAME: studyjam_core
       KAFKA_HOST: kafka-service:9092
       AUTH_API: http://auth-service/credentialsServiceApi
-      EXI_FILES_API: http://external-files-service/api/s3FileServiceApi
+      EXI_FILES_API: http://external-files-service/external-files/s3FileServiceApi
     ports:
       - "8080:80"
 
@@ -267,14 +270,17 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 8080
-      CORE_URL: http://core-service:8080
-      EXT_FILES_URL: http://external-files-service:8080
+      CORE_URL: http://core-service
+      EXT_FILES_URL: http://external-files-service
     ports:
       - "8088:8080"
 
 volumes:
-  postgres_db:
+  postgres:
   pgadmin:
-  zookeeper:
-  kafka:
+  zookeeper_data:
+  zookeeper_logs:
+  zookeeper_secrets:
+  kafka_data:
+  kafka_secrets:
   minio:

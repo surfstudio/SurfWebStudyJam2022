@@ -31,7 +31,8 @@ class SecurityConfiguration(
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
-        return http.csrf { csrf ->
+        return http.
+        csrf { csrf ->
             csrf.disable()
         }.httpBasic { httpSecurity ->
             httpSecurity.disable()
@@ -62,4 +63,5 @@ class SecurityConfiguration(
         get() = TokenAuthenticationFilter().apply {
             setAuthenticationManager(tokenAuthenticationManager)
         }
+
 }

@@ -12,7 +12,7 @@ export class ResourceService {
   private url: string;
 
   constructor(private http: HttpClient) {
-    this.url = 'http://localhost:8081/api/resource/';
+    this.url = 'http://192.168.0.100:8088/external-files/resource/';
   }
 
   public uploadResume(file: File): Observable<SFile> {
