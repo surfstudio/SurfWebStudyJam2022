@@ -1,20 +1,22 @@
 server:
   port: 8085
 
-keycloak:
-  host: localhost:8888
-  realm: studyjam
-  certs-id: K8aUK_QgRhBJ1mqLCXn5skBShc5PSY1lsLeKZyYboYE
-  client-id: spring
-  client-secret: mjnoLPMym2ZFSkKRKXDV3vnF7yENMKTR
-  client-grant-type: client_credentials
-  user-grant-type: password
+application:
+  keycloak:
+    host: localhost:8888
+    realm: studyjam
 
-  certs-url: http://${keycloak.host}/auth/realms/${keycloak.realm}/protocol/openid-connect/certs
-  token-url: http://${keycloak.host}/auth/realms/${keycloak.realm}/protocol/openid-connect/token
-  user-info-url: http://${keycloak.host}/auth/realms/${keycloak.realm}/protocol/openid-connect/userinfo
-  users-url: http://${keycloak.host}/auth/admin/realms/${keycloak.realm}/users
-  reset-password-url: http://${keycloak.host}/auth/admin/realms/${keycloak.realm}/users/{sub}/reset-password
+    certs-id: K8aUK_QgRhBJ1mqLCXn5skBShc5PSY1lsLeKZyYboYE
+    client-id: spring
+    client-secret: mjnoLPMym2ZFSkKRKXDV3vnF7yENMKTR
+    client-grant-type: client_credentials
+    user-grant-type: password
+
+    certs-url: http://${application.keycloak.host}/auth/realms/${application.keycloak.realm}/protocol/openid-connect/certs
+    token-url: http://${application.keycloak.host}/auth/realms/${application.keycloak.realm}/protocol/openid-connect/token
+    user-info-url: http://${application.keycloak.host}/auth/realms/${application.keycloak.realm}/protocol/openid-connect/userinfo
+    users-url: http://${application.keycloak.host}/auth/admin/realms/${application.keycloak.realm}/users
+    reset-password-url: http://${application.keycloak.host}/auth/admin/realms/${application.keycloak.realm}/users/{sub}/reset-password
 
 spring:
   datasource:
