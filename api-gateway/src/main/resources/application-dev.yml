@@ -8,5 +8,19 @@ management:
 
 application:
   ports:
-    service-core-port: http://localhost:8080/
-    external-files-port: http://localhost:8081/
+    service-core-port: http://localhost:8080
+    external-files-port: http://localhost:8081
+
+spring:
+  application:
+    name: API-GATEWAY
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"

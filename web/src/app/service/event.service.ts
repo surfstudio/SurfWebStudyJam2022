@@ -12,7 +12,7 @@ export class EventService {
   private url: string;
 
   constructor(private http: HttpClient) {
-    this.url = 'http://localhost:8080/api/events/';
+    this.url = 'http://192.168.0.100:8088/core/events/';
   }
 
   public getEventInfo(eventId: string): Observable<EventInfo> {

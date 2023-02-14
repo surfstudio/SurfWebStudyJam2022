@@ -1,0 +1,19 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="docker-compose-local.yml.quiz-service: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" server-name="DockerLT">
+    <deployment type="docker-compose.yml">
+      <settings>
+        <option name="envFilePath" value="" />
+        <option name="commandLineOptions" value="--build" />
+        <option name="services">
+          <list>
+            <option value="quiz-service" />
+          </list>
+        </option>
+        <option name="sourceFilePath" value="docker-compose-local.yml" />
+      </settings>
+    </deployment>
+    <method v="2">
+      <option name="Gradle.BeforeRunTask" enabled="true" tasks=":quiz:bootJar" externalProjectPath="$PROJECT_DIR$" vmOptions="" scriptParameters="" />
+    </method>
+  </configuration>
+</component>

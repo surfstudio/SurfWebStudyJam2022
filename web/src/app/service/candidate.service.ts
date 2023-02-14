@@ -12,7 +12,7 @@ export class CandidateService {
   private url: string;
 
   constructor(private http: HttpClient) {
-    this.url = 'http://localhost:8080/api/candidates/';
+    this.url = 'http://192.168.0.100:8088/core/candidates/';
   }
 
   public createCandidate(candidate: Candidate): Observable<Candidate> {
