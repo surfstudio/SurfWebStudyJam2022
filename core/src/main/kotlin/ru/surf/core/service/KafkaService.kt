@@ -1,9 +1,9 @@
 package ru.surf.core.service
 
-import ru.surf.core.dto.GeneralNotificationDto
+import ru.surf.core.event.ReceivingRequestKafkaEvent
 
 interface KafkaService {
 
-    fun sendGeneralNotificationMessage(generalNotificationDto: GeneralNotificationDto)
-    
+    fun sendReceivingRequestEvent(receivingRequestKafkaEvent: ReceivingRequestKafkaEvent)
+
 }

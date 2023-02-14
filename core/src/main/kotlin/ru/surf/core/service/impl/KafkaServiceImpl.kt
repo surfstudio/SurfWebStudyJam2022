@@ -2,33 +2,38 @@ package ru.surf.core.service.impl
 
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.KafkaException
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.kafka.core.KafkaProducerException
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
-import ru.surf.core.dto.GeneralNotificationDto
+import ru.surf.core.configuration.KafkaTopicConfiguration
+import ru.surf.core.event.ReceivingRequestKafkaEvent
 import ru.surf.core.exception.ExceptionType
 import ru.surf.core.service.KafkaService
 
 @Service
 class KafkaServiceImpl(
-    private val kafkaTemplate: KafkaTemplate<String, GeneralNotificationDto>,
+    private val kafkaTemplate: KafkaTemplate<String, ReceivingRequestKafkaEvent>,
 ) : KafkaService {
 
-    companion object TOPICS {
-        const val NOTIFICATION_TOPIC: String = "notification-topic"
+    companion object KafkaLogger {
+        val logger: Logger = LoggerFactory.getLogger(KafkaServiceImpl::class.java)
     }
 
-    override fun sendGeneralNotificationMessage(generalNotificationDto: GeneralNotificationDto) {
-        val notificationRecord =
-            ProducerRecord<String, GeneralNotificationDto>(NOTIFICATION_TOPIC, generalNotificationDto)
-        //TODO: Позже добавить детальную обработку
-        kafkaTemplate.send(notificationRecord).completable().whenComplete { result, ex ->
+    override fun sendReceivingRequestEvent(receivingRequestKafkaEvent: ReceivingRequestKafkaEvent) {
+        val requestKafkaEventRecord =
+            ProducerRecord<String, ReceivingRequestKafkaEvent>(
+                KafkaTopicConfiguration.TOPICS.RECEIVING_REQUEST_TOPIC,
+                receivingRequestKafkaEvent
+            )
+        kafkaTemplate.send(requestKafkaEventRecord).completable().whenComplete { result, ex ->
             when (ex == null) {
-                true -> println("Message success send to topic $NOTIFICATION_TOPIC")
+                true -> logger.debug("Successfully send $receivingRequestKafkaEvent to ${KafkaTopicConfiguration.TOPICS.RECEIVING_REQUEST_TOPIC}")
                 false -> {
-                    println("Message sending failed with data $result")
+                    logger.error("Message sending failed with data $result")
                     throw KafkaProducerException(
-                        notificationRecord,
+                        requestKafkaEventRecord,
                         ExceptionType.SERVICE_EXCEPTION.toString(),
                         KafkaException()
                     )
