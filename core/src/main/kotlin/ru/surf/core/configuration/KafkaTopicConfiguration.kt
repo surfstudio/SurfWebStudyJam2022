@@ -9,8 +9,8 @@ import org.springframework.kafka.core.KafkaAdmin
 @Configuration
 class KafkaTopicConfiguration(private val kafkaProducerConfiguration: KafkaProducerConfiguration) {
 
-    object TopicConfiguration {
-        const val notificationTopic: String = "notification-topic"
+    object TOPICS {
+        const val RECEIVING_REQUEST_TOPIC: String = "receiving-request-topic"
     }
 
     @Bean
@@ -24,7 +24,7 @@ class KafkaTopicConfiguration(private val kafkaProducerConfiguration: KafkaProdu
 
     @Bean
     fun notificationTopic() =
-        TopicBuilder.name(TopicConfiguration.notificationTopic)
+        TopicBuilder.name(TOPICS.RECEIVING_REQUEST_TOPIC)
             .partitions(3)
             .replicas(1)
             .build()
