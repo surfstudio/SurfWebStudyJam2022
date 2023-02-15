@@ -3,46 +3,64 @@ version: "3.9"
 x-db-cred: &db-cred
   DB_HOST: db-service
   DB_ADDR: db-service
-  DB_USER: postgres
-  DB_PASSWORD: postgres
+  DB_USER: ${DB_USER}
+  DB_PASSWORD: ${DB_PASSWORD}
+
+x-healthcheck-params: &healthcheck-params
+  interval: 30s
+  timeout: 20s
+  retries: 3
 
 services:
   db-service:
     restart: unless-stopped
     image: 'postgres:14.1-alpine'
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready
+      <<: *healthcheck-params
 
   pgadmin-service:
     restart: unless-stopped
     image: dpage/pgadmin4
+    depends_on:
+      db-service:
+        condition: service_healthy
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.local
-      PGADMIN_DEFAULT_PASSWORD: admin
       PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     ports:
       - "80:80"
     volumes:
       - pgadmin:/var/lib/pgadmin
+    healthcheck:
+      test: [ "CMD", "wget", "-qO", "-", "http://0.0.0.0:80/misc/ping" ]
+      <<: *healthcheck-params
   
   keycloak-service:
     restart: unless-stopped
     image: jboss/keycloak
     depends_on:
-      - db-service
+      db-service:
+        condition: service_healthy
     environment:
       DB_VENDOR: POSTGRES
       <<: *db-cred
       DB_DATABASE: studyjam_keycloak
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_USER: ${KEYCLOAK_USER}
+      KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
     ports:
       - "8888:8080"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://0.0.0.0:8080/auth/realms/master/" ]
+      <<: *healthcheck-params
 
   zookeeper-service:
     restart: unless-stopped
@@ -58,12 +76,16 @@ services:
       - zookeeper_data:/var/lib/zookeeper/data
       - zookeeper_logs:/var/lib/zookeeper/log
       - zookeeper_secrets:/etc/zookeeper/secrets
+    healthcheck:
+      test: "curl -f http://0.0.0.0:8080/commands/ruok | grep '\"error\" : null'"
+      <<: *healthcheck-params
 
   kafka-service:
     restart: unless-stopped
     image: confluentinc/cp-kafka:latest
     depends_on:
-      - zookeeper-service
+      zookeeper-service:
+        condition: service_healthy
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-service:2181
@@ -77,23 +99,34 @@ services:
     volumes:
       - kafka_data:/var/lib/kafka/data
       - kafka_secrets:/etc/kafka/secrets
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "0.0.0.0", "9092" ]
+      <<: *healthcheck-params
 
   kafka-ui-service:
     restart: unless-stopped
     image: provectuslabs/kafka-ui
     depends_on:
-      - kafka-service
+      kafka-service:
+          condition: service_healthy
     environment:
-       KAFKA_CLUSTERS_0_NAME: surfwebstudyjam
-       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka-service:29092"
        SERVER_PORT: 9094
+       KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTERS_0_NAME}
+       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka-service:29092"
+       AUTH_TYPE: LOGIN_FORM
+       SPRING_SECURITY_USER_NAME: ${KAFKA_UI_ADMIN_USERNAME}
+       SPRING_SECURITY_USER_PASSWORD: ${KAFKA_UI_ADMIN_PASSWORD}
     ports:
       - "9094:9094"
+    healthcheck:
+      test: "wget -qO - http://0.0.0.0:9094/actuator/health | grep '\"status\":\"UP\"'"
+      <<: *healthcheck-params
 
   kafka-init-service:
     image: confluentinc/cp-kafka:latest
     depends_on:
-      - kafka-service
+      kafka-service:
+          condition: service_healthy
     entrypoint: [ '/bin/sh', '-c' ]
     command: |
       "
@@ -106,6 +139,9 @@ services:
       echo -e 'Successfully created the following topics:'
       kafka-topics --bootstrap-server kafka-service:29092 --list
       "
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+      - kafka_secrets:/etc/kafka/secrets
 
   minio-service:
     restart: unless-stopped
@@ -113,8 +149,8 @@ services:
     command: 
       server --console-address ":9001" /data/
     environment:
-      MINIO_ROOT_USER: surfwebstudyjam
-      MINIO_ROOT_PASSWORD: surfwebstudyjam
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -122,9 +158,7 @@ services:
       - minio:/data
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
-      interval: 30s
-      timeout: 20s
-      retries: 3
+      <<: *healthcheck-params
 
   quiz-service:
     restart: unless-stopped
@@ -134,9 +168,12 @@ services:
     image: quiz
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      PORT: 8080
+      PORT: 80
     ports:
-      - "8087:8080"
+      - "8087:80"
+    healthcheck:
+      test: "wget -qO - http://0.0.0.0:80/actuator/health | grep '\"status\":\"UP\"'"
+      <<: *healthcheck-params
 
   defence-service:
     restart: unless-stopped
@@ -146,9 +183,12 @@ services:
     image: defence
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      PORT: 8080
+      PORT: 80
     ports:
-      - "8086:8080"
+      - "8086:80"
+    healthcheck:
+      test: "wget -qO - http://0.0.0.0:80/actuator/health | grep '\"status\":\"UP\"'"
+      <<: *healthcheck-params
 
   auth-service:
     restart: unless-stopped
@@ -157,20 +197,25 @@ services:
       dockerfile: Dockerfile
     image: auth
     depends_on:
-      - keycloak-service
-      - db-service
+      keycloak-service:
+          condition: service_healthy
+      db-service:
+          condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 80
       KEYCLOAK_HOST: keycloak-service:8080
-      KEYCLOAK_REALM_NAME: surfwebstudyjam
-      KEYCLOAK_REALM_CERTS_RS256: 8mCgZB6wVhhS3SiI7BPczlWX_co1c5AjrsxnYzT2EBM
-      KEYCLOAK_CLIENT_ID: authservice
-      KEYCLOAK_CLIENT_SECRET: enmVuQ9WRO0VpUIqSLDPB7llRK2YbkrY
+      KEYCLOAK_REALM_NAME: ${KEYCLOAK_REALM_NAME}
+      KEYCLOAK_REALM_CERTS_RS256: ${KEYCLOAK_REALM_CERTS_RS256}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       <<: *db-cred
       DB_NAME: studyjam_auth
     ports:
       - "8085:80"
+    healthcheck:
+      test: "wget -qO - http://0.0.0.0:80/actuator/health | grep '\"status\":\"UP\"'"
+      <<: *healthcheck-params
 
   testing-service:
     restart: unless-stopped
@@ -180,9 +225,12 @@ services:
     image: testing
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      PORT: 8080
+      PORT: 80
     ports:
-      - "8084:8080"
+      - "8084:80"
+    healthcheck:
+      test: "wget -qO - http://0.0.0.0:80/actuator/health | grep '\"status\":\"UP\"'"
+      <<: *healthcheck-params
 
   mail-service:
     restart: unless-stopped
@@ -192,9 +240,12 @@ services:
     image: mail
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      PORT: 8080
+      PORT: 80
     ports:
-      - "8083:8080"
+      - "8083:80"
+    healthcheck:
+      test: "wget -qO - http://0.0.0.0:80/actuator/health | grep '\"status\":\"UP\"'"
+      <<: *healthcheck-params
 
   report-service:
     restart: unless-stopped
@@ -204,9 +255,12 @@ services:
     image: report
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      PORT: 8080
+      PORT: 80
     ports:
-      - "8082:8080"
+      - "8082:80"
+    healthcheck:
+      test: "wget -qO - http://0.0.0.0:80/actuator/health | grep '\"status\":\"UP\"'"
+      <<: *healthcheck-params
 
   external-files-service:
     restart: unless-stopped
@@ -215,8 +269,10 @@ services:
       dockerfile: Dockerfile
     image: external_files
     depends_on:
-      - minio-service
-      - db-service
+      minio-service:
+          condition: service_healthy
+      db-service:
+          condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 80
@@ -224,14 +280,17 @@ services:
       DB_NAME: studyjam_core
       S3_URL: http://minio-service
       S3_HOST: 9000
-      S3_BUCKET_NAME: surfwebstudyjam
-      S3_ACCESS_KEY: surfwebstudyjam
-      S3_SECRET_KEY: surfwebstudyjam
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
       MAX_FILE_SIZE: 30MB
       MAX_REQ_SIZE: 30MB
       CLAIM_INTERVAL_SECONDS: 3600
     ports:
       - "8081:80"
+    healthcheck:
+      test: "wget -qO - http://0.0.0.0:80/external-files/actuator/health | grep '\"status\":\"UP\"'"
+      <<: *healthcheck-params
 
   core-service:
     restart: unless-stopped
@@ -240,14 +299,22 @@ services:
       dockerfile: Dockerfile
     image: core
     depends_on:
-      - db-service
-#      - quiz-service
-#      - defence-service
-#      - auth-service
-#      - testing-service
-#      - mail-service
-#      - report-service
-#      - external-files-service
+      db-service:
+        condition: service_healthy
+      auth-service:
+        condition: service_healthy
+      external-files-service:
+        condition: service_healthy
+      mail-service:
+        condition: service_healthy
+      testing-service:
+        condition: service_healthy
+      quiz-service:
+        condition: service_healthy
+      report-service:
+        condition: service_healthy
+      defence-service:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 80
@@ -258,6 +325,9 @@ services:
       EXI_FILES_API: http://external-files-service/external-files/s3FileServiceApi
     ports:
       - "8080:80"
+    healthcheck:
+      test: "wget -qO - http://0.0.0.0:80/core/actuator/health | grep '\"status\":\"UP\"'"
+      <<: *healthcheck-params
 
   gateway-service:
     restart: unless-stopped
@@ -266,14 +336,18 @@ services:
       dockerfile: Dockerfile
     image: gateway
     depends_on:
-      - core-service
+      core-service:
+          condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      PORT: 8080
+      PORT: 80
       CORE_URL: http://core-service
       EXT_FILES_URL: http://external-files-service
     ports:
-      - "8088:8080"
+      - "8088:80"
+    healthcheck:
+      test: "wget -qO - http://0.0.0.0:80/actuator/health | grep '\"status\":\"UP\"'"
+      <<: *healthcheck-params
 
 volumes:
   postgres:

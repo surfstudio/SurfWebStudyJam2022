@@ -31,6 +31,8 @@ dependencies {
     implementation("com.caucho:hessian:4.0.66")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.2")
 
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+
     runtimeOnly("org.postgresql:postgresql:42.5.1")
 
     devDependencies {

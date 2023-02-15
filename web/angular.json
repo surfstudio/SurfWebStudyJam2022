@@ -31,8 +31,8 @@
               {
                 "glob": "**/*",
                 "input": "node_modules/@taiga-ui/icons/src",
-                "output": "assets/taiga-ui/icons",
-              },
+                "output": "assets/taiga-ui/icons"
+              }
             ],
             "styles": [
               "src/styles.less"
@@ -61,7 +61,13 @@
               "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
-              "namedChunks": true
+              "namedChunks": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -99,8 +105,8 @@
               {
                 "glob": "**/*",
                 "input": "node_modules/@taiga-ui/icons/src",
-                "output": "assets/taiga-ui/icons",
-              },
+                "output": "assets/taiga-ui/icons"
+              }
             ],
             "styles": [
               "src/styles.less"

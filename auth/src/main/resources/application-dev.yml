@@ -6,9 +6,9 @@ application:
     host: localhost:8888
     realm: studyjam
 
-    certs-id: K8aUK_QgRhBJ1mqLCXn5skBShc5PSY1lsLeKZyYboYE
+    certs-id: ${KEYCLOAK_REALM_CERTS_RS256}
     client-id: spring
-    client-secret: mjnoLPMym2ZFSkKRKXDV3vnF7yENMKTR
+    client-secret: ${KEYCLOAK_CLIENT_SECRET}
     client-grant-type: client_credentials
     user-grant-type: password
 
