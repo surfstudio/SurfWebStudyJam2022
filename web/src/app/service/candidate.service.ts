@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { Observable } from 'rxjs';
 
+import { environment } from '../../environments/environment'
+
 import { Candidate } from 'entity/candidate'
 
 
@@ -12,7 +14,7 @@ export class CandidateService {
   private url: string;
 
   constructor(private http: HttpClient) {
-    this.url = 'http://192.168.0.100:8088/core/candidates/';
+    this.url = `${environment.SURFWEBSTUDYJAM_API_URL}core/candidates/`;
   }
 
   public createCandidate(candidate: Candidate): Observable<Candidate> {

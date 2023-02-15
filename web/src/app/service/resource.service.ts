@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { Observable } from 'rxjs';
 
+import { environment } from '../../environments/environment'
+
 import { SFile } from 'entity/s-file'
 
 
@@ -12,7 +14,7 @@ export class ResourceService {
   private url: string;
 
   constructor(private http: HttpClient) {
-    this.url = 'http://192.168.0.100:8088/external-files/resource/';
+    this.url = `${environment.SURFWEBSTUDYJAM_API_URL}external-files/resource/`;
   }
 
   public uploadResume(file: File): Observable<SFile> {
