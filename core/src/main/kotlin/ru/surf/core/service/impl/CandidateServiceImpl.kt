@@ -13,7 +13,7 @@ import ru.surf.core.dto.CandidatePromotionDto
 import ru.surf.core.entity.Account
 import ru.surf.core.entity.Candidate
 import ru.surf.core.entity.Trainee
-import ru.surf.core.event.ReceivingRequestKafkaEvent
+import ru.surf.core.kafkaEvents.CandidateAppliedEvent
 import ru.surf.core.mapper.candidate.CandidateMapper
 import ru.surf.core.repository.AccountRepository
 import ru.surf.core.repository.CandidateRepository
@@ -57,14 +57,17 @@ class CandidateServiceImpl(
                 flush()
             }
             it.cvFileId = s3FileService.claimFile(candidateDto.cv.fileId) ?: throw Exception("cv file expired")
-            kafkaService.sendReceivingRequestEvent(
-                ReceivingRequestKafkaEvent(
-                    candidateDto.email,
-                    eventService.getEvent(candidateDto.eventId).description,
-                    firstName = candidateDto.firstName,
-                    lastName = candidateDto.lastName
+            kafkaService.sendCoreEvent(
+                CandidateAppliedEvent(
+                        candidateDto.email,
+                        it
                 )
             )
+//            kafkaService.sendCoreEvent(
+//                    NotMailEventSample(
+//                            "this is some data for other services: " + RandomStringUtils.randomAscii(10)
+//                    )
+//            )
         }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])

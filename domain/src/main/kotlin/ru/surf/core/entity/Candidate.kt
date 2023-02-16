@@ -1,6 +1,5 @@
 package ru.surf.core.entity
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import ru.surf.core.entity.base.UUIDBasedEntity
 import java.util.*
 import javax.persistence.*
@@ -56,15 +55,15 @@ class Candidate(
         @JoinColumn(name = "hr_from_id", referencedColumnName = "id")
         val hr: SurfEmployee? = null,
 
-        @ManyToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.EAGER)
+        @ManyToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
         @JoinTable(name = "candidates_events",
                 joinColumns = [JoinColumn(name = "candidate_id", referencedColumnName = "id")],
                 inverseJoinColumns = [JoinColumn(name = "event_id", referencedColumnName = "id")])
-        @JsonIgnore
+        //@JsonIgnore
         val events: MutableSet<Event> = mutableSetOf(),
 
         @OneToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY, mappedBy = "candidate")
-        @JsonIgnore
+        //@JsonIgnore
         val trainees: List<Trainee> = emptyList(),
 
         ) : UUIDBasedEntity(id) {
