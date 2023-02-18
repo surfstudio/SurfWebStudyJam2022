@@ -1,7 +1,7 @@
 package ru.surf.externalfiles.service.impl
 
 
-import org.apache.commons.codec.digest.DigestUtils
+import io.klogging.NoCoLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
@@ -22,39 +22,47 @@ class S3DatabaseServiceImpl(
     private val s3FileMapper: S3FileMapper,
 ) : S3DatabaseService {
 
+    companion object : NoCoLogging
+
     override fun saveS3FileData(putObjectRequest: PutObjectRequest, multipartFile: MultipartFile): S3File {
         val s3FileFromRequest =
             s3FileMapper.convertFromS3PutRequestToS3FileEntity(putObjectRequest, multipartFile)
         val s3FileFromDb = multipartFile.originalFilename?.let {
-            s3FileRepository.getS3FileByChecksum(
-                DigestUtils.sha256Hex(multipartFile.inputStream)
-            )
+            s3FileRepository.getS3FileByS3Key(putObjectRequest.key())
         }
-        return s3FileFromDb?.let { synchronizeS3File(it, s3FileFromRequest) }
-            ?: run { s3FileRepository.save(s3FileFromRequest) }
+        return s3FileFromDb?.let {
+            logger.debug("Successfully synchronize s3 data $s3FileFromRequest in database")
+            synchronizeS3File(it, s3FileFromRequest)
+        }
+            ?: run {
+                logger.debug("Successfully saved s3 data $s3FileFromRequest in database")
+                s3FileRepository.save(s3FileFromRequest)
+            }
     }
 
-    override fun deleteS3FileData(fileId: UUID) {
-        getS3FileData(fileId).also { s3FileRepository.delete(it) }
+    override fun deleteS3FileData(fileId: UUID): String {
+        getS3FileData(fileId).also {
+            s3FileRepository.delete(it)
+            logger.debug("Successfully deleted s3 data with id $fileId from database")
+            return it.s3Key
+        }
     }
 
-    override fun getS3FileData(fileId: UUID): S3File =
-        s3FileRepository.findByIdOrNull(fileId) ?: throw S3FileNotFoundException(fileId)
+    override fun getS3FileData(fileId: UUID): S3File {
+        val s3FileDataFromDb = s3FileRepository.findByIdOrNull(fileId) ?: throw S3FileNotFoundException(fileId)
+        logger.debug("Successfully getting s3 data with id $fileId from database")
+        return s3FileDataFromDb
+    }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    override fun persistS3File(id: UUID): S3File? = s3FileRepository.
-    findById(id).
-    orElse(null)?.run {
+    override fun keepS3FileData(id: UUID): S3File = getS3FileData(id).run {
         expiresAt = null
         s3FileRepository.save(this)
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     override fun processExpiredFiles(zonedDateTime: ZonedDateTime, applyFn: (UUID) -> Unit) {
-        s3FileRepository.
-        findByExpiresAtLessThan(zonedDateTime).
-        map { it.id }.
-        forEach(applyFn)
+        s3FileRepository.findByExpiresAtLessThan(zonedDateTime).map { it.id }.forEach(applyFn)
     }
 
     private fun synchronizeS3File(lastVersion: S3File, newVersion: S3File) =
