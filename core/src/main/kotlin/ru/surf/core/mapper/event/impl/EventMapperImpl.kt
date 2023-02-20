@@ -12,12 +12,15 @@ class EventMapperImpl : EventMapper {
 
     override fun convertFromPostRequestEventDtoToEventEntity(postRequestEventDto: PostRequestEventDto): Event =
         Event(
-            description = postRequestEventDto.description, candidatesAmount = postRequestEventDto.candidatesAmount,
-            traineesAmount = postRequestEventDto.traineesAmount, offersAmount = postRequestEventDto.offersAmount,
+            title = postRequestEventDto.title ?: "",
+            description = postRequestEventDto.description ?: "",
+            candidatesAmount = postRequestEventDto.candidatesAmount ?: 0,
+            traineesAmount = postRequestEventDto.traineesAmount ?: 0,
+            offersAmount = postRequestEventDto.offersAmount ?: 0,
         )
 
     override fun convertFromEventEntityToFullResponseEventDto(event: Event): FullResponseEventDto =
-        FullResponseEventDto(id=event.id, description = event.description ?: "")
+        FullResponseEventDto(id=event.id, title = event.title)
 
     override fun convertFromEventEntityToShortResponseEventDto(event: Event): ShortResponseEventDto =
         ShortResponseEventDto(id = event.id)

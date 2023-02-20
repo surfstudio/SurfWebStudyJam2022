@@ -12,6 +12,7 @@ import ru.surf.core.dto.CandidateDto
 import ru.surf.core.dto.CandidatePromotionDto
 import ru.surf.core.entity.Account
 import ru.surf.core.entity.Candidate
+import ru.surf.core.entity.StateEvent
 import ru.surf.core.entity.Trainee
 import ru.surf.core.event.ReceivingRequestKafkaEvent
 import ru.surf.core.mapper.candidate.CandidateMapper
@@ -42,38 +43,36 @@ class CandidateServiceImpl(
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])
     override fun createCandidate(candidateDto: CandidateDto): Candidate =
         candidateMapper.convertFromCandidateDtoToCandidateEntity(candidateDto).apply {
-            events.add(
-                eventRepository.findById(candidateDto.eventId).orElseThrow {
+            event = eventRepository.findById(candidateDto.eventId).orElseThrow {
                     // TODO в этой ветке ещё нет кастомных исключений, добавить позже
                     Exception("event not found")
                 }.apply {
                     // TODO в черновом виде
-                    statesEvents.any { it.stateType.type == "CLOSED" } && throw Exception("Event closed")
+                    statesEvents.any { it.stateType == StateEvent.StateType.CLOSED } && throw Exception("Event closed")
                 }
-            )
         }.also {
             candidateRepository.run {
                 save(it)
                 flush()
             }
-            it.cvFileId = s3FileService.claimFile(candidateDto.cv.fileId) ?: throw Exception("cv file expired")
+            it.cvFileId = s3FileService.claimFile(candidateDto.cv.fileId)
             kafkaService.sendReceivingRequestEvent(
                 ReceivingRequestKafkaEvent(
                     candidateDto.email,
-                    eventService.getEvent(candidateDto.eventId).description,
+                    eventService.getEvent(candidateDto.eventId).title,
                     firstName = candidateDto.firstName,
                     lastName = candidateDto.lastName
                 )
             )
         }
 
+    @Suppress("KotlinConstantConditions")
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])
     override fun approveCandidate(candidate: Candidate): CandidateApprovalDto =
         candidateRepository.run {
             candidate.let {
                 // TODO в этой ветке ещё нет кастомных исключений, добавить позже
-                it.isApproved && throw Exception("candidate already approved!")
-                it.isApproved = true
+                it.isApproved = !it.isApproved || throw Exception("candidate already approved!")
                 save(it)
                 flush()
             }
@@ -83,36 +82,19 @@ class CandidateServiceImpl(
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])
     override fun promoteCandidate(candidate: Candidate, candidatePromotionDto: CandidatePromotionDto): Account =
-        // TODO в черновом виде
-        accountRepository.run {
-            save(
-                Account(
-                    email = candidate.email
-                )
-            ).apply {
-                flush()
-            }
-        }.apply {
+            // TODO в черновом виде
             traineeRepository.run {
-                save(
-                    Trainee(
-                        isActive = true,
-                        candidate = candidate,
-                        account = this@apply,
-                        event = candidate.events.last()
-                    )
-                ).apply {
+                save(Trainee(candidate = candidate)).apply {
                     flush()
                 }
-            }
-        }.apply {
-            credentialsService.promoteCandidate(
-                candidate.id, AccountCredentialsDto(
-                    identity = id,
-                    passphrase = candidatePromotionDto.passphrase
+            }.apply {
+                credentialsService.promoteCandidate(candidate.id,
+                        AccountCredentialsDto(
+                            identity = id,
+                            passphrase = candidatePromotionDto.passphrase
+                        )
                 )
-            )
-        }
+            }
 
     override fun get(candidateId: UUID): Candidate = candidateRepository.findById(candidateId).orElseThrow {
         // TODO в этой ветке ещё нет кастомных исключений, добавить позже

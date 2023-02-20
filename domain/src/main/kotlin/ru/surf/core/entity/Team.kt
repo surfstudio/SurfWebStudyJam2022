@@ -12,27 +12,24 @@ class Team(
         @Column(name = "id")
         override val id: UUID = UUID.randomUUID(),
 
-        @Column(name = "about")
-        var description: String? = null,
+        @Column(name = "title", nullable = false, unique = true)
+        var title: String = "",
 
-        @Column(name = "project_git_link")
-        var projectGitLink: String? = null,
+        @Column(name = "project_git_link", nullable = false, unique = true)
+        var projectGitLink: String = "",
 
-        @Column(name = "project_miro_link")
-        var projectMiroLink: String? = null,
+        @Column(name = "project_miro_link", nullable = false, unique = true)
+        var projectMiroLink: String = "",
 
-        @OneToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.EAGER)
-        @JoinColumn(name = "mentor_id", referencedColumnName = "id")
-        var mentor: SurfEmployee = SurfEmployee(),
-
-        @OneToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY, mappedBy = "team")
-        var feedbacks: MutableList<TeamFeedback> = mutableListOf(),
+        @OneToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
+        @JoinColumn(name = "mentor_id", referencedColumnName = "id", nullable = false)
+        val mentor: SurfEmployee = SurfEmployee(),
 
         ) : UUIDBasedEntity(id) {
 
     @Override
     override fun toString(): String {
-        return this::class.simpleName + "(id = $id , description = $description , projectGitLink = $projectGitLink , projectMiroLink = $projectMiroLink , mentor = $mentor )"
+        return this::class.simpleName + "(id = $id , title = $title , projectGitLink = $projectGitLink , projectMiroLink = $projectMiroLink , mentor = $mentor )"
     }
 
 }

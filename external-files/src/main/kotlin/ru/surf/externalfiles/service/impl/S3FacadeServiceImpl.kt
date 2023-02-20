@@ -1,10 +1,8 @@
 package ru.surf.externalfiles.service.impl
 
-import io.klogging.Klogging
 import io.klogging.NoCoLogging
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.core.io.ByteArrayResource
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import ru.surf.externalfiles.dto.PostResponseDto
@@ -14,7 +12,9 @@ import ru.surf.externalfiles.service.S3FacadeService
 import ru.surf.externalfiles.service.S3FileService
 import ru.surf.externalfiles.service.S3RequestService
 import java.sql.SQLException
+import java.time.ZonedDateTime
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 @Service
 class S3FacadeServiceImpl(
@@ -86,6 +86,11 @@ class S3FacadeServiceImpl(
             }
         }
         s3RequestService.createS3DeleteRequest(s3KeyDeletedFile).run { s3FileService.deleteObject(this) }
+    }
+
+    @Scheduled(fixedDelayString = "\${external-files.claim-interval-seconds}", timeUnit = TimeUnit.SECONDS)
+    override fun cleanUnclaimedFiles() {
+        s3DatabaseService.processExpiredFiles(ZonedDateTime.now(), this::deleteFile)
     }
 
 }

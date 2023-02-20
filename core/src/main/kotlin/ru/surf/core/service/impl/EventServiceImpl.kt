@@ -24,12 +24,12 @@ class EventServiceImpl(
 ) : EventService {
 
     override fun createEvent(postRequestEventDto: PostRequestEventDto): ShortResponseEventDto {
-        val initiatorId = postRequestEventDto.initiatorId
-        val eventTypeId = postRequestEventDto.eventTypeId
+        val initiatorId = postRequestEventDto.eventInitiatorId
+        val eventTagsId = postRequestEventDto.eventTagsId
         // TODO заглушка, убрать nullable когда будут готовы сервисы для связанных сущностей
         val transientEntity = eventMapper.convertFromPostRequestEventDtoToEventEntity(postRequestEventDto).apply {
             eventInitiator = initiatorId?.let { surfEmployeeService.getSurfEmployee(it) }
-            eventType = eventTypeId?.let { eventTypeService.getEventType(it) }
+            eventTags = eventTagsId.map { eventTypeService.getEventType(it) }
         }
         val persistedEvent = eventRepository.save(transientEntity)
         return eventMapper.convertFromEventEntityToShortResponseEventDto(persistedEvent)
@@ -43,11 +43,12 @@ class EventServiceImpl(
     override fun updateEvent(id: UUID, putRequestEventDto: PutRequestEventDto): ShortResponseEventDto {
         val eventFromDb = getEventFromDatabase(id)
         eventFromDb.apply {
+            title = putRequestEventDto.title
             description = putRequestEventDto.description
             candidatesAmount = putRequestEventDto.candidatesAmount
             offersAmount = putRequestEventDto.offersAmount
             traineesAmount = putRequestEventDto.traineesAmount
-            eventType = eventTypeService.getEventType(putRequestEventDto.eventTypeId)
+            eventTags = putRequestEventDto.eventTagsId.map { eventTypeService.getEventType(it) }
             eventInitiator = surfEmployeeService.getSurfEmployee(putRequestEventDto.eventInitiatorId)
             // TODO: 25.01.2023 Добавить логику потом 
             /*  statesEvents = TODO()*/
