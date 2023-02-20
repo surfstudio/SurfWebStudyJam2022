@@ -59,7 +59,7 @@ class Candidate(
 
         @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
         @JoinColumn(name = "event_id", referencedColumnName = "id", nullable = false)
-        var event: Event = Event(),
+        val event: Event = Event(),
 
         ) : UUIDBasedEntity(id) {
         override fun toString(): String {

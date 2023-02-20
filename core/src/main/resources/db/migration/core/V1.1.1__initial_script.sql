@@ -33,7 +33,7 @@ create table if not exists events
         constraint events_surf_employees_event_initiator_id_fk references surf_employees (id)
 );
 
-create table if not exists states_events
+create table if not exists event_states
 (
     id         uuid default gen_random_uuid() primary key,
     state_type text not null,

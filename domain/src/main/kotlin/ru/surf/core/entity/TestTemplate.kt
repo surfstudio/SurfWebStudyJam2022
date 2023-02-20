@@ -20,7 +20,7 @@ class TestTemplate(
 
         @OneToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
         @JoinColumn(name = "test_id")
-        val questions: MutableSet<Question> = mutableSetOf()
+        val questions: Set<Question> = setOf()
 
 ) : UUIDBasedEntity(id) {
 

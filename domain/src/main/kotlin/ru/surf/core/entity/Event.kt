@@ -31,19 +31,19 @@ class Event(
 
         @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
         @JoinColumn(name = "event_initiator_id", referencedColumnName = "id")
-        var eventInitiator: SurfEmployee? = null,
+        val eventInitiator: SurfEmployee? = null,
 
         @ManyToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.EAGER)
         @Fetch(value = FetchMode.SUBSELECT)
         @JoinTable(name = "event_tags_events",
                 joinColumns = [JoinColumn(name = "event_id", referencedColumnName = "id")],
                 inverseJoinColumns = [JoinColumn(name = "event_tag_id", referencedColumnName = "id")])
-        var eventTags: Collection<EventTag> = listOf(),
+        var eventTags: Set<EventTag> = setOf(),
 
         @OneToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.EAGER)
         @Fetch(value = FetchMode.SUBSELECT)
         @JoinColumn(name = "event_id")
-        var statesEvents: Collection<StateEvent> = listOf(),
+        var eventStates: Set<EventState> = setOf(),
 
         ) : UUIDBasedEntity(id) {
 

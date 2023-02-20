@@ -5,14 +5,14 @@ import java.time.ZonedDateTime
 import java.util.*
 import javax.persistence.*
 
-@Table(name = "states_events", uniqueConstraints = [
+@Table(name = "event_states", uniqueConstraints = [
     UniqueConstraint(columnNames = [
         "state_type",
         "event_id"
     ])
 ])
 @Entity
-class StateEvent(
+class EventState(
 
         @Id
         @Column(name = "id")
@@ -34,9 +34,10 @@ class StateEvent(
                 "stateDate=$stateDate)"
     }
 
+    @Suppress("unused")
     enum class StateType {
         APPLYING,
-        CLOSED
+        ENDED
     }
 
 }

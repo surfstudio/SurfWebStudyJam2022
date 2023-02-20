@@ -12,13 +12,12 @@ import ru.surf.core.dto.CandidateDto
 import ru.surf.core.dto.CandidatePromotionDto
 import ru.surf.core.entity.Account
 import ru.surf.core.entity.Candidate
-import ru.surf.core.entity.StateEvent
+import ru.surf.core.entity.EventState
 import ru.surf.core.entity.Trainee
 import ru.surf.core.event.ReceivingRequestKafkaEvent
 import ru.surf.core.mapper.candidate.CandidateMapper
 import ru.surf.core.repository.AccountRepository
 import ru.surf.core.repository.CandidateRepository
-import ru.surf.core.repository.EventRepository
 import ru.surf.core.repository.TraineeRepository
 import ru.surf.core.service.CandidateService
 import ru.surf.core.service.EventService
@@ -32,7 +31,6 @@ class CandidateServiceImpl(
     @Autowired private val credentialsService: CredentialsService,
     @Autowired private val s3FileService: S3FileService,
     @Autowired private val candidateRepository: CandidateRepository,
-    @Autowired private val eventRepository: EventRepository,
     @Autowired private val accountRepository: AccountRepository,
     @Autowired private val traineeRepository: TraineeRepository,
     @Autowired private val candidateMapper: CandidateMapper,
@@ -42,29 +40,29 @@ class CandidateServiceImpl(
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])
     override fun createCandidate(candidateDto: CandidateDto): Candidate =
-        candidateMapper.convertFromCandidateDtoToCandidateEntity(candidateDto).apply {
-            event = eventRepository.findById(candidateDto.eventId).orElseThrow {
-                    // TODO в этой ветке ещё нет кастомных исключений, добавить позже
-                    Exception("event not found")
-                }.apply {
-                    // TODO в черновом виде
-                    statesEvents.any { it.stateType == StateEvent.StateType.CLOSED } && throw Exception("Event closed")
+            candidateMapper.convertFromCandidateDtoToCandidateEntity(
+                    candidateDto,
+                    // todo временно, посмотреть mapstruct
+                    event = eventService.getEvent(candidateDto.eventId).apply {
+                        eventStates.none {
+                            it.stateType != EventState.StateType.APPLYING
+                        } && throw Exception("Candidate application phase has already ended")
+                    }
+            ).also {
+                candidateRepository.run {
+                    save(it)
+                    flush()
                 }
-        }.also {
-            candidateRepository.run {
-                save(it)
-                flush()
-            }
-            it.cvFileId = s3FileService.claimFile(candidateDto.cv.fileId)
-            kafkaService.sendReceivingRequestEvent(
-                ReceivingRequestKafkaEvent(
-                    candidateDto.email,
-                    eventService.getEvent(candidateDto.eventId).title,
-                    firstName = candidateDto.firstName,
-                    lastName = candidateDto.lastName
+                it.cvFileId = s3FileService.claimFile(candidateDto.cv.fileId)
+                kafkaService.sendReceivingRequestEvent(
+                        ReceivingRequestKafkaEvent(
+                                emailTo = it.email,
+                                eventName = it.event.title,
+                                firstName = it.firstName,
+                                lastName = it.lastName
+                        )
                 )
-            )
-        }
+            }
 
     @Suppress("KotlinConstantConditions")
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])

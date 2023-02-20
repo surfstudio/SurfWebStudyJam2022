@@ -1,6 +1,6 @@
 package ru.surf.core.dto
 
-import java.util.*
+import ru.surf.core.entity.EventTag
 
 data class PutRequestEventDto(
         val title: String,
@@ -8,6 +8,5 @@ data class PutRequestEventDto(
         val candidatesAmount: Int,
         val traineesAmount: Int,
         val offersAmount: Int,
-        val eventTagsId: Collection<UUID>,
-        val eventInitiatorId: UUID
+        val eventTags: Set<EventTag>
 )
