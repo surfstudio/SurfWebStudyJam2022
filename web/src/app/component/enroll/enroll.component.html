@@ -1,7 +1,7 @@
 <div class="enroll-component">
-	<app-enroll-welcome 
+	<app-enroll-welcome
 		*ngIf="state=='welcome'"
-		[eventTitle]="devMode ? event?.description ?? '' : event!.description"
+		[eventTitle]="devMode ? event?.title ?? '' : event!.title"
 		(onApply)="state='applyment'"
 	>
 	</app-enroll-welcome>
@@ -11,7 +11,7 @@
 		(onApply)="state='success'"
 	>
 	</app-enroll-applyment>
-	<app-enroll-success 
+	<app-enroll-success
 		*ngIf="state=='success'"
 	>
 	</app-enroll-success>

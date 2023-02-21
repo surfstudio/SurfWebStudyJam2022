@@ -17,4 +17,6 @@ interface CandidateService {
 
     fun get(candidateId: UUID): Candidate
 
+    fun getPreferredCandidates(): Map<Candidate, List<String>>
+
 }

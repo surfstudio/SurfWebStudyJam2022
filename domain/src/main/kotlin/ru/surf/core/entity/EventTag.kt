@@ -2,20 +2,17 @@ package ru.surf.core.entity
 
 import ru.surf.core.entity.base.UUIDBasedEntity
 import java.util.*
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 
-@Table(name = "roles")
+@Table(name = "event_tags")
 @Entity
-class Role(
+class EventTag(
 
         @Id
         @Column(name = "id")
         override val id: UUID = UUID.randomUUID(),
 
-        @Column(name = "role")
+        @Column(name = "description", nullable = false, unique = true)
         var description: String = "",
 
         ) : UUIDBasedEntity(id) {
@@ -26,4 +23,3 @@ class Role(
     }
 
 }
-

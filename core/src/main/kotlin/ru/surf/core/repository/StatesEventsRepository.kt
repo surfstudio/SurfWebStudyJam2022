@@ -1,8 +1,10 @@
 package ru.surf.core.repository
 
 import org.springframework.data.jpa.repository.JpaRepository
-import ru.surf.core.entity.StatesEvents
+import org.springframework.stereotype.Repository
+import ru.surf.core.entity.EventState
 import java.util.UUID
 
-interface StatesEventsRepository : JpaRepository<StatesEvents, UUID> {
+@Repository
+interface StatesEventsRepository : JpaRepository<EventState, UUID> {
 }

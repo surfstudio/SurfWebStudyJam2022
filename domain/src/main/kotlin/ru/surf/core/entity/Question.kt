@@ -12,30 +12,35 @@ class Question(
         @Column(name = "id")
         override val id: UUID = UUID.randomUUID(),
 
-        @Column(name = "question")
-        var description: String = "",
+        @Enumerated(EnumType.STRING)
+        @Column(name = "question_type", nullable = false)
+        val questionType: QuestionType = QuestionType.SINGE_CHOICE,
 
-        @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
-        @JoinColumn(name = "question_type_id")
-        var type: QuestionType = QuestionType(),
+        @Column(name = "title", nullable = false)
+        val title: String = "",
 
-        @ManyToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
-        @JoinTable(
-                name = "questions_answers",
-                joinColumns = [JoinColumn(name = "answer_id")],
-                inverseJoinColumns = [JoinColumn(name = "question_id")]
-        )
-        var answers: MutableList<Answer> = mutableListOf(),
+        @Column(name = "weight", nullable = false)
+        var weight: Int = 0,
 
-        @OneToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.EAGER)
-        @JoinColumn(name = "right_answer_id", referencedColumnName = "id")
-        var rightAnswer: Answer = Answer(),
+        @OneToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
+        @JoinColumn(name = "question_id")
+        val answers: Set<Answer> = setOf(),
 
         ) : UUIDBasedEntity(id) {
 
-    @Override
     override fun toString(): String {
-        return this::class.simpleName + "(id = $id , description = $description , rightAnswer = $rightAnswer )"
+        return "Question(" +
+                "id=$id, " +
+                "questionType=$questionType, " +
+                "title='$title', " +
+                "weight=$weight, " +
+                "answers=$answers)"
+    }
+
+    @Suppress("unused")
+    enum class QuestionType {
+        SINGE_CHOICE,
+        MULTIPLE_CHOICE
     }
 
 }

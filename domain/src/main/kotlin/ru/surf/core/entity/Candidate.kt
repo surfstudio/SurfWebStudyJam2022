@@ -1,10 +1,16 @@
 package ru.surf.core.entity
 
 import ru.surf.core.entity.base.UUIDBasedEntity
+import java.time.ZonedDateTime
 import java.util.*
 import javax.persistence.*
 
-@Table(name = "candidates")
+@Table(name = "candidates", uniqueConstraints = [
+        UniqueConstraint(columnNames = [
+                "email",
+                "event_id"
+        ])
+])
 @Entity
 class Candidate(
 
@@ -12,77 +18,66 @@ class Candidate(
         @Column(name = "id")
         override val id: UUID = UUID.randomUUID(),
 
-        @Column(name = "first_name")
-        var firstName: String = "",
+        @Column(name = "first_name", nullable = false)
+        val firstName: String = "",
 
-        @Column(name = "last_name")
+        @Column(name = "last_name", nullable = false)
         val lastName: String = "",
 
-        @Column(name = "university")
+        @Column(name = "university", nullable = false)
         val university: String = "",
 
-        @Column(name = "faculty")
+        @Column(name = "faculty", nullable = false)
         val faculty: String = "",
 
-        @Column(name = "course")
+        @Column(name = "course", nullable = false)
         val course: String = "",
 
-        @Column(name = "experience")
+        @Column(name = "experience", nullable = false)
         val experience: String = "",
 
-        @Column(name = "vcs")
+        @Column(name = "vcs", nullable = false)
         val vcs: String = "",
 
-        @Column(name = "cv_file_id", columnDefinition = "uuid")
+        @Column(name = "cv_file_id", columnDefinition = "uuid", nullable = false)
         var cvFileId: UUID = UUID.randomUUID(),
 
-        @Column(name = "email")
-        var email: String = "",
+        @Column(name = "email", nullable = false)
+        val email: String = "",
 
-        @Column(name = "telegram")
+        @Column(name = "telegram", nullable = false)
         val telegram: String = "",
 
-        @Column(name = "feedback")
+        @Column(name = "feedback", nullable = false)
         val feedback: String = "",
 
-        @Column(name = "is_new")
-        var isNew: Boolean? = null,
+        @Column(name = "applied_at", nullable = false)
+        val appliedAt: ZonedDateTime = ZonedDateTime.now(),
 
-        @Column(name = "is_approved")
+        @Column(name = "is_approved", nullable = false)
         var isApproved: Boolean = false,
 
         @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
-        @JoinColumn(name = "hr_from_id", referencedColumnName = "id")
-        val hr: SurfEmployee? = null,
-
-        @ManyToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
-        @JoinTable(name = "candidates_events",
-                joinColumns = [JoinColumn(name = "candidate_id", referencedColumnName = "id")],
-                inverseJoinColumns = [JoinColumn(name = "event_id", referencedColumnName = "id")])
-        //@JsonIgnore
-        val events: MutableSet<Event> = mutableSetOf(),
-
-        @OneToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY, mappedBy = "candidate")
-        //@JsonIgnore
-        val trainees: List<Trainee> = emptyList(),
+        @JoinColumn(name = "event_id", referencedColumnName = "id", nullable = false)
+        val event: Event = Event(),
 
         ) : UUIDBasedEntity(id) {
-    override fun toString(): String {
-        return "Candidate(" +
-                "id=$id, " +
-                "firstName='$firstName', " +
-                "lastName='$lastName', " +
-                "university='$university', " +
-                "faculty='$faculty', " +
-                "course='$course', " +
-                "experience='$experience', " +
-                "vcs='$vcs', " +
-                "email='$email', " +
-                "telegram='$telegram', " +
-                "feedback='$feedback', " +
-                "isNew=$isNew, " +
-                "isApproved=$isApproved" +
-                ")"
-    }
-
+        override fun toString(): String {
+                return "Candidate(" +
+                        "id=$id, " +
+                        "firstName='$firstName', " +
+                        "lastName='$lastName', " +
+                        "university='$university', " +
+                        "faculty='$faculty', " +
+                        "course='$course', " +
+                        "experience='$experience', " +
+                        "vcs='$vcs', " +
+                        "cvFileId=$cvFileId, " +
+                        "email='$email', " +
+                        "telegram='$telegram', " +
+                        "feedback='$feedback', " +
+                        "appliedAt=$appliedAt, " +
+                        "isApproved=$isApproved, " +
+                        "event=$event)"
+        }
 }

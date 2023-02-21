@@ -6,12 +6,15 @@ import ru.surf.core.dto.FullResponseEventDto
 import ru.surf.core.dto.PostRequestEventDto
 import ru.surf.core.dto.PutRequestEventDto
 import ru.surf.core.dto.ShortResponseEventDto
+import ru.surf.core.mapper.event.EventMapper
 import ru.surf.core.service.EventService
 import java.util.UUID
 
 @RestController
 @RequestMapping("/events")
-class EventController(private val eventService: EventService) {
+class EventController(private val eventService: EventService,
+                      private val eventMapper: EventMapper
+) {
 
     @PostMapping("/event")
     fun createEvent(@RequestBody postRequestEventDto: PostRequestEventDto): ResponseEntity<ShortResponseEventDto> {
@@ -22,7 +25,7 @@ class EventController(private val eventService: EventService) {
     @GetMapping("/{id}")
     fun getEvent(@PathVariable(name =  "id") eventId: UUID): ResponseEntity<FullResponseEventDto> {
         val fullResponseEventDto = eventService.getEvent(eventId)
-        return ResponseEntity.ok(fullResponseEventDto)
+        return ResponseEntity.ok(eventMapper.convertFromEventEntityToFullResponseEventDto(fullResponseEventDto))
     }
 
     @PutMapping("/{id}")

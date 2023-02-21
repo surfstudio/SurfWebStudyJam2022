@@ -4,7 +4,7 @@ import org.apache.commons.codec.digest.DigestUtils
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
-import ru.surf.externalfiles.dto.PostResponseResumeDto
+import ru.surf.externalfiles.dto.PostResponseDto
 import ru.surf.externalfiles.entity.S3File
 import ru.surf.externalfiles.mapper.S3FileMapper
 import ru.surf.externalfiles.mapper.impl.S3FileMapperImpl.FILENAME.unknown
@@ -34,7 +34,7 @@ class S3FileMapperImpl(
             expiresAt = ZonedDateTime.now().plusSeconds(claimIntervalSeconds)
         )
 
-    override fun convertFromS3ResumeEntityToPostResponseResumeDto(s3ResumeFile: S3File): PostResponseResumeDto =
-        PostResponseResumeDto(fileId = s3ResumeFile.id, size = s3ResumeFile.sizeInBytes, name = s3ResumeFile.s3Filename)
+    override fun convertFromS3ResumeEntityToPostResponseResumeDto(s3ResumeFile: S3File): PostResponseDto =
+        PostResponseDto(fileId = s3ResumeFile.id, size = s3ResumeFile.sizeInBytes, name = s3ResumeFile.s3Filename)
 
 }

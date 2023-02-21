@@ -23,24 +23,32 @@ dependencies {
     val apacheCommonsCodecVersion = "1.15"
     val hibernateVersion = "5.6.14.Final"
     val apachePoiVersion = "3.17"
+    val postgreSQLVersion = "42.5.1"
+    val kLoggingVersion = "0.4.6"
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+
+    implementation("org.springdoc:springdoc-openapi-ui:$springDocVersion")
+    implementation("org.springdoc:springdoc-openapi-kotlin:$springDocVersion")
+
+    implementation("commons-codec:commons-codec:$apacheCommonsCodecVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.flywaydb:flyway-core")
-    implementation("org.springdoc:springdoc-openapi-ui:$springDocVersion")
-    implementation("org.springdoc:springdoc-openapi-kotlin:$springDocVersion")
-    implementation("commons-codec:commons-codec:$apacheCommonsCodecVersion")
+
     implementation("org.hibernate:hibernate-envers:$hibernateVersion")
     implementation(platform("software.amazon.awssdk:bom:$awssdkBomVersion"))
     implementation("software.amazon.awssdk:s3")
     implementation("org.apache.poi:poi-ooxml:$apachePoiVersion")
     implementation("com.caucho:hessian:4.0.66")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    runtimeOnly("org.postgresql:postgresql")
+    implementation("org.postgresql:postgresql:$postgreSQLVersion")
+    implementation("io.klogging:klogging-jvm:$kLoggingVersion")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
     implementation(project(":domain"))
 
     devDependencies {
