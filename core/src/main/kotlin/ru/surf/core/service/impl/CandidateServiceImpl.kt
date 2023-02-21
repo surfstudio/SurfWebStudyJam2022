@@ -19,6 +19,7 @@ import ru.surf.core.repository.AccountRepository
 import ru.surf.core.repository.CandidateRepository
 import ru.surf.core.repository.EventRepository
 import ru.surf.core.repository.TraineeRepository
+import ru.surf.core.service.CandidateFilterService
 import ru.surf.core.service.CandidateService
 import ru.surf.core.service.EventService
 import ru.surf.core.service.KafkaService
@@ -36,7 +37,8 @@ class CandidateServiceImpl(
     @Autowired private val traineeRepository: TraineeRepository,
     @Autowired private val candidateMapper: CandidateMapper,
     @Autowired private val kafkaService: KafkaService,
-    @Autowired private val eventService: EventService
+    @Autowired private val eventService: EventService,
+    @Autowired private val candidateFilterService: CandidateFilterService
 ) : CandidateService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])
@@ -117,6 +119,13 @@ class CandidateServiceImpl(
     override fun get(candidateId: UUID): Candidate = candidateRepository.findById(candidateId).orElseThrow {
         // TODO в этой ветке ещё нет кастомных исключений, добавить позже
         Exception("candidate not found")
+    }
+
+    override fun getPreferredCandidates(): Map<Candidate, List<String>> {
+        //какой-то вызов логики
+        //....
+        //Сюда будет передан список из репозитория
+       return candidateFilterService.filterCandidatesForm(listOf())
     }
 
 }

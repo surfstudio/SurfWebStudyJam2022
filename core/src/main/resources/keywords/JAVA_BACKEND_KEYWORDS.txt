@@ -1,0 +1,5 @@
+JAVA, JAVA SE, JAVA 8, JAVA 11, JAVA 17, JAVA EE, JDBC, KOTLIN, SQL, SPRING FRAMEWORK, SPRING BOOT, SPRING DATA, SPRING SECURITY,
+SPRING MVC, SPRING TEST, SPRING CLOUD, SQL, POSTGRESQL, JOOQ, HIBERNATE, REST API, VCS, GIT, APACHE KAFKA, JAVASCRIPT, TYPESCRIPT, ANGULAR, REACT, RABBITMQ,
+MICROSERVICES, MONOLITH, DOCKER, KUBERNETES, OPENSHIFT, JUNIT, MOCKITO, ARGOCD, SERVLETS, GITHUB ACTIONS, GITLAB CI, MONGODB, CLICKHOUSE, ДЖАВА,
+КОТЛИН, МИКРОСЕРВИСЫ, СПРИНГ ФРЕЙМВОРК, СПРИНГ, СПРИНГ СЕКЬЮРИТИ, СПРИНГ ДАТА, СПРИНГ МВЦ, ДОКЕР, ГИТ, ДЖАВАСКРИПТ, ТАЙПСКРИПТ, АНГУЛЯР, РЕАКТ,
+ПОСТЕГРЕС, РЕСТ АПИ, СПРИНГ ТЕСТ, СПРИНГ КЛАУД, ЖЮНИТ, МОКИТО, СЕРВЛЕТЫ, КРУД, CRUD
