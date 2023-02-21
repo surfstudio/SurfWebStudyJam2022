@@ -13,4 +13,6 @@ interface S3FacadeService {
 
     fun deleteFile(fileId: UUID)
 
+    fun cleanUnclaimedFiles()
+
 }

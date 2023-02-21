@@ -16,7 +16,5 @@ interface S3FileService {
 
     fun claimFile(fileId: UUID): UUID
 
-    fun cleanUnclaimedFiles()
-
 }
 

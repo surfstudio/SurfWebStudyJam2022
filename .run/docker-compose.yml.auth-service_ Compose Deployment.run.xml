@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="docker-compose-local.yml.auth-service: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" server-name="DockerLT">
+  <configuration default="false" name="docker-compose.yml.auth-service: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" server-name="DockerLT">
     <deployment type="docker-compose.yml">
       <settings>
         <option name="envFilePath" value="" />
@@ -9,7 +9,7 @@
             <option value="auth-service" />
           </list>
         </option>
-        <option name="sourceFilePath" value="docker-compose-local.yml" />
+        <option name="sourceFilePath" value="docker-compose.yml" />
       </settings>
     </deployment>
     <method v="2">

@@ -53,7 +53,7 @@ services:
     environment:
       DB_VENDOR: POSTGRES
       <<: *db-cred
-      DB_DATABASE: studyjam_keycloak
+      DB_DATABASE: surfwebstudyjam_keycloak
       KEYCLOAK_USER: ${KEYCLOAK_USER}
       KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
     ports:
@@ -210,7 +210,7 @@ services:
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       <<: *db-cred
-      DB_NAME: studyjam_auth
+      DB_NAME: surfwebstudyjam_auth
     ports:
       - "8085:80"
     healthcheck:
@@ -267,7 +267,7 @@ services:
     build:
       context: external-files
       dockerfile: Dockerfile
-    image: external_files
+    image: external-files
     depends_on:
       minio-service:
           condition: service_healthy
@@ -277,7 +277,7 @@ services:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 80
       <<: *db-cred
-      DB_NAME: studyjam_core
+      DB_NAME: surfwebstudyjam_core
       S3_URL: http://minio-service
       S3_HOST: 9000
       S3_BUCKET_NAME: ${S3_BUCKET_NAME}
@@ -319,7 +319,7 @@ services:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 80
       <<: *db-cred
-      DB_NAME: studyjam_core
+      DB_NAME: surfwebstudyjam_core
       KAFKA_HOST: kafka-service:9092
       AUTH_API: http://auth-service/credentialsServiceApi
       EXI_FILES_API: http://external-files-service/external-files/s3FileServiceApi

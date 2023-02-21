@@ -1,10 +1,10 @@
 package ru.surf.core.service
 
-import ru.surf.core.dto.FullResponseEventDto
 import ru.surf.core.dto.PostRequestEventDto
 import ru.surf.core.dto.PutRequestEventDto
 import ru.surf.core.dto.ShortResponseEventDto
-import java.util.UUID
+import ru.surf.core.entity.Event
+import java.util.*
 
 interface EventService {
 
@@ -12,7 +12,7 @@ interface EventService {
 
     fun deleteEvent(id: UUID)
 
-    fun getEvent(id: UUID): FullResponseEventDto
+    fun getEvent(id: UUID): Event
 
     fun updateEvent(id: UUID, putRequestEventDto: PutRequestEventDto): ShortResponseEventDto
 

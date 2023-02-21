@@ -16,14 +16,19 @@ class Answer(
         @Column(name = "id")
         override val id: UUID = UUID.randomUUID(),
 
-        @Column(name = "answer")
-        var text: String = "",
+        @Column(name = "title", nullable = false)
+        val title: String = "",
+
+        @Column(name = "weight", nullable = false)
+        val weight: Int = 0,
 
         ) : UUIDBasedEntity(id) {
 
-    @Override
     override fun toString(): String {
-        return this::class.simpleName + "(id = $id , text = $text )"
+        return "Answer(" +
+                "id=$id, " +
+                "title='$title', " +
+                "weight=$weight)"
     }
 
 }

@@ -1,33 +1,45 @@
 package ru.surf.core.entity
 
 import ru.surf.core.entity.base.UUIDBasedEntity
+import java.time.ZonedDateTime
 import java.util.*
 import javax.persistence.*
+import javax.validation.constraints.Email
 
 @Table(name = "accounts")
 @Entity
-class Account(
+@Inheritance(strategy = InheritanceType.JOINED)
+open class Account(
 
         @Id
         @Column(name = "id")
         override val id: UUID = UUID.randomUUID(),
 
-        @Column(name = "email")
-        var email: String = "",
+        @Column(name = "email", nullable = false, unique = true)
+        @Email(regexp = ".+?@.+")
+        open val email: String = "",
 
-        @Column(name = "password")
-        var password: String? = null,
+        @Enumerated(EnumType.STRING)
+        @Column(name = "role", nullable = false)
+        open val role: Role = Role.TRAINEE,
 
-        @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.EAGER)
-        @JoinColumn(name = "role_id", referencedColumnName = "id")
-        val role: Role? = null,
-
+        @Column(name = "created_at", nullable = false)
+        val createdAt: ZonedDateTime = ZonedDateTime.now(),
 
         ) : UUIDBasedEntity(id) {
 
-    @Override
     override fun toString(): String {
-        return this::class.simpleName + "(id = $id , email = $email , password = $password )"
+        return "Account(" +
+                "id=$id, " +
+                "email='$email', " +
+                "role=$role, " +
+                "createdAt=$createdAt)"
+    }
+
+    @Suppress("unused")
+    enum class Role {
+        TRAINEE,
+        SURF_EMPLOYEE
     }
 
 }

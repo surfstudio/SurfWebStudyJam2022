@@ -5,6 +5,7 @@ import io.klogging.NoCoLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import ru.surf.externalfiles.entity.S3File
@@ -60,7 +61,7 @@ class S3DatabaseServiceImpl(
         s3FileRepository.save(this)
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.SERIALIZABLE)
     override fun processExpiredFiles(zonedDateTime: ZonedDateTime, applyFn: (UUID) -> Unit) {
         s3FileRepository.findByExpiresAtLessThan(zonedDateTime).map { it.id }.forEach(applyFn)
     }

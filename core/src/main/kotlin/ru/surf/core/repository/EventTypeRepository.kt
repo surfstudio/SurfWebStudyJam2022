@@ -1,8 +1,10 @@
 package ru.surf.core.repository
 
 import org.springframework.data.jpa.repository.JpaRepository
-import ru.surf.core.entity.EventType
+import org.springframework.stereotype.Repository
+import ru.surf.core.entity.EventTag
 import java.util.UUID
 
-interface EventTypeRepository : JpaRepository<EventType, UUID> {
+@Repository
+interface EventTypeRepository : JpaRepository<EventTag, UUID> {
 }
