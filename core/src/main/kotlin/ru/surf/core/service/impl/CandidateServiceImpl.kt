@@ -42,6 +42,18 @@ class CandidateServiceImpl(
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])
     override fun createCandidate(candidateDto: CandidateDto): Candidate =
+        candidateMapper.convertFromCandidateDtoToCandidateEntity(
+            candidateDto,
+            // todo временно, посмотреть mapstruct
+            event = eventService.getEvent(candidateDto.eventId).apply {
+                eventStates.none {
+                    it.stateType != EventState.StateType.APPLYING
+                } && throw Exception("Candidate application phase has already ended")
+            }
+        ).also {
+            candidateRepository.run {
+                save(it)
+                flush()
             candidateMapper.convertFromCandidateDtoToCandidateEntity(
                     candidateDto,
                     // todo временно, посмотреть mapstruct
@@ -67,7 +79,6 @@ class CandidateServiceImpl(
 //                          "this is some data for other services: " + RandomStringUtils.randomAscii(10)
 //                   )
 //              )
-            }
 
     @Suppress("KotlinConstantConditions")
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])
@@ -85,30 +96,27 @@ class CandidateServiceImpl(
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])
     override fun promoteCandidate(candidate: Candidate, candidatePromotionDto: CandidatePromotionDto): Account =
-            // TODO в черновом виде
-            traineeRepository.run {
-                save(Trainee(candidate = candidate)).apply {
-                    flush()
-                }
-            }.apply {
-                credentialsService.promoteCandidate(candidate.id,
-                        AccountCredentialsDto(
-                            identity = id,
-                            passphrase = candidatePromotionDto.passphrase
-                        )
-                )
+        // TODO в черновом виде
+        traineeRepository.run {
+            save(Trainee(candidate = candidate)).apply {
+                flush()
             }
+        }.apply {
+            credentialsService.promoteCandidate(
+                candidate.id,
+                AccountCredentialsDto(
+                    identity = id,
+                    passphrase = candidatePromotionDto.passphrase
+                )
+            )
+        }
 
     override fun get(candidateId: UUID): Candidate = candidateRepository.findById(candidateId).orElseThrow {
         // TODO в этой ветке ещё нет кастомных исключений, добавить позже
         Exception("candidate not found")
     }
 
-    override fun getPreferredCandidates(): Map<Candidate, List<String>> {
-        //какой-то вызов логики
-        //....
-        //Сюда будет передан список из репозитория
-       return candidateFilterService.filterCandidatesForm(listOf())
-    }
+    override fun getPreferredCandidates(eventId: UUID): Map<Candidate, List<String>> =
+        candidateRepository.getCandidatesByEventId(eventId).run { candidateFilterService.filterCandidatesForm(this) }
 
 }
