@@ -54,7 +54,7 @@ class CandidateServiceImpl(
             candidateRepository.run {
                 save(it)
                 flush()
-            candidateMapper.convertFromCandidateDtoToCandidateEntity(
+                candidateMapper.convertFromCandidateDtoToCandidateEntity(
                     candidateDto,
                     // todo временно, посмотреть mapstruct
                     event = eventService.getEvent(candidateDto.eventId).apply {
@@ -62,23 +62,26 @@ class CandidateServiceImpl(
                             it.stateType != EventState.StateType.APPLYING
                         } && throw Exception("Candidate application phase has already ended")
                     }
-            ).also {
-                candidateRepository.run {
-                    save(it)
-                    flush()
-                }
-                it.cvFileId = s3FileService.claimFile(candidateDto.cv.fileId)
-                kafkaService.sendCoreEvent(
-                    CandidateAppliedEvent(
+                ).also {
+                    candidateRepository.run {
+                        save(it)
+                        flush()
+                    }
+                    it.cvFileId = s3FileService.claimFile(candidateDto.cv.fileId)
+                    kafkaService.sendCoreEvent(
+                        CandidateAppliedEvent(
                             candidateDto.email,
                             it
+                        )
                     )
-                )
 //              kafkaService.sendCoreEvent(
 //                   NotMailEventSample(
 //                          "this is some data for other services: " + RandomStringUtils.randomAscii(10)
 //                   )
 //              )
+                }
+            }
+        }
 
     @Suppress("KotlinConstantConditions")
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])
