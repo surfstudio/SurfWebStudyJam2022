@@ -8,30 +8,29 @@ import org.springframework.kafka.core.KafkaProducerException
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import ru.surf.core.configuration.KafkaTopicConfiguration
-import ru.surf.core.event.ReceivingRequestKafkaEvent
 import ru.surf.core.exception.ExceptionType
 import ru.surf.core.service.KafkaService
 
 @Service
 class KafkaServiceImpl(
-    private val kafkaTemplate: KafkaTemplate<String, ReceivingRequestKafkaEvent>,
+        private val kafkaTemplate: KafkaTemplate<String, Any>,
 ) : KafkaService {
 
     companion object KafkaLogger {
         val logger: Logger = LoggerFactory.getLogger(KafkaServiceImpl::class.java)
     }
 
-    override fun sendReceivingRequestEvent(receivingRequestKafkaEvent: ReceivingRequestKafkaEvent) {
+    override fun sendCoreEvent(event: Any) {
         val requestKafkaEventRecord =
-            ProducerRecord<String, ReceivingRequestKafkaEvent>(
-                KafkaTopicConfiguration.TOPICS.RECEIVING_REQUEST_TOPIC,
-                receivingRequestKafkaEvent
+            ProducerRecord<String, Any>(
+                KafkaTopicConfiguration.TOPICS.CORE_TOPICS,
+                    event
             )
         kafkaTemplate.send(requestKafkaEventRecord).completable().whenComplete { result, ex ->
             when (ex == null) {
-                true -> logger.debug("Successfully send $receivingRequestKafkaEvent to ${KafkaTopicConfiguration.TOPICS.RECEIVING_REQUEST_TOPIC}")
+                true -> logger.info("Successfully send $event to ${KafkaTopicConfiguration.TOPICS.CORE_TOPICS}")
                 false -> {
-                    logger.error("Message sending failed with data $result")
+                    logger.info("Message sending failed with data $result")
                     throw KafkaProducerException(
                         requestKafkaEventRecord,
                         ExceptionType.SERVICE_EXCEPTION.toString(),

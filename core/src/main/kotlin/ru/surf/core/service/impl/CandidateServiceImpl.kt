@@ -14,7 +14,7 @@ import ru.surf.core.entity.Account
 import ru.surf.core.entity.Candidate
 import ru.surf.core.entity.EventState
 import ru.surf.core.entity.Trainee
-import ru.surf.core.event.ReceivingRequestKafkaEvent
+import ru.surf.core.kafkaEvents.CandidateAppliedEvent
 import ru.surf.core.mapper.candidate.CandidateMapper
 import ru.surf.core.repository.AccountRepository
 import ru.surf.core.repository.CandidateRepository
@@ -56,14 +56,17 @@ class CandidateServiceImpl(
                     flush()
                 }
                 it.cvFileId = s3FileService.claimFile(candidateDto.cv.fileId)
-                kafkaService.sendReceivingRequestEvent(
-                        ReceivingRequestKafkaEvent(
-                                emailTo = it.email,
-                                eventName = it.event.title,
-                                firstName = it.firstName,
-                                lastName = it.lastName
-                        )
+                kafkaService.sendCoreEvent(
+                    CandidateAppliedEvent(
+                            candidateDto.email,
+                            it
+                    )
                 )
+//              kafkaService.sendCoreEvent(
+//                   NotMailEventSample(
+//                          "this is some data for other services: " + RandomStringUtils.randomAscii(10)
+//                   )
+//              )
             }
 
     @Suppress("KotlinConstantConditions")
