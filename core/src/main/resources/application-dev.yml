@@ -37,3 +37,4 @@ authService:
 
 externalFiles:
   s3FileServiceApi: http://localhost:8081/api/s3FileServiceApi
+  s3ResourceServiceApi: http://localhost:8081/api/s3ResourceServiceApi

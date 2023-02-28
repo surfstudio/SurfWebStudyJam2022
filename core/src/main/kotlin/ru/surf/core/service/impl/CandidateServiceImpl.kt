@@ -9,20 +9,20 @@ import ru.surf.auth.dto.AccountCredentialsDto
 import ru.surf.auth.service.CredentialsService
 import ru.surf.core.dto.CandidateApprovalDto
 import ru.surf.core.dto.CandidateDto
+import ru.surf.core.dto.CandidateEventNotificationDto
 import ru.surf.core.dto.CandidatePromotionDto
-import ru.surf.core.entity.Account
-import ru.surf.core.entity.Candidate
-import ru.surf.core.entity.EventState
-import ru.surf.core.entity.Trainee
+import ru.surf.core.entity.*
 import ru.surf.core.kafkaEvents.CandidateAppliedEvent
 import ru.surf.core.mapper.candidate.CandidateMapper
-import ru.surf.core.repository.AccountRepository
 import ru.surf.core.repository.CandidateRepository
+import ru.surf.core.repository.EventRepository
+import ru.surf.core.repository.EventTagRepository
 import ru.surf.core.repository.TraineeRepository
 import ru.surf.core.service.CandidateFilterService
 import ru.surf.core.service.CandidateService
 import ru.surf.core.service.EventService
 import ru.surf.core.service.KafkaService
+import ru.surf.externalfiles.dto.CandidateExcelDto
 import ru.surf.externalfiles.service.S3FileService
 import java.util.*
 
@@ -32,11 +32,12 @@ class CandidateServiceImpl(
     @Autowired private val credentialsService: CredentialsService,
     @Autowired private val s3FileService: S3FileService,
     @Autowired private val candidateRepository: CandidateRepository,
-    @Autowired private val accountRepository: AccountRepository,
     @Autowired private val traineeRepository: TraineeRepository,
     @Autowired private val candidateMapper: CandidateMapper,
     @Autowired private val kafkaService: KafkaService,
     @Autowired private val eventService: EventService,
+    @Autowired private val eventTagRepository: EventTagRepository,
+    @Autowired private val eventRepository: EventRepository,
     @Autowired private val candidateFilterService: CandidateFilterService
 ) : CandidateService {
 
@@ -119,7 +120,27 @@ class CandidateServiceImpl(
         Exception("candidate not found")
     }
 
+    // TODO: 25.02.2023 Скорее всего вынести в отдельный сервис
+    override fun notifyCandidates(candidates: List<CandidateExcelDto>) {
+        candidates.map { transform(it) }.forEach { kafkaService.sendCoreEvent(it) }
+    }
+
     override fun getPreferredCandidates(eventId: UUID): Map<Candidate, List<String>> =
         candidateRepository.getCandidatesByEventId(eventId).run { candidateFilterService.filterCandidatesForm(this) }
+
+    private fun transform(candidateExcelDto: CandidateExcelDto): CandidateEventNotificationDto {
+        val eventTags =
+            candidateExcelDto.tags.map { it.uppercase(Locale.getDefault()) }
+                .mapNotNull { eventTagRepository.findEventTagByDescription(it) }.toSet()
+        return CandidateEventNotificationDto(
+            firstName = candidateExcelDto.firstName,
+            lastName = candidateExcelDto.lastName,
+            email = candidateExcelDto.email,
+            eventsName = eventTags.map { eventRepository.findByEventTagsIn(setOf(it)) }
+                .mapNotNull { it?.title }
+                .distinct()
+                .toSet()
+        )
+    }
 
 }

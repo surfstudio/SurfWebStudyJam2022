@@ -9,24 +9,28 @@ import ru.surf.core.entity.Event
 import ru.surf.core.exception.event.EventNotFoundByIdException
 import ru.surf.core.mapper.event.EventMapper
 import ru.surf.core.repository.EventRepository
+import ru.surf.core.service.CandidateService
 import ru.surf.core.service.EventService
 import ru.surf.core.service.SurfEmployeeService
+import ru.surf.externalfiles.service.ResourceFileService
 import java.util.*
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 
 @Service
 class EventServiceImpl(
-        private val eventMapper: EventMapper,
-        private val eventRepository: EventRepository,
-        private val surfEmployeeService: SurfEmployeeService,
+    private val eventMapper: EventMapper,
+    private val eventRepository: EventRepository,
+    private val surfEmployeeService: SurfEmployeeService,
 ) : EventService {
 
     override fun createEvent(postRequestEventDto: PostRequestEventDto): ShortResponseEventDto {
         // TODO заглушка, убрать nullable когда будут готовы сервисы для связанных сущностей
         val transientEntity = eventMapper.convertFromPostRequestEventDtoToEventEntity(
-                postRequestEventDto,
-                // todo временно, посмотреть mapstruct
-                eventInitiator = postRequestEventDto.eventInitiatorId?.let { surfEmployeeService.getSurfEmployee(it) }
+            postRequestEventDto,
+            // todo временно, посмотреть mapstruct
+            eventInitiator = postRequestEventDto.eventInitiatorId?.let { surfEmployeeService.getSurfEmployee(it) }
         ).apply {
             eventTags = postRequestEventDto.eventTags
         }

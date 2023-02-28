@@ -1,7 +1,13 @@
 package ru.surf.core.controller
 
-import org.springframework.http.ResponseEntity
+import aj.org.objectweb.asm.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.core.ParameterizedTypeReference
+import org.springframework.http.*
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.exchange
+import org.springframework.web.util.UriComponentsBuilder
 import ru.surf.core.dto.FullResponseEventDto
 import ru.surf.core.dto.PostRequestEventDto
 import ru.surf.core.dto.PutRequestEventDto
@@ -10,14 +16,15 @@ import ru.surf.core.entity.Candidate
 import ru.surf.core.mapper.event.EventMapper
 import ru.surf.core.service.CandidateService
 import ru.surf.core.service.EventService
-import java.util.UUID
+import ru.surf.externalfiles.dto.CandidateExcelDto
+import java.util.*
 
 @RestController
 @RequestMapping("/events")
 class EventController(
     private val eventService: EventService,
     private val eventMapper: EventMapper,
-    private val candidateService: CandidateService
+    private val candidateService: CandidateService,
 ) {
 
     @PostMapping("/event")
@@ -50,5 +57,23 @@ class EventController(
     @GetMapping("/{id}/preferred")
     fun getPreferredCandidates(@PathVariable(name = "id") eventId: UUID): ResponseEntity<Map<Candidate, List<String>>> =
         ResponseEntity.ok(candidateService.getPreferredCandidates(eventId))
+
+    // TODO: 25.02.2023 Убрать в будущем
+    @PostMapping("/notify/{id}")
+    fun notifyCandidates(@PathVariable(name = "id") eventId: UUID, @RequestParam(name = "file_id") fileId: UUID) {
+        val restTemplate: RestTemplate = RestTemplate()
+        val url = "http://localhost:8081/external-files/resource/candidates"
+        val support = UriComponentsBuilder.fromHttpUrl(url)
+            .queryParam("file_id", fileId)
+        val mapper = ObjectMapper()
+        val forEntity: ResponseEntity<kotlin.collections.List<CandidateExcelDto>> =
+            restTemplate.exchange(
+                support.toUriString(),
+                HttpMethod.GET,
+                null,
+                object : ParameterizedTypeReference<List<CandidateExcelDto>>() {}
+            )
+        candidateService.notifyCandidates(forEntity.body!!)
+    }
 
 }

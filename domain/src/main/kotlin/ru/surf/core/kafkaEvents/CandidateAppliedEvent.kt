@@ -8,7 +8,7 @@ data class CandidateAppliedEvent(
 ) : IMailEvent {
     override fun convertToParam(): Map<*, *> =
             mapOf(
-                    "eventName" to candidate.events.first().description,
+                    "eventName" to candidate.event.description,
                     "firstName" to candidate.firstName,
                     "lastName" to candidate.lastName
             )

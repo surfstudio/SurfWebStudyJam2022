@@ -12,7 +12,7 @@ class CandidateFilterServiceImpl : CandidateFilterService {
     val keywords = readFileStrings(KeywordsPath.JAVA_BACKEND_KEYWORDS_PATH.path)
 
     override fun filterCandidatesForm(candidates: List<Candidate>): Map<Candidate, List<String>> =
-         candidates.associateWithTo(mutableMapOf()) { candidate -> candidate.feedback.split(" ") }
+         candidates.associateWithTo(mutableMapOf()) { candidate -> candidate.experience.split(" ") }
             .mapValues { matchNeedWords(it.value) }
 
     private fun matchNeedWords(candidatesSkills: List<String>): List<String> {
