@@ -1,6 +1,6 @@
 package ru.surf.auth.entity
 
-import javax.persistence.*
+import jakarta.persistence.*
 
 
 @Entity

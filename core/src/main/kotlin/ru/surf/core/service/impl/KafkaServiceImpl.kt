@@ -26,7 +26,7 @@ class KafkaServiceImpl(
                 KafkaTopicConfiguration.TOPICS.CORE_TOPICS,
                     event
             )
-        kafkaTemplate.send(requestKafkaEventRecord).completable().whenComplete { result, ex ->
+        kafkaTemplate.send(requestKafkaEventRecord).whenComplete { result, ex ->
             when (ex == null) {
                 true -> logger.info("Successfully send $event to ${KafkaTopicConfiguration.TOPICS.CORE_TOPICS}")
                 false -> {

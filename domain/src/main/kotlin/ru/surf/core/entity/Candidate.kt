@@ -3,7 +3,7 @@ package ru.surf.core.entity
 import ru.surf.core.entity.base.UUIDBasedEntity
 import java.time.ZonedDateTime
 import java.util.*
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Table(name = "candidates", uniqueConstraints = [
         UniqueConstraint(columnNames = [
@@ -57,7 +57,7 @@ class Candidate(
         @Column(name = "is_approved", nullable = false)
         var isApproved: Boolean = false,
 
-        @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
+        @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.EAGER)
         @JoinColumn(name = "event_id", referencedColumnName = "id", nullable = false)
         val event: Event = Event(),
 
@@ -78,6 +78,6 @@ class Candidate(
                         "feedback='$feedback', " +
                         "appliedAt=$appliedAt, " +
                         "isApproved=$isApproved, " +
-                        "event=$event)"
+                        "event=${event})"
         }
 }

@@ -10,6 +10,7 @@ application:
   ports:
     service-core-port: ${CORE_URL}
     external-files-port: ${EXT_FILES_URL}
+    service-testing-port: ${TESTING_URL}
 
 spring:
   application:

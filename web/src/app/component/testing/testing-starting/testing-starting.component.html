@@ -1,0 +1,31 @@
+<tui-island class="testing-starting_container">
+  <h1 class="tui-island__title">Вы начинаете тестирование</h1>
+  <tui-scrollbar
+    [hidden]="false"
+    tuiOverscroll="scroll"
+    class="testing-starting_scrollable"
+  >
+    <p class="tui-island__paragraph solid">
+      Длительность тестирования в секундах: {{maxAcceptableDurationSec}}
+    </p>
+    <p class="tui-island__paragraph">
+      Отсчет времени начнется, когда вы запустите тестирование.
+    </p>
+    <p class="tui-island__paragraph">
+      Отвечать на вопросы надо по порядку, мы сохраняем ваши ответы по мере их отправки.
+    </p>
+    <p class="tui-island__paragraph">
+      Если тестирование будет начато, приостановить его уже не получится. Так что проверьте ваше интернет-соединений, устраивайтесь по-удобнее и начинаем!
+    </p>
+    <p class="tui-island__paragraph">
+      Желаем удачи
+    </p>
+  </tui-scrollbar>
+  <button
+    tuiButton
+    (click)="applyButtonClicked()"
+    class="testing_apply"
+  >
+    Начать тестирование
+  </button>
+</tui-island>

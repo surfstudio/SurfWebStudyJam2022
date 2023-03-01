@@ -14,6 +14,8 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      hibernate.format_sql: false
   h2:
     console.enabled: true
   flyway:
@@ -36,5 +38,5 @@ authService:
   credentialsServiceApi: http://localhost:8085/credentialsServiceApi
 
 externalFiles:
-  s3FileServiceApi: http://localhost:8081/api/s3FileServiceApi
-  s3ResourceServiceApi: http://localhost:8081/api/s3ResourceServiceApi
+  s3FileServiceApi: http://localhost:8081/external-files/s3FileServiceApi
+  s3ResourceServiceApi: http://localhost:8081/external-files/s3ResourceServiceApi

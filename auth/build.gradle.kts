@@ -3,7 +3,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 
 plugins {
-    id("org.springframework.boot") version "2.7.6"
+    id("org.springframework.boot") version "3.0.2"
     id("io.spring.dependency-management") version "1.0.15.RELEASE"
     kotlin("jvm") version "1.6.21"
     kotlin("plugin.spring") version "1.6.21"
@@ -28,12 +28,13 @@ dependencies {
 
     implementation("com.auth0:jwks-rsa:0.21.3")
     implementation("com.auth0:java-jwt:4.2.2")
-    implementation("com.caucho:hessian:4.0.66")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.2")
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
     runtimeOnly("org.postgresql:postgresql:42.5.1")
+
+    implementation(project(":remoting"))
 
     devDependencies {
         runtimeOnly("com.h2database:h2:2.1.214")

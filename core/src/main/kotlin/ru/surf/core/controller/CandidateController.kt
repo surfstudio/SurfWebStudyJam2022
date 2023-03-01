@@ -19,7 +19,7 @@ class CandidateController(
         private val candidateService: CandidateService
         ) {
 
-    @PostMapping
+    @PostMapping(value = ["/"])
     fun create(@RequestBody candidateDto: CandidateDto): Candidate = candidateService.createCandidate(candidateDto)
 
     @PostMapping(value = ["/approve/{candidateId}"])

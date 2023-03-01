@@ -10,6 +10,7 @@ application:
   ports:
     service-core-port: http://localhost:8080
     external-files-port: http://localhost:8081
+    service-testing-port: http://localhost:8084
 
 spring:
   application:

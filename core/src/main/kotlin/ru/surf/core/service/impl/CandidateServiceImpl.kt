@@ -43,46 +43,26 @@ class CandidateServiceImpl(
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])
     override fun createCandidate(candidateDto: CandidateDto): Candidate =
-        candidateMapper.convertFromCandidateDtoToCandidateEntity(
-            candidateDto,
-            // todo временно, посмотреть mapstruct
-            event = eventService.getEvent(candidateDto.eventId).apply {
-                eventStates.none {
-                    it.stateType != EventState.StateType.APPLYING
-                } && throw Exception("Candidate application phase has already ended")
-            }
-        ).also {
-            candidateRepository.run {
-                save(it)
-                flush()
-                candidateMapper.convertFromCandidateDtoToCandidateEntity(
+            candidateMapper.convertFromCandidateDtoToCandidateEntity(
                     candidateDto,
                     // todo временно, посмотреть mapstruct
                     event = eventService.getEvent(candidateDto.eventId).apply {
-                        eventStates.none {
-                            it.stateType != EventState.StateType.APPLYING
-                        } && throw Exception("Candidate application phase has already ended")
+                        currentState?.stateType == EventState.StateType.APPLYING ||
+                                throw Exception("Candidate application phase has already ended")
                     }
-                ).also {
-                    candidateRepository.run {
-                        save(it)
-                        flush()
-                    }
-                    it.cvFileId = s3FileService.claimFile(candidateDto.cv.fileId)
-                    kafkaService.sendCoreEvent(
-                        CandidateAppliedEvent(
-                            candidateDto.email,
-                            it
-                        )
-                    )
-//              kafkaService.sendCoreEvent(
-//                   NotMailEventSample(
-//                          "this is some data for other services: " + RandomStringUtils.randomAscii(10)
-//                   )
-//              )
+            ).also {
+                candidateRepository.run {
+                    save(it)
+                    flush()
                 }
+                it.cvFileId = s3FileService.claimFile(candidateDto.cv.fileId)
+                kafkaService.sendCoreEvent(
+                        CandidateAppliedEvent(
+                                emailTo = it.email,
+                                candidate = it
+                        )
+                )
             }
-        }
 
     @Suppress("KotlinConstantConditions")
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])

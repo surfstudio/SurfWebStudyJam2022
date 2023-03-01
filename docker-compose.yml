@@ -226,10 +226,12 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 80
+      <<: *db-cred
+      DB_NAME: surfwebstudyjam_testing
     ports:
       - "8084:80"
     healthcheck:
-      test: "wget -qO - http://0.0.0.0:80/actuator/health | grep '\"status\":\"UP\"'"
+      test: "wget -qO - http://0.0.0.0:80/testing/actuator/health | grep '\"status\":\"UP\"'"
       <<: *healthcheck-params
 
   mail-service:
@@ -343,6 +345,7 @@ services:
       PORT: 80
       CORE_URL: http://core-service
       EXT_FILES_URL: http://external-files-service
+      TESTING_URL: http://testing-service
     ports:
       - "8088:80"
     healthcheck:

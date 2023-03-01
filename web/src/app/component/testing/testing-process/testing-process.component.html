@@ -1,0 +1,55 @@
+<progress
+  *ngIf="testTimerValue$ | async as val"
+  tuiProgressBar
+  [max]="maxAcceptableDurationSec"
+  color="linear-gradient(to right, var(--tui-support-02), var(--tui-support-14), var(--tui-support-12))"
+  class="progress"
+  size="s"
+  [value]="val"
+></progress>
+<div class="wrapper">
+  <tui-island
+    *ngIf="testInfoObservable$ | async as testInfo"
+    class="container"
+  >
+    <form
+      [formGroup]="testingForm"
+    >
+      <h3
+        class="tui-island__title"
+      >{{ testInfo.currentQuestion?.title }}</h3>
+      <p
+        *ngFor="let answer of testInfo.currentQuestion?.answers"
+        class="tui-island__paragraph"
+      >
+        <tui-checkbox-labeled
+          [(ngModel)]="answer.value"
+          [ngModelOptions]="{standalone: true}"
+          size="l"
+          *ngIf="testInfo.currentQuestion?.questionType == 'MULTIPLE_CHOICE'"
+        >
+          {{ answer.title }}
+        </tui-checkbox-labeled>
+        <tui-radio-labeled
+          formControlName="chosenVariant"
+          [item]="answer.answerId"
+          size="l"
+          *ngIf="testInfo.currentQuestion?.questionType == 'SINGLE_CHOICE'"
+        >
+          {{ answer.title }}
+        </tui-radio-labeled>
+      </p>
+      <p class="tui-island__paragraph">
+        <button
+          tuiButton
+          (click)="submitCurrentAnswerAndMoveNext(testInfo)"
+          [disabled]="getChosenAnswers(testInfo).length == 0"
+          class="testing_apply"
+          type="button"
+        >
+          Отправить
+        </button>
+      </p>
+    </form>
+  </tui-island>
+</div>

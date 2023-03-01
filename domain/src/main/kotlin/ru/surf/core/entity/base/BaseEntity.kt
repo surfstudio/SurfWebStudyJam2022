@@ -3,7 +3,7 @@ package ru.surf.core.entity.base
 import org.springframework.data.util.ProxyUtils
 import java.io.Serializable
 import java.util.*
-import javax.persistence.MappedSuperclass
+import jakarta.persistence.*
 
 @MappedSuperclass
 abstract class BaseEntity<T : Serializable> {

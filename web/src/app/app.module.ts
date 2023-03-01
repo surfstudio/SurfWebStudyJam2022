@@ -22,6 +22,7 @@ import {TuiInputFilesModule} from '@taiga-ui/kit';
 import {TuiThemeNightModule} from '@taiga-ui/core';
 import {TuiModeModule} from '@taiga-ui/core';
 import {TuiToggleModule} from '@taiga-ui/kit';
+import {TuiCheckboxLabeledModule} from '@taiga-ui/kit';
 
 import {TUI_SANITIZER} from '@taiga-ui/core';
 import {NgDompurifySanitizer} from '@tinkoff/ng-dompurify';
@@ -33,7 +34,11 @@ import { EnrollApplymentComponent } from './component/enroll/enroll-applyment/en
 import { StepFormComponent } from './component/enroll/enroll-applyment/step-form/step-form.component';
 import { StepComponent } from './component/enroll/enroll-applyment/step-form/step/step.component';
 import { EnrollSuccessComponent } from './component/enroll/enroll-success/enroll-success.component';
-
+import { TestingComponent } from './component/testing/testing.component';
+import { TestingStartingComponent } from './component/testing/testing-starting/testing-starting.component';
+import { TestingProcessComponent } from './component/testing/testing-process/testing-process.component';
+import { TestingEndedComponent } from './component/testing/testing-ended/testing-ended.component';
+import { TuiRadioLabeledModule } from '@taiga-ui/kit';
 
 @NgModule({
   declarations: [
@@ -44,6 +49,10 @@ import { EnrollSuccessComponent } from './component/enroll/enroll-success/enroll
     StepFormComponent,
     StepComponent,
     EnrollSuccessComponent,
+    TestingComponent,
+    TestingStartingComponent,
+    TestingProcessComponent,
+    TestingEndedComponent,
   ],
   imports: [
     BrowserModule,
@@ -69,6 +78,8 @@ import { EnrollSuccessComponent } from './component/enroll/enroll-success/enroll
     TuiThemeNightModule,
     TuiModeModule,
     TuiToggleModule,
+    TuiCheckboxLabeledModule,
+    TuiRadioLabeledModule,
   ],
   providers: [
     {

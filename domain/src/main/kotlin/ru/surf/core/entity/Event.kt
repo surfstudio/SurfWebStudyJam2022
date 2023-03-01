@@ -4,7 +4,7 @@ import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 import ru.surf.core.entity.base.UUIDBasedEntity
 import java.util.*
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Table(name = "events")
 @Entity
@@ -33,23 +33,31 @@ class Event(
         @JoinColumn(name = "event_initiator_id", referencedColumnName = "id")
         val eventInitiator: SurfEmployee? = null,
 
-        @ManyToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.EAGER)
+        @ManyToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.EAGER, targetEntity = EventTag::class)
         @Fetch(value = FetchMode.SUBSELECT)
         @JoinTable(name = "event_tags_events",
                 joinColumns = [JoinColumn(name = "event_id", referencedColumnName = "id")],
                 inverseJoinColumns = [JoinColumn(name = "event_tag_id", referencedColumnName = "id")])
-        var eventTags: Set<EventTag> = setOf(),
+        var eventTags: Set<EventTag> = mutableSetOf(),
 
-        @OneToMany(cascade = [CascadeType.REFRESH], fetch = FetchType.EAGER)
+        @OneToMany(cascade = [CascadeType.MERGE], fetch = FetchType.EAGER, targetEntity = EventState::class)
         @Fetch(value = FetchMode.SUBSELECT)
         @JoinColumn(name = "event_id")
-        var eventStates: Set<EventState> = setOf(),
+        var eventStates: Set<EventState> = mutableSetOf(),
 
         ) : UUIDBasedEntity(id) {
 
+    val currentState: EventState?
+        get() = eventStates.maxByOrNull { it.stateDate }
+
     @Override
     override fun toString(): String {
-        return this::class.simpleName + "(id = $id , description = $description , candidatesAmount = $candidatesAmount , traineesAmount = $traineesAmount , offersAmount = $offersAmount )"
+        return this::class.simpleName + "(" +
+                "id = $id, " +
+                "description = $description, " +
+                "candidatesAmount = $candidatesAmount, " +
+                "traineesAmount = $traineesAmount, " +
+                "offersAmount = $offersAmount)"
     }
 
 }

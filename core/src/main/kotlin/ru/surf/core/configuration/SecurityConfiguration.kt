@@ -1,9 +1,10 @@
 package ru.surf.core.configuration
 
+import jakarta.servlet.Filter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -14,12 +15,11 @@ import ru.surf.core.security.account.token.TokenAuthenticationFilter
 import ru.surf.core.security.account.token.TokenAuthenticationManager
 import ru.surf.core.security.candidate.CandidateAuthenticationFilter
 import ru.surf.core.security.candidate.CandidateAuthenticationManager
-import javax.servlet.Filter
 
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true)
 class SecurityConfiguration(
         @Autowired
         private val candidateAuthenticationManager: CandidateAuthenticationManager,

@@ -1,11 +1,9 @@
 package ru.surf.auth.configuration
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
 
 
 @ConfigurationProperties(prefix = "application.keycloak")
-@ConstructorBinding
 data class KeycloakConfiguration(
         val certsId: String,
 

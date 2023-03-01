@@ -2,7 +2,7 @@ package ru.surf.core.security.candidate
 
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter
 import java.util.*
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 
 class CandidateAuthenticationFilter : AbstractPreAuthenticatedProcessingFilter() {
 
