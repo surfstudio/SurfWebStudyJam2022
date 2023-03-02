@@ -1,0 +1,23 @@
+<div>
+  <app-testing-starting
+    *ngIf="test?.state=='NOT_STARTED'"
+    [testVariantId]="test!.testVariantId"
+    [maxAcceptableDurationSec]="test!.maxAcceptableDurationSec"
+    (onApply)="test = $event"
+    class="testing-component"
+  >
+  </app-testing-starting>
+  <app-testing-process
+    *ngIf="test?.state=='STARTED'"
+    [testVariantId]="test!.testVariantId"
+    [maxAcceptableDurationSec]="test!.maxAcceptableDurationSec"
+    [finishingAt]="test!.finishingAt"
+    (onApply)="test = null"
+  >
+  </app-testing-process>
+  <app-testing-ended
+    *ngIf="test?.state=='FINISHED' || test === null"
+    class="testing-component"
+  >
+  </app-testing-ended>
+</div>

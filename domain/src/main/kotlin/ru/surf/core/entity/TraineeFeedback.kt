@@ -3,7 +3,7 @@ package ru.surf.core.entity
 import ru.surf.core.entity.base.UUIDBasedEntity
 import java.time.ZonedDateTime
 import java.util.*
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Table(name = "trainees_feedbacks", uniqueConstraints = [
     UniqueConstraint(columnNames = [

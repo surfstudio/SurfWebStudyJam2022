@@ -8,13 +8,17 @@ import java.time.Duration
 
 
 @Configuration
-class RestTemplateConfig {
+class RestTemplateConfiguration {
+
+    companion object {
+        const val TIMEOUT = 10L
+    }
+
     @get:Bean
     val restTemplate: RestTemplate
         get() = RestTemplateBuilder().
                     setConnectTimeout(Duration.ofSeconds(TIMEOUT)).
                     setReadTimeout(Duration.ofSeconds(TIMEOUT)).
                     build()
-}
 
-const val TIMEOUT = 3L
+}

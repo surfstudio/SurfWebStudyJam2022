@@ -1,7 +1,7 @@
 package ru.surf.core.security.account.token
 
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 
 class TokenAuthenticationFilter : AbstractPreAuthenticatedProcessingFilter() {
 

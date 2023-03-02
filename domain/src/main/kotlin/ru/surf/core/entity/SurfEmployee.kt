@@ -1,8 +1,6 @@
 package ru.surf.core.entity
 
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Table
+import jakarta.persistence.*
 
 @Table(name = "surf_employees")
 @Entity

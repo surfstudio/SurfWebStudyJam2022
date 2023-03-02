@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val awssdkBomVersion = "2.15.0"
 
 plugins {
-    id("org.springframework.boot") version "2.7.6"
+    id("org.springframework.boot") version "3.0.2"
     id("io.spring.dependency-management") version "1.0.15.RELEASE"
     kotlin("jvm") version "1.6.21"
     kotlin("plugin.spring") version "1.6.21"
@@ -19,9 +19,9 @@ repositories {
 
 dependencies {
 
-    val springDocVersion = "1.6.9"
+    val springDocVersion = "2.0.2"
     val apacheCommonsCodecVersion = "1.15"
-    val hibernateVersion = "5.6.14.Final"
+    val hibernateVersion = "6.1.7.Final"
     val apachePoiVersion = "3.17"
     val postgreSQLVersion = "42.5.1"
     val kLoggingVersion = "0.4.6"
@@ -29,9 +29,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
 
-    implementation("org.springdoc:springdoc-openapi-ui:$springDocVersion")
-    implementation("org.springdoc:springdoc-openapi-kotlin:$springDocVersion")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion")
 
     implementation("commons-codec:commons-codec:$apacheCommonsCodecVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -43,13 +43,13 @@ dependencies {
     implementation(platform("software.amazon.awssdk:bom:$awssdkBomVersion"))
     implementation("software.amazon.awssdk:s3")
     implementation("org.apache.poi:poi-ooxml:$apachePoiVersion")
-    implementation("com.caucho:hessian:4.0.66")
     implementation("org.postgresql:postgresql:$postgreSQLVersion")
     implementation("io.klogging:klogging-jvm:$kLoggingVersion")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     implementation(project(":domain"))
+    implementation(project(":remoting"))
 
     devDependencies {
         runtimeOnly("com.h2database:h2:2.1.214")

@@ -3,18 +3,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
 
     val kotlinVersion = "1.6.21"
-    val springBootVersion = "2.7.6"
+    val springBootVersion = "3.0.2"
     val springDependencyManagementVersion = "1.0.15.RELEASE"
 
     id("org.springframework.boot") version springBootVersion
     id("io.spring.dependency-management") version springDependencyManagementVersion
-    id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
-}
-
-allOpen {
-    annotations("javax.persistence.Entity", "javax.persistence.MappedSuperclass", "javax.persistence.Embedabble")
 }
 
 group = "ru.surf"
@@ -26,8 +21,7 @@ repositories {
 }
 
 dependencies {
-
-    val springDocVersion = "1.6.9"
+    val springDocVersion = "2.0.2"
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -39,9 +33,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.flywaydb:flyway-core")
-
-    implementation("org.springdoc:springdoc-openapi-ui:$springDocVersion")
-    implementation("org.springdoc:springdoc-openapi-kotlin:$springDocVersion")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion")
 
     runtimeOnly("org.postgresql:postgresql")
 
@@ -50,6 +42,7 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":auth"))
     implementation(project(":external-files"))
+    implementation(project(":remoting"))
 
     devDependencies {
         runtimeOnly("com.h2database:h2:2.1.214")

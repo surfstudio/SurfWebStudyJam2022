@@ -1,6 +1,7 @@
 rootProject.name = "studyjam"
 include("core")
 include("domain")
+include("remoting")
 include("report")
 include("mail")
 include("external-files")

@@ -1,8 +1,8 @@
 package ru.surf.auth.entity
 
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
 import java.util.*
-import javax.persistence.Column
-import javax.persistence.Entity
 
 
 @Entity

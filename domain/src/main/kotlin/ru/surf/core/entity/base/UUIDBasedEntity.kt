@@ -1,9 +1,7 @@
 package ru.surf.core.entity.base
 
 import java.util.*
-import javax.persistence.Column
-import javax.persistence.Id
-import javax.persistence.MappedSuperclass
+import jakarta.persistence.*
 
 @MappedSuperclass
 abstract class UUIDBasedEntity(

@@ -1,12 +1,12 @@
 package ru.surf.core.entity
 
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Table(name = "trainees")
 @Entity
 class Trainee(
 
-        @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
+        @ManyToOne(cascade = [CascadeType.MERGE], fetch = FetchType.EAGER)
         @JoinColumn(name = "candidate_id", nullable = false, unique = true)
         val candidate: Candidate = Candidate(),
 
