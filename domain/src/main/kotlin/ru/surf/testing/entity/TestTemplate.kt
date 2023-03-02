@@ -19,8 +19,9 @@ class TestTemplate(
         @Column(name = "max_questions_pool_size", nullable = false)
         val maxQuestionPoolSize: Int = Int.MAX_VALUE,
 
-        @Column(name = "event_id", columnDefinition = "uuid", nullable = false, unique = true)
-        val eventId: UUID = UUID.randomUUID(),
+        @OneToOne(cascade = [CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST], fetch = FetchType.LAZY, optional = false)
+        @JoinColumn(name = "event_id", referencedColumnName = "id", nullable = false, unique = true)
+        val eventInfo: EventInfo = EventInfo(),
 
         @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
         @JoinColumn(name = "test_id", nullable = false)
@@ -34,7 +35,7 @@ class TestTemplate(
                         "id=$id, " +
                         "maxAcceptableDurationSec=$maxAcceptableDurationSec, " +
                         "maxQuestionPoolSize=$maxQuestionPoolSize, " +
-                        "eventId=$eventId)"
+                        "eventId=${eventInfo.id})"
         }
 
 }

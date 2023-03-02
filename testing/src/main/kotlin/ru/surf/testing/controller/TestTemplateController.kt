@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import ru.surf.testing.dto.request.TestTemplatePutRequestDto
 import ru.surf.testing.dto.responce.TestTemplateResponseDto
-import ru.surf.testing.entity.TestTemplate
 import ru.surf.testing.mapper.TestTemplateMapper
 import ru.surf.testing.service.TestTemplateService
 import java.util.*
@@ -21,8 +21,15 @@ class TestTemplateController(
 ) {
 
     @PutMapping(value = ["/"])
-    fun create(@RequestBody testTemplate: TestTemplate): ResponseEntity<TestTemplateResponseDto> =
-            ResponseEntity(testTemplateMapper.toDto(testTemplateService.create(testTemplate)), HttpStatus.CREATED)
+    fun create(@RequestBody testTemplatePutRequestDto: TestTemplatePutRequestDto): ResponseEntity<TestTemplateResponseDto> =
+            ResponseEntity(
+                    testTemplateMapper.toDto(
+                        testTemplateService.create(
+                                testTemplateMapper.toEntity(testTemplatePutRequestDto)
+                        )
+                    ),
+                    HttpStatus.CREATED
+            )
 
     @GetMapping(value = ["/event/{id}"])
     fun getByEventId(@PathVariable id: UUID): ResponseEntity<TestTemplateResponseDto> =

@@ -18,6 +18,9 @@ class ExceptionHandler {
             NoSuchCandidateException::class,
             NoSuchEventException::class,
             NoSuchTestException::class,
+            TestingPhaseActiveException::class,
+            TestingPhaseCompleteException::class,
+            TestingPhaseNotActiveException::class,
             TestNotStartedException::class,
             TestStartedException::class,
     )

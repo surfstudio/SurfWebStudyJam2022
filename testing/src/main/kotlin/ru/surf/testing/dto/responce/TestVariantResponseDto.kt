@@ -6,7 +6,7 @@ import java.util.*
 
 data class TestVariantResponseDto(
         val testVariantId: UUID,
-        val candidateInfoDto: CandidateInfoDto,
+        val candidateInfo: CandidateInfoDto,
         val testTemplateId: UUID,
         val startedAt: ZonedDateTime?,
         val finishingAt: ZonedDateTime?,

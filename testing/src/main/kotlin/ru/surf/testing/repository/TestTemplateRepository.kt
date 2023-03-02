@@ -8,6 +8,6 @@ import java.util.UUID
 @Repository
 interface TestTemplateRepository : JpaRepository<TestTemplate, UUID> {
 
-    fun findByEventId(eventId: UUID): TestTemplate?
+    fun findByEventInfoId(eventId: UUID): TestTemplate?
 
 }

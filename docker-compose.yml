@@ -160,6 +160,15 @@ services:
       test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
       <<: *healthcheck-params
 
+  greenmail-service:
+    restart: unless-stopped
+    image: greenmail/standalone:1.6.14
+    ports:
+      - "3025:3025"
+      - "3143:3143"
+      - "18888:8080"
+
+
   quiz-service:
     restart: unless-stopped
     build:
@@ -175,20 +184,20 @@ services:
       test: "wget -qO - http://0.0.0.0:80/actuator/health | grep '\"status\":\"UP\"'"
       <<: *healthcheck-params
 
-  defence-service:
-    restart: unless-stopped
-    build:
-      context: defenceOfProject
-      dockerfile: Dockerfile
-    image: defence
-    environment:
-      SPRING_PROFILES_ACTIVE: prod
-      PORT: 80
-    ports:
-      - "8086:80"
-    healthcheck:
-      test: "wget -qO - http://0.0.0.0:80/actuator/health | grep '\"status\":\"UP\"'"
-      <<: *healthcheck-params
+#  defence-service:
+#    restart: unless-stopped
+#    build:
+#      context: defenceOfProject
+#      dockerfile: Dockerfile
+#    image: defence
+#    environment:
+#      SPRING_PROFILES_ACTIVE: prod
+#      PORT: 80
+#    ports:
+#      - "8086:80"
+#    healthcheck:
+#      test: "wget -qO - http://0.0.0.0:80/actuator/health | grep '\"status\":\"UP\"'"
+#      <<: *healthcheck-params
 
   auth-service:
     restart: unless-stopped
@@ -315,8 +324,8 @@ services:
         condition: service_healthy
       report-service:
         condition: service_healthy
-      defence-service:
-        condition: service_healthy
+#      defence-service:
+#        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 80
@@ -324,7 +333,8 @@ services:
       DB_NAME: surfwebstudyjam_core
       KAFKA_HOST: kafka-service:9092
       AUTH_API: http://auth-service/credentialsServiceApi
-      EXI_FILES_API: http://external-files-service/external-files/s3FileServiceApi
+      EXT_FILES_API: http://external-files-service/external-files/s3FileServiceApi
+      EXT_FILES_RES_API: http://external-files-service/external-files/s3ResourceServiceApi
     ports:
       - "8080:80"
     healthcheck:

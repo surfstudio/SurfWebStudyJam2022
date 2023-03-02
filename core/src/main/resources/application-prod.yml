@@ -37,4 +37,5 @@ authService:
   credentialsServiceApi: ${AUTH_API}
 
 externalFiles:
-  s3FileServiceApi: ${EXI_FILES_API}
+  s3FileServiceApi: ${EXT_FILES_API}
+  s3ResourceServiceApi: ${EXT_FILES_RES_API}

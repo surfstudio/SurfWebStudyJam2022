@@ -8,6 +8,6 @@ import java.util.*
 @Repository
 interface CandidateInfoRepository : JpaRepository<CandidateInfo, UUID> {
 
-    fun findAllByEventId(eventId: UUID): List<CandidateInfo>
+    fun findAllByEventInfoId(eventId: UUID): List<CandidateInfo>
 
 }

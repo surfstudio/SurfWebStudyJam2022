@@ -9,16 +9,19 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import ru.surf.testing.dto.CandidateInfoFullDto
 import ru.surf.testing.dto.request.AnswerRequestDto
-import ru.surf.testing.dto.responce.ScoreInfoResponseDto
+import ru.surf.testing.sharedDto.CandidateScoreResponseDto
 import ru.surf.testing.dto.responce.TestInfoResponseDto
 import ru.surf.testing.dto.responce.TestVariantResponseDto
 import ru.surf.testing.exception.NoSuchEventException
+import ru.surf.testing.mapper.CandidateInfoMapper
 import ru.surf.testing.mapper.TestVariantMapper
+import ru.surf.testing.service.CandidateInfoService
 import ru.surf.testing.service.TestTemplateService
 import ru.surf.testing.service.TestVariantService
+import ru.surf.testing.sharedDto.CandidateScoresResponseDto
 import java.util.*
 
 @RestController
@@ -31,16 +34,21 @@ class TestVariantController(
         private val testVariantService: TestVariantService,
 
         @Autowired
-        private val testVariantMapper: TestVariantMapper
+        private val candidateInfoService: CandidateInfoService,
+
+        @Autowired
+        private val testVariantMapper: TestVariantMapper,
+
+        @Autowired
+        private val candidateInfoMapper: CandidateInfoMapper,
 ) {
 
     @PutMapping
-    fun create(@RequestParam eventId: UUID,
-               @RequestParam candidateId: UUID): ResponseEntity<TestVariantResponseDto> =
+    fun create(@RequestBody candidateInfoFullDto: CandidateInfoFullDto): ResponseEntity<TestVariantResponseDto> =
             testVariantService.create(
-                    testTemplate=testTemplateService.getByEventId(eventId) ?:
-                        throw NoSuchEventException(eventId),
-                    candidateId=candidateId
+                    testTemplate=testTemplateService.getByEventId(candidateInfoFullDto.eventId) ?:
+                        throw NoSuchEventException(candidateInfoFullDto.eventId),
+                    candidate=candidateInfoMapper.toEntity(candidateInfoFullDto)
             ).let {
                 ResponseEntity(testVariantMapper.toDto(it), HttpStatus.CREATED)
             }
@@ -73,21 +81,26 @@ class TestVariantController(
             )
 
     @GetMapping(value = ["/score/{candidateId}"])
-    fun computeCandidateScore(@PathVariable candidateId: UUID): ResponseEntity<ScoreInfoResponseDto> =
+    fun computeCandidateScore(@PathVariable candidateId: UUID): ResponseEntity<CandidateScoreResponseDto> =
             testVariantService.computeCandidateScore(candidateId).let {
-                ResponseEntity.ok(ScoreInfoResponseDto(
+                ResponseEntity.ok(CandidateScoreResponseDto(
                         candidateId=candidateId,
                         score=it
                 ))
             }
 
     @GetMapping(value = ["/scores/{eventId}"])
-    fun getCandidateScoresByEventId(@PathVariable eventId: UUID): Any =
-            testVariantService.getAllByEventId(eventId).map { candidateInfo ->
-                ScoreInfoResponseDto(
-                        candidateId=candidateInfo.id,
-                        score=testVariantService.computeCandidateScore(candidateInfo.id)
-                )
-            }
+    fun getCandidateScoresByEventId(@PathVariable eventId: UUID): ResponseEntity<CandidateScoresResponseDto> =
+            ResponseEntity.ok(
+                    CandidateScoresResponseDto(
+                            eventId=eventId,
+                            scores=candidateInfoService.getAllByEventId(eventId).map { candidateInfo ->
+                                CandidateScoreResponseDto(
+                                        candidateId=candidateInfo.id,
+                                        score=testVariantService.computeCandidateScore(candidateInfo.id)
+                                )
+                            }
+                    )
+            )
 
 }
