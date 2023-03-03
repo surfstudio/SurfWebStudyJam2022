@@ -1,8 +1,8 @@
-package ru.surf.testing.dto.responce
+package ru.surf.testing.sharedDto
 
 import java.util.UUID
 
-data class ScoreInfoResponseDto(
+data class CandidateScoreResponseDto(
         val candidateId: UUID,
         val score: Double?
 )

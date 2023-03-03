@@ -12,9 +12,9 @@ class TestVariantMapperImpl : TestVariantMapper {
     override fun toDto(testVariant: TestVariant): TestVariantResponseDto =
             TestVariantResponseDto(
                     testVariantId=testVariant.id,
-                    candidateInfoDto= TestVariantResponseDto.CandidateInfoDto(
+                    candidateInfo=TestVariantResponseDto.CandidateInfoDto(
                             candidateId=testVariant.candidateInfo.id,
-                            eventId=testVariant.candidateInfo.eventId
+                            eventId=testVariant.candidateInfo.eventInfo.id
                     ),
                     testTemplateId=testVariant.testTemplate.id,
                     startedAt=testVariant.startedAt,
@@ -39,10 +39,11 @@ class TestVariantMapperImpl : TestVariantMapper {
 
     override fun toTestInfoDto(testVariant: TestVariant): TestInfoResponseDto =
             TestInfoResponseDto(
-                    testVariantId =testVariant.id,
-                    maxAcceptableDurationSec =testVariant.testTemplate.maxAcceptableDurationSec,
-                    finishingAt =testVariant.finishingAt,
-                    currentQuestion =testVariant.currentQuestion?.let {
+                    testVariantId=testVariant.id,
+                    testingPhaseState=testVariant.testTemplate.eventInfo.testingPhaseState,
+                    maxAcceptableDurationSec=testVariant.testTemplate.maxAcceptableDurationSec,
+                    finishingAt=testVariant.finishingAt,
+                    currentQuestion=testVariant.currentQuestion?.let {
                         TestInfoResponseDto.QuestionInfoDto(
                                 title=it.question.title,
                                 questionType=it.question.questionType,
@@ -59,6 +60,6 @@ class TestVariantMapperImpl : TestVariantMapper {
                                 }
                         )
                     },
-                    state =testVariant.state
+                    state=testVariant.state
             )
 }

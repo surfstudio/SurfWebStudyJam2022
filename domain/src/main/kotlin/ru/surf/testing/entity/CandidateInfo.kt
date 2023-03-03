@@ -1,13 +1,11 @@
 package ru.surf.testing.entity
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import ru.surf.core.entity.base.UUIDBasedEntity
 import java.util.*
+import javax.validation.constraints.Email
 
-@Table(name = "candidate_info")
+@Table(name = "candidates_info")
 @Entity
 class CandidateInfo(
 
@@ -15,15 +13,28 @@ class CandidateInfo(
         @Column(name="id")
         override val id: UUID = UUID.randomUUID(),
 
-        @Column(name = "event_id", columnDefinition = "uuid", nullable = false)
-        val eventId: UUID = UUID.randomUUID()
+        @Column(name = "first_name", nullable = false)
+        var firstName: String = "",
+
+        @Column(name = "last_name", nullable = false)
+        var lastName: String = "",
+
+        @Column(name = "email", nullable = false)
+        @Email(regexp = ".+?@.+")
+        var email: String = "",
+
+        @OneToOne(cascade = [CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST], fetch = FetchType.LAZY, optional = false)
+        @JoinColumn(name = "event_id", referencedColumnName = "id", nullable = false)
+        val eventInfo: EventInfo = EventInfo(),
+
 
 ) : UUIDBasedEntity(id) {
 
         override fun toString(): String {
                 return "CandidateInfo(" +
                         "id=$id, " +
-                        "eventId=$eventId)"
+                        "firstName='$firstName', " +
+                        "lastName='$lastName', " +
+                        "eventId=${eventInfo.id})"
         }
-
 }

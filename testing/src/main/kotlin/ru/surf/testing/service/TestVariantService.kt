@@ -8,7 +8,7 @@ import java.util.*
 
 interface TestVariantService {
 
-    fun create(testTemplate: TestTemplate, candidateId: UUID): TestVariant
+    fun create(testTemplate: TestTemplate, candidate: CandidateInfo): TestVariant
 
     fun startTest(testVariantId: UUID): TestVariant
 
@@ -21,6 +21,4 @@ interface TestVariantService {
     fun getByCandidateId(candidateId: UUID): TestVariant?
 
     fun getAll(): List<TestVariant>
-
-    fun getAllByEventId(eventID: UUID): List<CandidateInfo>
 }

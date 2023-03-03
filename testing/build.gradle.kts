@@ -16,9 +16,6 @@ repositories {
 }
 
 dependencies {
-    //implementation("org.hibernate:hibernate-core:6.1.7.Final")
-    //implementation("org.hibernate:hibernate-validator:6.1.7.Final")
-
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -27,12 +24,12 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
     implementation("org.flywaydb:flyway-core")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.kafka:spring-kafka")
-    implementation(project(":domain"))
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    implementation(project(":domain"))
 
     runtimeOnly("org.postgresql:postgresql:42.5.1")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    implementation(project(":domain"))
 
     devDependencies {
         runtimeOnly("com.h2database:h2:2.1.214")

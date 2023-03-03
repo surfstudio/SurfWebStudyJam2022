@@ -10,4 +10,6 @@ interface TestVariantRepository : JpaRepository<TestVariant, UUID> {
 
     fun findByCandidateInfoId(candidateId: UUID): TestVariant?
 
+    fun findAllByTestTemplateEventInfoId(eventId: UUID): List<TestVariant>
+
 }

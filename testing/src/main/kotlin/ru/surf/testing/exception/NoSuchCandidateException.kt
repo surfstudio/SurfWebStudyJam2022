@@ -7,7 +7,7 @@ class NoSuchCandidateException(
 
         private val candidateId: UUID
 
-) : TestingException("TestVariant for candidate with given id doesn't exist") {
+) : TestingException("TestVariant for candidate $candidateId with given id doesn't exist") {
 
     override fun getParams() = mapOf(
             "candidateId" to candidateId

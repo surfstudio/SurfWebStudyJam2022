@@ -1,4 +1,4 @@
-package ru.surf.mail.config
+package ru.surf.mail.configuration
 
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -15,7 +15,7 @@ import org.springframework.kafka.support.serializer.JsonDeserializer
 
 @Configuration
 @EnableKafka
-class KafkaConfig {
+class KafkaConfiguration {
 
     @Bean
     fun jsonMessageConverter(): JsonMessageConverter {

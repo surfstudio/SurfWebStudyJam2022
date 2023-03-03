@@ -7,7 +7,7 @@ class NoSuchEventException(
 
         private val eventId: UUID
 
-) : TestingException("TestTemplate for event with given id doesn't exist") {
+) : TestingException("TestTemplate for event $eventId with given id doesn't exist") {
 
     override fun getParams() = mapOf(
             "eventId" to eventId

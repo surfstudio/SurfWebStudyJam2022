@@ -7,7 +7,7 @@ class NoSuchTestException(
 
         private val testVariantId: UUID
 
-) : TestingException("TestVariant with given id doesn't exist") {
+) : TestingException("TestVariant $testVariantId doesn't exist") {
 
     override fun getParams() = mapOf(
             "testVariantId" to testVariantId

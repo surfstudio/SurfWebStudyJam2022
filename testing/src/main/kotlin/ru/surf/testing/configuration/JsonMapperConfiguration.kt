@@ -1,25 +1,22 @@
 package ru.surf.testing.configuration
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
-import org.springframework.beans.factory.annotation.Autowired
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.event.ContextRefreshedEvent
-import org.springframework.context.event.EventListener
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
+import org.springframework.context.annotation.Primary
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 
 @Configuration
-class JsonMapperConfiguration(
-        @Autowired
-        private val handlerAdapter: RequestMappingHandlerAdapter
-) {
+class JsonMapperConfiguration {
 
-    @EventListener
-    fun handleContextRefresh(event: ContextRefreshedEvent): Unit =
-            handlerAdapter.messageConverters.forEach {
-                if (it is MappingJackson2HttpMessageConverter) {
-                    it.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                }
+    @Bean
+    @Primary
+    fun objectMapper(builder: Jackson2ObjectMapperBuilder): ObjectMapper =
+            builder.build<ObjectMapper>().apply {
+                registerModule(JavaTimeModule())
+                disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             }
 
 }

@@ -2,11 +2,13 @@ package ru.surf.testing.dto.responce
 
 import ru.surf.testing.entity.QuestionType
 import ru.surf.testing.entity.TestVariant
+import ru.surf.testing.entity.TestingPhaseState
 import java.time.ZonedDateTime
 import java.util.*
 
 data class TestInfoResponseDto(
         val testVariantId: UUID,
+        val testingPhaseState: TestingPhaseState,
         val maxAcceptableDurationSec: Long,
         val finishingAt: ZonedDateTime?,
         val currentQuestion: QuestionInfoDto?,
