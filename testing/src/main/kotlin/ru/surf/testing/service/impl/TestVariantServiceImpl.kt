@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationListener
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.scheduling.TaskScheduler
 import org.springframework.stereotype.Service
 import ru.surf.core.kafkaEvents.TestCreatedEvent
 import ru.surf.core.kafkaEvents.TestPassedEvent
 import ru.surf.testing.applicationEvents.TestTemplateReplaced
+import ru.surf.testing.applicationEvents.TestVariantStateFinished
 import ru.surf.testing.applicationEvents.TestingPhaseStateChanged
 import ru.surf.testing.dto.request.AnswerRequestDto
 import ru.surf.testing.entity.*
@@ -18,6 +18,7 @@ import ru.surf.testing.exception.*
 import ru.surf.testing.repository.TestVariantRepository
 import ru.surf.testing.service.CandidateInfoService
 import ru.surf.testing.service.KafkaService
+import ru.surf.testing.service.TestVariantFinalizerService
 import ru.surf.testing.service.TestVariantService
 import java.time.ZonedDateTime
 import java.util.*
@@ -32,10 +33,10 @@ class TestVariantServiceImpl(
         private val testVariantRepository: TestVariantRepository,
 
         @Autowired
-        private val kafkaService: KafkaService,
+        private val testVariantFinalizerService: TestVariantFinalizerService,
 
         @Autowired
-        private val taskScheduler: TaskScheduler,
+        private val kafkaService: KafkaService,
 
 ) : TestVariantService,
     ApplicationListener<ApplicationEvent> {
@@ -45,23 +46,32 @@ class TestVariantServiceImpl(
     }
 
     override fun create(testTemplate: TestTemplate, candidate: CandidateInfo): TestVariant =
-            if (testTemplate.eventInfo.testingPhaseState != TestingPhaseState.COMPLETE)
-                getByCandidateId(candidate.id)?.run {
-                    if (state != TestVariant.TestState.NOT_STARTED) {
-                        throw TestStartedException(id, candidateInfo.id)
+            with(testTemplate.eventInfo.testingPhaseState) {
+                if (this@with != TestingPhaseState.COMPLETE)
+                    getByCandidateId(candidate.id)?.run {
+                        if (this@with == TestingPhaseState.ACTIVE) {
+                            throw TestingPhaseActiveException(testTemplate.eventInfo.id)
+                        }
+
+                        logger.info("TestVariant for candidate = $candidateInfo already exists. Overwriting...")
+
+                        candidateInfo.also {
+                            testVariantRepository.delete(this)
+                        }
+                    }.run {
+                        logger.info("Creating TestVariant for $candidate ...")
+
+                        generateTestVariant(this ?: candidate, testTemplate).let {
+                            testVariantRepository.save(it)
+                        }.also {
+                            if (this@with == TestingPhaseState.ACTIVE) {
+                                publishTestVariant(it)
+                            }
+                        }
                     }
-                    logger.info("TestVariant for candidate = $candidateInfo already exists. Overwriting...")
-                    candidateInfo.also {
-                        testVariantRepository.delete(this)
-                    }
-                }.run {
-                    logger.info("Creating TestVariant for $candidate ...")
-                    generateTestVariant(this ?: candidate, testTemplate).let {
-                        testVariantRepository.save(it)
-                    }
-                }
-            else
-                throw TestingPhaseCompleteException(testTemplate.eventInfo.id)
+                else
+                    throw TestingPhaseCompleteException(testTemplate.eventInfo.id)
+            }
 
     private fun generateTestVariant(candidate: CandidateInfo, testTemplate: TestTemplate) =
             TestVariant(
@@ -89,16 +99,13 @@ class TestVariantServiceImpl(
             }
             startedAt = ZonedDateTime.now()
             testVariantRepository.save(this).also {
-                taskScheduler.schedule(
-                        { onTestTimeExceeded(it) },
-                        it.finishingAt!!.toInstant()
-                )
+                testVariantFinalizerService.registerStartedTest(it)
             }
         }
 
 
     override fun submitCurrentAnswerAndMoveNext(answerRequestDto: AnswerRequestDto): TestVariant =
-            get(answerRequestDto.testVariantId).also {
+            get(answerRequestDto.testVariantId).let {
                 if (it.state != TestVariant.TestState.STARTED) {
                     throw TestNotStartedException(it.id, it.candidateInfo.id, it.state)
                 }
@@ -116,7 +123,10 @@ class TestVariantServiceImpl(
                         throw BadAnswerException(it.id, it.candidateInfo.id, reason)
                     }
                     answeredAt = ZonedDateTime.now()
-                    testVariantRepository.save(it)
+                }
+                testVariantRepository.save(it).apply {
+                    if (state == TestVariant.TestState.FINISHED)
+                        testVariantFinalizerService.finalizeTest(this)
                 }
             }
 
@@ -145,19 +155,11 @@ class TestVariantServiceImpl(
     override fun getAll(): List<TestVariant> =
             testVariantRepository.findAll()
 
-    private fun onTestTimeExceeded(testVariant: TestVariant) {
-        kafkaService.sendCoreEvent(
-                TestPassedEvent(
-                        emailTo=testVariant.candidateInfo.email,
-                        candidateInfo=testVariant.candidateInfo
-                )
-        )
-    }
-
     override fun onApplicationEvent(event: ApplicationEvent) {
         when (event) {
             is TestTemplateReplaced -> onTestTemplateReplaces(event)
             is TestingPhaseStateChanged -> onTestingPhaseStateChanged(event)
+            is TestVariantStateFinished -> onTestVariantStateFinished(event)
         }
     }
 
@@ -178,7 +180,16 @@ class TestVariantServiceImpl(
                 forEach { publishTestVariant(it) }
             }
     }
-
+    
+    private fun onTestVariantStateFinished(event: TestVariantStateFinished) {
+        kafkaService.sendCoreEvent(
+                TestPassedEvent(
+                        emailTo=event.testVariant.candidateInfo.email,
+                        candidateInfo=event.testVariant.candidateInfo
+                )
+        )
+    }
+    
     private fun publishTestVariant(testVariant: TestVariant) = kafkaService.sendCoreEvent(
             TestCreatedEvent(
                     emailTo=testVariant.candidateInfo.email,

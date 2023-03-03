@@ -3,9 +3,11 @@ package ru.surf.testing.controller
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.kafka.annotation.KafkaHandler
 import org.springframework.kafka.annotation.KafkaListener
+import org.springframework.kafka.annotation.RetryableTopic
 import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.stereotype.Component
 import ru.surf.core.kafkaEvents.CandidateAppliedEvent
+import ru.surf.testing.exception.NoSuchEventException
 import ru.surf.testing.mapper.CandidateInfoMapper
 import ru.surf.testing.service.TestTemplateService
 import ru.surf.testing.service.TestVariantService
@@ -24,10 +26,11 @@ class TestingListener(
 ) {
 
     @KafkaHandler
+    @RetryableTopic
     fun listenForCandidateAppliedEvent(@Payload candidateAppliedEvent: CandidateAppliedEvent) {
         testVariantService.create(
                 testTemplate=testTemplateService.getByEventId(eventId = candidateAppliedEvent.candidate.event.id) ?:
-                    throw NoSuchElementException(candidateAppliedEvent.candidate.event.id.toString()),
+                    throw NoSuchEventException(candidateAppliedEvent.candidate.event.id),
                 candidate=candidateInfoMapper.toEntity(candidateAppliedEvent.candidate)
         )
     }

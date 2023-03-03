@@ -7,8 +7,8 @@ class TestingPhaseActiveException(
 
         private val eventId: UUID
 
-) : TestingException("Testing phase for event has entered to ACTIVE state. " +
-                     "Overwriting test templates for this state is prohibited.") {
+) : TestingException("Testing phase for event $eventId has entered to ACTIVE state. " +
+                     "Overwriting test templates and test variant for this state is prohibited.") {
 
     override fun getParams() = mapOf(
             "eventId" to eventId

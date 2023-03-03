@@ -7,7 +7,7 @@ class TestingPhaseNotActiveException(
 
         private val eventId: UUID
 
-) : TestingException("Testing phase for event is not in ACTIVE state. " +
+) : TestingException("Testing phase for event $eventId is not in ACTIVE state. " +
                      "Passing tests only allowed for events with ACTIVE testing phase state.") {
 
     override fun getParams() = mapOf(

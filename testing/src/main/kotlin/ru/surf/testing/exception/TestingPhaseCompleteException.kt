@@ -7,7 +7,7 @@ class TestingPhaseCompleteException(
 
         private val eventId: UUID
 
-) : TestingException("Testing phase for event is already in COMPLETE state. " +
+) : TestingException("Testing phase for event $eventId is already in COMPLETE state. " +
                      "No further states.") {
 
     override fun getParams() = mapOf(

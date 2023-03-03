@@ -237,6 +237,7 @@ services:
       PORT: 80
       <<: *db-cred
       DB_NAME: surfwebstudyjam_testing
+      KAFKA_HOST: kafka-service:9092
     ports:
       - "8084:80"
     healthcheck:
