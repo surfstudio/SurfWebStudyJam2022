@@ -11,11 +11,9 @@ import com.icegreen.greenmail.util.ServerSetup
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.springframework.test.context.ContextConfiguration
 import ru.surf.core.kafkaEvents.EmailType
 import ru.surf.core.kafkaEvents.GeneralNotificationDto
 
-@ContextConfiguration(classes = [KafkaTestConfig::class])
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class MailApplicationTests {
 
@@ -29,6 +27,7 @@ class MailApplicationTests {
         @DynamicPropertySource
         fun kafkaProperties(registry: DynamicPropertyRegistry) {
             registry.add("spring.kafka.producer.bootstrap-servers") { KafkaBase.kafkaContainer.bootstrapServers }
+            registry.add("spring.kafka.bootstrap-servers") { KafkaBase.kafkaContainer.bootstrapServers }
         }
 
         @JvmStatic

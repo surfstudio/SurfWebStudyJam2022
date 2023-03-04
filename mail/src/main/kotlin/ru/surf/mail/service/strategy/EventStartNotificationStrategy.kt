@@ -11,8 +11,8 @@ import ru.surf.core.kafkaEvents.GeneralNotificationDto
 
 @Component
 class EventStartNotificationStrategy(
-        private val javaMailSender: JavaMailSender,
-        private val springTemplateEngine: SpringTemplateEngine,
+    private val javaMailSender: JavaMailSender,
+    private val springTemplateEngine: SpringTemplateEngine,
 ) : EmailSendStrategy {
     override fun emailType(): EmailType = EmailType.EVENT_START_NOTIFICATION
 

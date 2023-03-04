@@ -29,7 +29,7 @@ dependencies {
     implementation(project(":domain"))
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("com.icegreen:greenmail-junit5:1.6.12")
+    testImplementation("com.icegreen:greenmail-junit5:2.0.0-alpha-3")
     testImplementation("org.testcontainers:junit-jupiter:1.17.6")
     testImplementation("org.testcontainers:kafka:1.17.6")
 }
