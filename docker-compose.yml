@@ -162,12 +162,16 @@ services:
 
   greenmail-service:
     restart: unless-stopped
-    image: greenmail/standalone:1.6.14
+    build:
+      context: .
+      dockerfile: greenmail/Dockerfile
     ports:
       - "3025:3025"
       - "3143:3143"
       - "18888:8080"
-
+    healthcheck:
+      test: "wget -qO - http://0.0.0.0:8080/api/service/readiness | grep '\"message\":\"Service running\"'"
+      <<: *healthcheck-params
 
   quiz-service:
     restart: unless-stopped
@@ -232,6 +236,11 @@ services:
       context: testing
       dockerfile: Dockerfile
     image: testing
+    depends_on:
+      db-service:
+        condition: service_healthy
+      kafka-service:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 80
@@ -250,13 +259,23 @@ services:
       context: mail
       dockerfile: Dockerfile
     image: mail
+    depends_on:
+      greenmail-service:
+        condition: service_healthy
+      kafka-service:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 80
+      KAFKA_HOST: kafka-service:9092
+      SMTP_SERVER_HOST: greenmail-service
+      SMTP_SERVER_PORT: 3025
+      SENDER_EMAIL_ADDRESS: ${SENDER_EMAIL_ADDRESS}
+      SENDER_EMAIL_PASSWORD: ${SENDER_EMAIL_PASSWORD}
     ports:
       - "8083:80"
     healthcheck:
-      test: "wget -qO - http://0.0.0.0:80/actuator/health | grep '\"status\":\"UP\"'"
+      test: "wget -qO - http://0.0.0.0:80/mail/actuator/health | grep '\"status\":\"UP\"'"
       <<: *healthcheck-params
 
   report-service:
@@ -312,6 +331,8 @@ services:
     image: core
     depends_on:
       db-service:
+        condition: service_healthy
+      kafka-service:
         condition: service_healthy
       auth-service:
         condition: service_healthy

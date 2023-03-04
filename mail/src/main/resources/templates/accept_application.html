@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:remove="all">Template for HTML email</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<p>
+    <b th:text="${lastName}">Foo</b>
+    <b th:text="${firstName}">Foo,</b>
+</p>
+<p>Вы подавли заявку на участие в стажировке (<b th:text="${eventName}">StudyJam 2022</b>). В скором времени на эту
+    почту Вы получите письмо с персональной ссылкой на тест.</p>
+
+<p>Команда Surf.</p>
+
+</body>
+</html>

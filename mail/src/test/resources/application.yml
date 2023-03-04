@@ -1,0 +1,20 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+
+  mail:
+    username: user
+    password: admin
+    host: 127.0.0.1
+    port: 3025
+    protocol: smtp
+
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
+    listener:
+      missing-topics-fatal: false

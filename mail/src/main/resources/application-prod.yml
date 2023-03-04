@@ -1,2 +1,20 @@
 server:
   port: ${PORT:8083}
+  servlet:
+    context-path: /mail
+
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_HOST}
+  mail:
+    host: ${SMTP_SERVER_HOST}
+    port: ${SMTP_SERVER_PORT}
+    username: ${SENDER_EMAIL_ADDRESS}
+    password: ${SENDER_EMAIL_PASSWORD}
+    test-connection: true
+    properties:
+      mail:
+        smtp:
+          auth: ${SMTP_AUTH_ENABLED}
+          starttls:
+            enable: ${SMTP_STARTTLS_ENABLED}

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:remove="all">Template for HTML email</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<p>
+    <b th:text="${lastName}">Foo</b>
+    <b th:text="${firstName}">Foo,</b>
+</p>
+<p>
+    <a th:href="@{http://localhost:4200/testing/{id}(id=${testId})}">Ваш тест.</a>
+    <span>Пройти тест необходимо до  <b th:text="${deadline}">10.10.2023</b></span>
+</p>
+
+<span>Удачи!</span><br>
+<span>Команда Surf.</span>
+
+</body>
+</html>

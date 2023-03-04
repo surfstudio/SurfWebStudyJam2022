@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:remove="all">Template for HTML email</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<p>
+    <b th:text="${lastName}">Foo</b>
+    <b th:text="${firstName}">Foo,</b>
+</p>
+<p>
+    <span>Поздравляем! Вы прошли отбор на стажировку. Для активаци акаунта участника пройдите по ссылке.</span>
+    <a th:href="@{account_link}">Активировать аккаунт</a>
+</p>
+
+<span>Команда Surf.</span>
+
+</body>
+</html>

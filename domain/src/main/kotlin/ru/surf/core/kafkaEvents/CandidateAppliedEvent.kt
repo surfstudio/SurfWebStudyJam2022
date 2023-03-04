@@ -3,13 +3,17 @@ package ru.surf.core.kafkaEvents
 import ru.surf.core.entity.Candidate
 
 data class CandidateAppliedEvent(
-        override val emailTo: String,
-        val candidate: Candidate
+    override val emailType: EmailType = EmailType.DEFAULT,
+    override val emailTo: String,
+    override val subject: String = "Вы зарегистрировались на стажировку в Surf",
+
+    val candidate: Candidate
 ) : IMailEvent {
-    override fun convertToParam(): Map<*, *> =
-            mapOf(
-                    "eventName" to candidate.event.description,
-                    "firstName" to candidate.firstName,
-                    "lastName" to candidate.lastName
-            )
+    override fun params(): Map<String, *> {
+        return mapOf(
+            "eventName" to candidate.event.description,
+            "firstName" to candidate.firstName,
+            "lastName" to candidate.lastName
+        )
+    }
 }

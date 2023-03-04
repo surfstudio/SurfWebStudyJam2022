@@ -1,0 +1,20 @@
+server:
+  port: 8083
+  servlet:
+    context-path: /mail
+
+spring:
+  kafka:
+    bootstrap-servers: kafka-service:9092
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL}
+    password: ${EMAIL_PASSWORD}
+    test-connection: true
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
