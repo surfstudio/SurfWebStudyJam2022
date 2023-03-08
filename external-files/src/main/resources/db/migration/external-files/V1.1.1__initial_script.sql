@@ -8,10 +8,9 @@ create table if not exists accounts
 
 create table if not exists surf_employees
 (
-    id         uuid default gen_random_uuid() primary key,
-    account_id uuid unique
-        constraint surf_employees_accounts_account_id_fk references accounts (id),
-    name       text not null
+    id           uuid default gen_random_uuid() primary key,
+    name         text not null,
+    activated_at timestamp with time zone not null
 );
 
 
@@ -98,8 +97,6 @@ create table if not exists teams_feedbacks
 create table if not exists trainees
 (
     id           uuid default gen_random_uuid() primary key,
-    account_id   uuid unique
-        constraint trainees_accounts_account_id_fk references accounts (id),
     candidate_id uuid not null unique
         constraint trainees_candidates_candidate_id_fk references candidates (id),
     team_id      uuid

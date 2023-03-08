@@ -6,10 +6,10 @@ import jakarta.persistence.Entity
 
 
 @Entity
-class CandidateIdentity(
+class ActivationIdentity(
         @Column(unique = true, columnDefinition = "uuid")
-        var candidateId: UUID = UUID.randomUUID(),
+        var subjectId: UUID = UUID.randomUUID(),
 
         @Column(unique = true, columnDefinition = "uuid")
-        var promotionId: UUID = UUID.randomUUID()
+        var activationId: UUID = UUID.randomUUID()
 ): Identity()

@@ -6,8 +6,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import ru.surf.core.dto.CandidateApprovalDto
 import ru.surf.core.dto.CandidateDto
-import ru.surf.core.dto.CandidatePromotionDto
-import ru.surf.core.entity.Account
 import ru.surf.core.entity.Candidate
 import ru.surf.core.service.CandidateService
 import java.util.*
@@ -17,7 +15,7 @@ import java.util.*
 class CandidateController(
         @Autowired
         private val candidateService: CandidateService
-        ) {
+) {
 
     @PostMapping(value = ["/"])
     fun create(@RequestBody candidateDto: CandidateDto): Candidate = candidateService.createCandidate(candidateDto)
@@ -30,11 +28,5 @@ class CandidateController(
     @PreAuthorize("isAuthenticated")
     fun get(@AuthenticationPrincipal candidate: Candidate): Candidate =
             candidate
-
-    @PostMapping(value = ["/promote"])
-    @PreAuthorize("isAuthenticated")
-    fun promote(@AuthenticationPrincipal candidate: Candidate,
-                @RequestBody candidatePromotionDto: CandidatePromotionDto): Account =
-            candidateService.promoteCandidate(candidate, candidatePromotionDto)
 
 }

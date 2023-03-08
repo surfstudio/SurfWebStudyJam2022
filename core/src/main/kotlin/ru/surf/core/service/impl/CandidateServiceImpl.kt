@@ -5,19 +5,16 @@ import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
-import ru.surf.auth.dto.AccountCredentialsDto
 import ru.surf.auth.service.CredentialsService
 import ru.surf.core.dto.CandidateApprovalDto
 import ru.surf.core.dto.CandidateDto
 import ru.surf.core.dto.CandidateEventNotificationDto
-import ru.surf.core.dto.CandidatePromotionDto
 import ru.surf.core.entity.*
 import ru.surf.core.kafkaEvents.CandidateAppliedEvent
 import ru.surf.core.mapper.candidate.CandidateMapper
 import ru.surf.core.repository.CandidateRepository
 import ru.surf.core.repository.EventRepository
 import ru.surf.core.repository.EventTagRepository
-import ru.surf.core.repository.TraineeRepository
 import ru.surf.core.service.CandidateFilterService
 import ru.surf.core.service.CandidateService
 import ru.surf.core.service.EventService
@@ -32,7 +29,6 @@ class CandidateServiceImpl(
     @Autowired private val credentialsService: CredentialsService,
     @Autowired private val s3FileService: S3FileService,
     @Autowired private val candidateRepository: CandidateRepository,
-    @Autowired private val traineeRepository: TraineeRepository,
     @Autowired private val candidateMapper: CandidateMapper,
     @Autowired private val kafkaService: KafkaService,
     @Autowired private val eventService: EventService,
@@ -74,25 +70,7 @@ class CandidateServiceImpl(
                 save(it)
                 flush()
             }
-            CandidateApprovalDto(credentialsService.createCandidate(candidate.id))
-        }
-
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])
-    override fun promoteCandidate(candidate: Candidate, candidatePromotionDto: CandidatePromotionDto): Account =
-        // TODO в черновом виде
-        traineeRepository.run {
-            save(Trainee(candidate = candidate)).apply {
-                flush()
-            }
-        }.apply {
-            credentialsService.promoteCandidate(
-                candidate.id,
-                AccountCredentialsDto(
-                    identity = id,
-                    passphrase = candidatePromotionDto.passphrase
-                )
-            )
+            CandidateApprovalDto(credentialsService.createTemporaryIdentity(candidate.id))
         }
 
     override fun get(candidateId: UUID): Candidate = candidateRepository.findById(candidateId).orElseThrow {

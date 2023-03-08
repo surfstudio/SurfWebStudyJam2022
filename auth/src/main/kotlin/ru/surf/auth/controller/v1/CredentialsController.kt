@@ -15,24 +15,24 @@ import java.util.*
 class CredentialsController(
         @Autowired private val credentialsService: CredentialsService,
 ) {
-    @PostMapping(value = ["/createCandidate/{candidateId}"])
-    fun createCandidate(@PathVariable candidateId: UUID): Any {
+    @PostMapping(value = ["/createSubject/{subjectId}"])
+    fun createSubject(@PathVariable subjectId: UUID): Any {
         @Suppress("unused") return object {
-            val promotionId = credentialsService.createCandidate(candidateId)
-            val candidateId = candidateId
+            val activationId = credentialsService.createTemporaryIdentity(subjectId)
+            val subjectId = subjectId
         }
     }
 
-    @PostMapping(value = ["/authenticateCandidate/{promotionId}"])
-    fun authenticateCandidate(@PathVariable promotionId: UUID): Any {
+    @PostMapping(value = ["/authenticateSubject/{activationId}"])
+    fun authenticateSubject(@PathVariable activationId: UUID): Any {
         @Suppress("unused") return object {
-            val candidateId = credentialsService.authenticateCandidate(promotionId)
+            val subjectId = credentialsService.authenticateSubject(activationId)
         }
     }
 
-    @PostMapping(value = ["/promoteCandidate/{candidateId}"])
-    fun promoteCandidate(@PathVariable candidateId: UUID, @RequestBody dto: AccountCredentialsDto): Any {
-        credentialsService.promoteCandidate(candidateId, dto)
+    @PostMapping(value = ["/activateSubject/{subjectId}"])
+    fun activateSubject(@PathVariable subjectId: UUID, @RequestBody dto: AccountCredentialsDto): Any {
+        credentialsService.activateSubject(subjectId, dto)
         @Suppress("unused") return object {
             val identity = dto.identity
         }

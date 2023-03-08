@@ -2,8 +2,8 @@ package ru.surf.testing.entity
 
 import jakarta.persistence.*
 import ru.surf.core.entity.base.UUIDBasedEntity
+import ru.surf.core.validation.EmailConstraint
 import java.util.*
-import javax.validation.constraints.Email
 
 @Table(name = "candidates_info")
 @Entity
@@ -20,7 +20,7 @@ class CandidateInfo(
         var lastName: String = "",
 
         @Column(name = "email", nullable = false)
-        @Email(regexp = ".+?@.+")
+        @EmailConstraint(regexp = ".+?@.+")
         var email: String = "",
 
         @OneToOne(cascade = [CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST], fetch = FetchType.LAZY, optional = false)

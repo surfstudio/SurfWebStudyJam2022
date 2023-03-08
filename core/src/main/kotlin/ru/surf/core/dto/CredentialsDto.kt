@@ -1,5 +1,5 @@
 package ru.surf.core.dto
 
-data class CandidatePromotionDto(
+data class CredentialsDto(
         val passphrase: String
 )
