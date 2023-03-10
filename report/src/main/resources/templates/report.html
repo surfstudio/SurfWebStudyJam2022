@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <link th:href="@{/styles.css}" rel="stylesheet"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <title>Report</title>
+</head>
+<body class="flex flex-col items-center justify-center">
+<div class="rounded-lg border shadow-lg p-10 w-3/5">
+
+    <div class="">
+        <h2>Отчет о стажировке</h2>
+    </div>
+
+    <div class="bg-gray-100 rounded-lg p-5"></div>
+
+    <div>
+        <table class="w-full text-right rounded">
+            <thead class="">
+            <tr>
+                <th class="text-left">Этап</th>
+                <th class="text-right">Дата</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${report.eventStates}">
+                <td class="text-left" th:text="${item.stateType}">Начало стажировки</td>
+                <td th:text="${item.date}">1.12.2022</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="bg-gray-100 rounded-lg p-5 mb-2"></div>
+    <div>
+        <table class="w-full text-right border rounded">
+            <tr>
+                <td class="text-left">Отправили заявку</td>
+                <td th:text="${report.peopleAmountByStates.get(0)}">150</td>
+            </tr>
+            <tr>
+                <td class="text-left">Приняли участие в тестировании</td>
+                <td th:text="${report.peopleAmountByStates.get(1)}">100</td>
+            </tr>
+            <tr>
+                <td class="text-left">Попали в команды</td>
+                <td th:text="${report.peopleAmountByStates.get(2)}">20</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="bg-gray-100 rounded-lg p-5 mb-2"></div>
+
+    <div class="w-full">
+        <p class="text-center">Результаты тестирования</p>
+        <div class="flex w-full text-center">
+            <div class="bg-gray-200 container con-1 w-quarter m-2 items-center rounded-lg">
+                <div class="m-2 p-2">0 - 25 %</div>
+                <div class="m-2 p-2" th:text="${report.testResults.get(0)}">30</div>
+            </div>
+            <div class="bg-gray-200 container con-1 w-quarter m-2 items-center rounded-lg">
+                <div class="m-2 p-2">25 - 50 %</div>
+                <div class="m-2 p-2" th:text="${report.testResults.get(1)}">20</div>
+            </div>
+            <div class="bg-gray-200 container con-1 w-quarter m-2 items-center rounded-lg">
+                <div class="m-2 p-2">50 - 75 %</div>
+                <div class="m-2 p-2" th:text="${report.testResults.get(2)}">20</div>
+            </div>
+            <div class="bg-gray-200 container con-1 w-quarter m-2 items-center rounded-lg">
+                <div class="m-2 p-2">75 - 100 %</div>
+                <div class="m-2 p-2" th:text="${report.testResults.get(3)}">10</div>
+            </div>
+        </div>
+    </div>
+    <div class="w-full">
+        <p class="text-center">Команды</p>
+        <div class="container con-1 w-full">
+            <div class="bg-gray-200 mb-2 rounded-lg" th:each="item : ${report.teamResults}">
+                <table class="w-full p-5 text-right border rounded">
+                    <tr>
+                        <td class="text-left">Ментор</td>
+                        <td th:text="${item.key}">Калиныч П.А.</td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">Оценка команды</td>
+                        <td th:text="${item.value}">8</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
