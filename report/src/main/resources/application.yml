@@ -2,6 +2,8 @@ server:
   port: 8082
 
 spring:
+  kafka:
+    bootstrap-servers: localhost:9092
   datasource:
     url: jdbc:postgresql://localhost:5432/surf_db
     username: sas
@@ -23,3 +25,5 @@ services:
     base_url: http://localhost:8082
   testing:
     url: http://0.0.0.0:8084/testing
+  external-files:
+    url: http://0.0.0.0:8181/external-files

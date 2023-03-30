@@ -16,4 +16,6 @@ interface EventService {
 
     fun updateEvent(id: UUID, putRequestEventDto: PutRequestEventDto): ShortResponseEventDto
 
+    fun getReport(id: UUID): ByteArray
+
 }

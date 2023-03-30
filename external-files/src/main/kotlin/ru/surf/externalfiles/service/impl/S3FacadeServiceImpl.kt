@@ -1,7 +1,6 @@
 package ru.surf.externalfiles.service.impl
 
 import io.klogging.NoCoLogging
-import org.springframework.core.io.ByteArrayResource
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -37,21 +36,23 @@ class S3FacadeServiceImpl(
                     logger.error(errorMessage)
                     throw RuntimeException(e.message)
                 }
+
                 else -> {
                     logger.error(errorMessage)
                     throw RuntimeException(e.message)
                 }
             }
         }
+//        TODO: Откат сохранения в БД при ошибке в s3
         s3FileService.putObjectIntoS3Storage(file, s3PutRequest)
         logger.debug("Successfully saving file $file")
         return s3FileMapper.convertFromS3ResumeEntityToPostResponseResumeDto(s3File)
     }
 
-    override fun getFile(fileId: UUID): ByteArrayResource {
+    override fun getFile(fileId: UUID): ByteArray {
         return try {
             s3DatabaseService.getS3FileData(fileId).run {
-                ByteArrayResource(s3FileService.getObject(s3RequestService.createS3GetRequest(this.s3Key)))
+                s3FileService.getObject(s3RequestService.createS3GetRequest(this.s3Key))
             }
         } catch (e: Exception) {
             val errorMessage = "Database getting failed for file with id $fileId"
@@ -60,6 +61,7 @@ class S3FacadeServiceImpl(
                     logger.error(errorMessage)
                     throw RuntimeException(e.message)
                 }
+
                 else -> {
                     logger.error(errorMessage)
                     throw RuntimeException(e.message)
@@ -79,6 +81,7 @@ class S3FacadeServiceImpl(
                     logger.error(errorMessage)
                     throw RuntimeException(e.message)
                 }
+
                 else -> {
                     logger.error(errorMessage)
                     throw RuntimeException(e.message)
@@ -88,6 +91,7 @@ class S3FacadeServiceImpl(
         s3RequestService.createS3DeleteRequest(s3KeyDeletedFile).run { s3FileService.deleteObject(this) }
     }
 
+//    TODO: Не удалять вообще все файлы (только бесполезные)
     @Scheduled(fixedDelayString = "\${external-files.claim-interval-seconds}", timeUnit = TimeUnit.SECONDS)
     override fun cleanUnclaimedFiles() {
         s3DatabaseService.processExpiredFiles(ZonedDateTime.now(), this::deleteFile)

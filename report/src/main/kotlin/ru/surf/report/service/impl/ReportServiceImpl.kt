@@ -1,11 +1,19 @@
-package ru.surf.report.service
+package ru.surf.report.service.impl
 
 import kotlinx.coroutines.runBlocking
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.io.ByteArrayResource
+import org.springframework.http.MediaType
+import org.springframework.http.client.MultipartBodyBuilder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
+import ru.surf.report.model.PostResponseDto
 import ru.surf.report.model.Report
 import ru.surf.report.repository.*
+import ru.surf.report.service.ReportService
 import ru.surf.testing.sharedDto.CandidateScoresResponseDto
 import java.util.*
 
@@ -16,10 +24,15 @@ class ReportServiceImpl(
     private val candidateRepository: CandidateRepository,
     private val traineeRepository: TraineeRepository,
     private val webClient: WebClient,
+
+    @Value("\${services.testing.url}")
+    private val testingServiceUrl: String,
+    @Value("\${services.external-files.url}")
+    private val externalFilesServiceUrl: String,
 ) : ReportService {
     private lateinit var testResults: CandidateScoresResponseDto
 
-    override fun getPdfReport(eventId: UUID): Report {
+    override fun getReport(eventId: UUID): Report {
         val report = Report()
 
         getTestResult(eventId)
@@ -33,10 +46,29 @@ class ReportServiceImpl(
         return report
     }
 
+    @Transactional
+    override fun saveReport(reportByteArray: ByteArray, eventId: UUID) {
+        val builder = MultipartBodyBuilder()
+        builder.part("file", ByteArrayResource(reportByteArray))
+            .filename("Report.pdf")
+            .contentType(MediaType.APPLICATION_PDF)
+
+        val response: PostResponseDto = runBlocking {
+            webClient.post()
+                .uri("${externalFilesServiceUrl}/files/file")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(builder.build()))
+                .retrieve()
+                .awaitBody()
+        }
+
+        eventRepository.updateReportFileId(response.fileId, eventId)
+    }
+
     private fun getTestResult(eventId: UUID) {
         testResults = runBlocking {
             webClient.get()
-                .uri("/test_variant/scores/{eventId}", eventId)
+                .uri("${testingServiceUrl}/test_variant/scores/{eventId}", eventId)
                 .retrieve()
                 .awaitBody()
         }

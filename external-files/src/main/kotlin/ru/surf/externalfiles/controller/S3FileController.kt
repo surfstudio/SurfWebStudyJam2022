@@ -1,12 +1,10 @@
 package ru.surf.externalfiles.controller
 
-import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import ru.surf.externalfiles.dto.PostResponseDto
 import ru.surf.externalfiles.service.S3FacadeService
-import ru.surf.externalfiles.service.S3FileService
 import java.util.UUID
 
 //TODO: реализовать привязку файла к пользователю
@@ -20,8 +18,9 @@ class S3FileController(private val s3FacadeService: S3FacadeService) {
     fun uploadFile(@RequestParam(name = "file") multipartFile: MultipartFile): ResponseEntity<PostResponseDto> =
         ResponseEntity.ok(s3FacadeService.saveFile(multipartFile))
 
+//    TODO: Сделать автоматическую загрузку файла при вызове эндпоинта
     @GetMapping("/{id}")
-    fun downloadFile(@PathVariable(name = "id") id: UUID): ResponseEntity<ByteArrayResource> {
+    fun downloadFile(@PathVariable(name = "id") id: UUID): ResponseEntity<ByteArray> {
         return ResponseEntity.ok(s3FacadeService.getFile(id))
     }
 

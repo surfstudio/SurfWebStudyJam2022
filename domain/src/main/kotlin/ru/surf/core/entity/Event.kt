@@ -45,6 +45,9 @@ class Event(
         @JoinColumn(name = "event_id")
         var eventStates: Set<EventState> = mutableSetOf(),
 
+        @Column(name = "report_file_id", nullable = true)
+        var reportFileId: UUID? = UUID.randomUUID()
+
         ) : UUIDBasedEntity(id) {
 
     val currentState: EventState?

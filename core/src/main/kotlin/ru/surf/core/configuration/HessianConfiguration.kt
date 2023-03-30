@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import ru.surf.auth.service.CredentialsService
-import ru.surf.externalfiles.service.ResourceFileService
+import ru.surf.externalfiles.service.S3FacadeService
 import ru.surf.externalfiles.service.S3FileService
 import ru.surf.remoting.hessian.accessor.HessianProxyFactoryBean
 
@@ -16,6 +16,9 @@ class HessianConfiguration(
 
         @Value("\${externalFiles.s3FileServiceApi}")
         private val s3FileServiceApi: String,
+
+        @Value("\${externalFiles.s3FacadeServiceApi}")
+        private val s3FacadeServiceApi: String,
 
         @Value("\${externalFiles.s3ResourceServiceApi}")
         private val s3ResourceServiceApi: String
@@ -32,6 +35,12 @@ class HessianConfiguration(
     fun s3FileServiceHessianInvoker(): HessianProxyFactoryBean<S3FileService> = HessianProxyFactoryBean(
             serviceInterface = S3FileService::class.java,
             serviceUrl = s3FileServiceApi
+    )
+
+    @Bean(name = ["s3FacadeServiceApiHessianInvoker"])
+    fun s3FacadeServiceHessianInvoker(): HessianProxyFactoryBean<S3FacadeService> = HessianProxyFactoryBean(
+        serviceInterface = S3FacadeService::class.java,
+        serviceUrl = s3FacadeServiceApi
     )
 
     // TODO: 25.02.2023 Нужна помощь

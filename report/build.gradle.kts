@@ -23,7 +23,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
 	runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-reactive")
-
+	implementation("org.springframework.kafka:spring-kafka")
 
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")

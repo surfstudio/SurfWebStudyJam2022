@@ -4,5 +4,6 @@ import ru.surf.report.model.Report
 import java.util.UUID
 
 interface ReportService {
-    fun getPdfReport(eventId: UUID) : Report
+    fun getReport(eventId: UUID): Report
+    fun saveReport(reportByteArray: ByteArray, eventId: UUID)
 }

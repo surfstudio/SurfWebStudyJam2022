@@ -18,7 +18,7 @@ class ResourceFileServiceImpl(
 
     override fun parseHrExcelFile(fileId: UUID): List<CandidateExcelDto> {
         val excelFile = s3FacadeService.getFile(fileId)
-        val sheet: XSSFSheet = XSSFWorkbook(ByteArrayInputStream(excelFile.byteArray)).getSheet("Кандидаты")
+        val sheet: XSSFSheet = XSSFWorkbook(ByteArrayInputStream(excelFile)).getSheet("Кандидаты")
         return (1..sheet.lastRowNum).map { sheet.getRow(it) }.map {
             CandidateExcelDto(
                 firstName = it.getCell(0).stringCellValue,

@@ -10,8 +10,6 @@ import org.springframework.web.reactive.function.client.WebClient
 @Configuration
 @EntityScan("ru.surf.core.entity")
 class ReportModuleConfig(
-    @Value("\${services.testing.url}")
-    private val testingServiceUrl: String,
     @Value("\${services.report.base_url}")
     private val baseUrl: String
 ) {
@@ -25,7 +23,6 @@ class ReportModuleConfig(
     @Bean
     fun restTemplate(): WebClient {
         return WebClient.builder()
-            .baseUrl(testingServiceUrl)
             .build()
     }
 }

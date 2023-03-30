@@ -1,12 +1,10 @@
 package ru.surf.core.controller
 
-import aj.org.objectweb.asm.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.*
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.client.exchange
 import org.springframework.web.util.UriComponentsBuilder
 import ru.surf.core.dto.FullResponseEventDto
 import ru.surf.core.dto.PostRequestEventDto
@@ -76,4 +74,12 @@ class EventController(
         candidateService.notifyCandidates(forEntity.body!!)
     }
 
+    @GetMapping("/{id}/report")
+    fun getReport(@PathVariable(name = "id") eventId: UUID): ResponseEntity<ByteArray> {
+        val target = eventService.getReport(eventId)
+
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_PDF)
+            .body(target)
+    }
 }
