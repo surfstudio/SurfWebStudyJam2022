@@ -39,3 +39,4 @@ authService:
 externalFiles:
   s3FileServiceApi: ${EXT_FILES_API}
   s3ResourceServiceApi: ${EXT_FILES_RES_API}
+  s3FacadeServiceApi: ${EXT_FACADE_API}

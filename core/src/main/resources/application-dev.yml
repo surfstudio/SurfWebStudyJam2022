@@ -38,5 +38,6 @@ authService:
   credentialsServiceApi: http://localhost:8085/credentialsServiceApi
 
 externalFiles:
+  s3FacadeServiceApi: http://localhost:8081/external-files/s3FacadeServiceApi
   s3FileServiceApi: http://localhost:8081/external-files/s3FileServiceApi
   s3ResourceServiceApi: http://localhost:8081/external-files/s3ResourceServiceApi
