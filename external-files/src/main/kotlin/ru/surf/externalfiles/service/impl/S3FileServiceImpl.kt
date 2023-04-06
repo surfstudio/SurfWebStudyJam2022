@@ -1,18 +1,15 @@
 package ru.surf.externalfiles.service.impl
 
-import io.klogging.NoCoLogging
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import ru.surf.externalfiles.service.S3DatabaseService
 import ru.surf.externalfiles.service.S3FileService
-import software.amazon.awssdk.awscore.exception.AwsServiceException
-import software.amazon.awssdk.core.exception.SdkException
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest
 import software.amazon.awssdk.services.s3.model.GetObjectRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
-import software.amazon.awssdk.services.s3.model.S3Exception
 import java.util.*
 
 
@@ -22,7 +19,9 @@ class S3FileServiceImpl(
     private val s3Client: S3Client,
 ) : S3FileService {
 
-    companion object : NoCoLogging
+    companion object {
+        val logger = LoggerFactory.getLogger(S3FileServiceImpl::class.java)
+    }
 
     override fun putObjectIntoS3Storage(multipartFile: MultipartFile, putObjectRequest: PutObjectRequest) {
         val file = multipartFile.inputStream
@@ -31,20 +30,8 @@ class S3FileServiceImpl(
             s3Client.putObject(putObjectRequest, fileData)
         } catch (e: Exception) {
             val errorMessage = "An error occurred when saving a file $file to s3 storage"
-            when (e) {
-                is S3Exception -> {
-                    logger.error(errorMessage, e.message)
-                    throw RuntimeException(errorMessage)
-                }
-                is AwsServiceException -> {
-                    logger.error(errorMessage, e.message)
-                    throw RuntimeException(errorMessage)
-                }
-                is SdkException -> {
-                    logger.error(errorMessage, e.message)
-                    throw RuntimeException(errorMessage)
-                }
-            }
+            logger.info(errorMessage)
+            throw RuntimeException(errorMessage)
         }
     }
 
@@ -54,24 +41,8 @@ class S3FileServiceImpl(
         } catch (e: Exception) {
             val errorMessage =
                 "An error occurred when getting a file with s3key ${getObjectRequest.key()} from s3 storage"
-            when (e) {
-                is S3Exception -> {
-                    logger.error(errorMessage, e.message)
-                    throw RuntimeException(errorMessage)
-                }
-                is AwsServiceException -> {
-                    logger.error(errorMessage, e.message)
-                    throw RuntimeException(errorMessage)
-                }
-                is SdkException -> {
-                    logger.error(errorMessage, e.message)
-                    throw RuntimeException(errorMessage)
-                }
-                else -> {
-                    logger.error(errorMessage, e.message)
-                    throw RuntimeException(errorMessage)
-                }
-            }
+            logger.error(errorMessage)
+            throw RuntimeException(errorMessage)
         }
     }
 
@@ -81,20 +52,8 @@ class S3FileServiceImpl(
         } catch (e: Exception) {
             val errorMessage =
                 "An error occurred when deleting a file with s3key ${deleteObjectRequest.key()} from s3 storage"
-            when (e) {
-                is S3Exception -> {
-                    logger.error(errorMessage, e.message)
-                    throw RuntimeException(errorMessage)
-                }
-                is AwsServiceException -> {
-                    logger.error(errorMessage, e.message)
-                    throw RuntimeException(errorMessage)
-                }
-                is SdkException -> {
-                    logger.error(errorMessage, e.message)
-                    throw RuntimeException(errorMessage)
-                }
-            }
+            logger.error(errorMessage)
+            throw RuntimeException(errorMessage)
         }
     }
 
