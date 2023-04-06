@@ -1,6 +1,6 @@
 package ru.surf.externalfiles.service.impl
 
-import io.klogging.NoCoLogging
+import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -13,10 +13,11 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest
 
 @Service
 class S3RequestServiceImpl(s3PropertiesConfiguration: S3PropertiesConfiguration) : S3RequestService {
-
     private val bucketName = s3PropertiesConfiguration.bucketName
 
-    companion object : NoCoLogging
+    companion object {
+        val logger = LoggerFactory.getLogger(S3RequestServiceImpl::class.java)
+    }
 
     override fun createS3PutRequest(multipartFile: MultipartFile): PutObjectRequest {
         return PutObjectRequest.builder()
@@ -25,7 +26,7 @@ class S3RequestServiceImpl(s3PropertiesConfiguration: S3PropertiesConfiguration)
             .contentType(MediaType.APPLICATION_OCTET_STREAM.toString())
             .build()
             .also {
-                logger.debug("Successfully creating s3PutRequest with data $it")
+                logger.info("Successfully creating s3PutRequest with data $it")
             }
     }
 
@@ -35,7 +36,7 @@ class S3RequestServiceImpl(s3PropertiesConfiguration: S3PropertiesConfiguration)
             .key(s3Key)
             .build()
             .also {
-                logger.debug("Successfully creating s3GetRequest with data $it")
+                logger.info("Successfully creating s3GetRequest with data $it")
             }
     }
 
@@ -45,7 +46,7 @@ class S3RequestServiceImpl(s3PropertiesConfiguration: S3PropertiesConfiguration)
             .key(s3Key)
             .build()
             .also {
-                logger.debug("Successfully creating s3DeleteRequest with data $it")
+                logger.info("Successfully creating s3DeleteRequest with data $it")
             }
     }
 

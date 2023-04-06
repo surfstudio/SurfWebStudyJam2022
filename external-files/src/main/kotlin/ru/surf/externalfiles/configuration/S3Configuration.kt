@@ -12,14 +12,12 @@ import java.net.URI
 class S3Configuration {
 
     @Bean
-    fun S3Client(s3PropertiesConfiguration: S3PropertiesConfiguration): S3Client {
-        val awsCredentials =
-            AwsBasicCredentials.create(s3PropertiesConfiguration.accessKey, s3PropertiesConfiguration.secretKey)
-        return S3Client.builder()
-            .endpointOverride(URI.create(s3PropertiesConfiguration.fullUrlAddress))
-            .region(Region.AWS_GLOBAL)
-            .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
-            .build()
-    }
-
+    fun S3Client(s3PropertiesConfiguration: S3PropertiesConfiguration): S3Client =
+        AwsBasicCredentials.create(s3PropertiesConfiguration.accessKey, s3PropertiesConfiguration.secretKey).run {
+            S3Client.builder()
+                .endpointOverride(URI.create(s3PropertiesConfiguration.fullUrlAddress))
+                .region(Region.AWS_GLOBAL)
+                .credentialsProvider(StaticCredentialsProvider.create(this))
+                .build()
+        }
 }

@@ -1,7 +1,7 @@
 package ru.surf.externalfiles.service.impl
 
 
-import io.klogging.NoCoLogging
+import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
@@ -23,7 +23,9 @@ class S3DatabaseServiceImpl(
     private val s3FileMapper: S3FileMapper,
 ) : S3DatabaseService {
 
-    companion object : NoCoLogging
+    companion object {
+        val logger = LoggerFactory.getLogger(S3DatabaseServiceImpl::class.java)
+    }
 
     override fun saveS3FileData(putObjectRequest: PutObjectRequest, multipartFile: MultipartFile): S3File {
         val s3FileFromRequest =

@@ -24,7 +24,6 @@ dependencies {
     val hibernateVersion = "6.1.7.Final"
     val apachePoiVersion = "3.17"
     val postgreSQLVersion = "42.5.1"
-    val kLoggingVersion = "0.4.6"
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -44,7 +43,6 @@ dependencies {
     implementation("software.amazon.awssdk:s3")
     implementation("org.apache.poi:poi-ooxml:$apachePoiVersion")
     implementation("org.postgresql:postgresql:$postgreSQLVersion")
-    implementation("io.klogging:klogging-jvm:$kLoggingVersion")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
