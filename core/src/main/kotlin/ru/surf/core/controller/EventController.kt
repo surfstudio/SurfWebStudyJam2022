@@ -6,10 +6,10 @@ import org.springframework.http.*
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
-import ru.surf.core.dto.FullResponseEventDto
-import ru.surf.core.dto.PostRequestEventDto
-import ru.surf.core.dto.PutRequestEventDto
-import ru.surf.core.dto.ShortResponseEventDto
+import ru.surf.core.dto.event.FullResponseEventDto
+import ru.surf.core.dto.event.PostRequestEventDto
+import ru.surf.core.dto.event.PutRequestEventDto
+import ru.surf.core.dto.event.ShortResponseEventDto
 import ru.surf.core.entity.Candidate
 import ru.surf.core.mapper.event.EventMapper
 import ru.surf.core.service.CandidateService

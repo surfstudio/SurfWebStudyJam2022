@@ -8,7 +8,7 @@ data class TestCreatedEvent(
         override val subject: String = "Тест для стажировки Surf",
 
         val testVariant: TestVariant,
-) : IMailEvent {
+) : MailEvent {
     override fun params(): Map<String, *> =
             mapOf(
                     "firstName" to testVariant.candidateInfo.firstName,

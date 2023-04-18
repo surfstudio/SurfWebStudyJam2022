@@ -7,10 +7,10 @@ import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import ru.surf.auth.dto.AccountCredentialsDto
 import ru.surf.auth.service.CredentialsService
-import ru.surf.core.dto.CandidateApprovalDto
-import ru.surf.core.dto.CandidateDto
-import ru.surf.core.dto.CandidateEventNotificationDto
-import ru.surf.core.dto.CandidatePromotionDto
+import ru.surf.core.dto.candidate.CandidateApprovalDto
+import ru.surf.core.dto.candidate.CandidateDto
+import ru.surf.core.dto.candidate.CandidateEventNotificationDto
+import ru.surf.core.dto.candidate.CandidatePromotionDto
 import ru.surf.core.entity.*
 import ru.surf.core.kafkaEvents.CandidateAppliedEvent
 import ru.surf.core.mapper.candidate.CandidateMapper

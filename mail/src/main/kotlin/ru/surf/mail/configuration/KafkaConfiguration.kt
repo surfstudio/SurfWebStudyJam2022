@@ -33,7 +33,7 @@ class KafkaConfiguration(
         return DefaultKafkaConsumerFactory(
             mapOf(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers,
-                ConsumerConfig.CLIENT_ID_CONFIG to "mail_service",
+                ConsumerConfig.CLIENT_ID_CONFIG to "mail-service",
                 ConsumerConfig.GROUP_ID_CONFIG to "2",
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to "StringDeserializer::class.java",
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to "JsonDeserializer::class.java",
@@ -41,7 +41,7 @@ class KafkaConfiguration(
             ),
             StringDeserializer(),
             JsonDeserializer<Any>().apply {
-                addTrustedPackages("ru.surf.core.kafkaEvents")
+                addTrustedPackages("ru.surf.core.*")
             }
         )
     }

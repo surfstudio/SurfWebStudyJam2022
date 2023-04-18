@@ -18,3 +18,14 @@ spring:
           auth: ${SMTP_AUTH_ENABLED}
           starttls:
             enable: ${SMTP_STARTTLS_ENABLED}
+
+management:
+  endpoints.web.exposure.include: prometheus,health,info
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+  prometheus:
+    metrics:
+      export:
+        enabled: true

@@ -23,6 +23,9 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
 	runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-reactive")
+
+	implementation("io.micrometer:micrometer-registry-prometheus")
+	implementation("net.logstash.logback:logstash-logback-encoder:7.3")
 	implementation("org.springframework.kafka:spring-kafka")
 
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")

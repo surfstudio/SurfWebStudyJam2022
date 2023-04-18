@@ -7,7 +7,7 @@ import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.annotation.RetryableTopic
 import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.stereotype.Component
-import ru.surf.core.kafkaEvents.IMailEvent
+import ru.surf.core.kafkaEvents.MailEvent
 import ru.surf.mail.service.EmailService
 
 @Component
@@ -22,7 +22,7 @@ class EmailListener(
 
     @KafkaHandler
     @RetryableTopic
-    fun listenForMailEvent(@Payload value: IMailEvent) {
+    fun listenForMailEvent(@Payload value: MailEvent) {
         emailService.sendEmail(value)
         logger.info("Sent mail event ${value::class.qualifiedName} " +
                     "to ${value.emailTo} " +

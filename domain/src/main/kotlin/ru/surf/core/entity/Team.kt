@@ -25,10 +25,6 @@ class Team(
         @JoinColumn(name = "mentor_id", referencedColumnName = "id", nullable = false)
         val mentor: SurfEmployee = SurfEmployee(),
 
-        @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
-        @JoinColumn(name = "event_id", referencedColumnName = "id")
-        var event: Event = Event(),
-
         ) : UUIDBasedEntity(id) {
 
     @Override

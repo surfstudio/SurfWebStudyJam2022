@@ -1,9 +1,9 @@
 package ru.surf.core.mapper.event.impl
 
 import org.springframework.stereotype.Component
-import ru.surf.core.dto.FullResponseEventDto
-import ru.surf.core.dto.PostRequestEventDto
-import ru.surf.core.dto.ShortResponseEventDto
+import ru.surf.core.dto.event.FullResponseEventDto
+import ru.surf.core.dto.event.PostRequestEventDto
+import ru.surf.core.dto.event.ShortResponseEventDto
 import ru.surf.core.entity.Event
 import ru.surf.core.entity.SurfEmployee
 import ru.surf.core.mapper.event.EventMapper

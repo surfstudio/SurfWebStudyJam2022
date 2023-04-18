@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import ru.surf.core.dto.ErrorDto
+import ru.surf.core.exception.defence.DefenceCreationFailedException
 import ru.surf.core.exception.event.EventNotFoundByIdException
 import ru.surf.core.exception.event.EventReportNotFoundException
 import java.time.LocalDateTime
@@ -24,4 +25,10 @@ class GlobalExceptionHandler {
         val errorDto = ErrorDto(exception.exceptionType.toString(), exception.message, LocalDateTime.now())
         return ResponseEntity(errorDto, HttpStatus.NOT_FOUND)
     }
+    @ExceptionHandler(DefenceCreationFailedException::class)
+    fun handleDefenceCreationFailedException(exception: DefenceCreationFailedException): ResponseEntity<ErrorDto> {
+        val errorDto = ErrorDto(exception.exceptionType.toString(), exception.message, LocalDateTime.now())
+        return ResponseEntity(errorDto, HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
 }

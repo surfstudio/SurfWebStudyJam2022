@@ -1,0 +1,58 @@
+server:
+  port: 8086
+  servlet:
+    context-path: /meeting
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate.format_sql: false
+
+  flyway:
+    enabled: false
+
+  kafka:
+    producer:
+      # При условии что кафка торчит из докера наружу портом 9092
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      client-id: service-defence
+      properties:
+        spring.json.add.type.headers: false
+
+springdoc:
+  swagger-ui:
+    enabled: true
+
+zoom:
+  api-url: https://api.zoom.us/v2
+  base-url: https://zoom.us
+  account-id: Lgcrhrp2TDW_Udbwh7hJgw
+  client-id: 71zT9LUyQL6dI8Tivaemvg
+  client-secret: CVeoVn0cmI1L1JScVK0GBXTfb8XwswjF
+  admin:
+    admin-id: 01gvD9vmSr2CGgcnyBzATQ
+    admin-reserve-id: surfstudyplatform@gmail.com
+
+management:
+  endpoints.web.exposure.include: prometheus,health,info
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+  prometheus:
+    metrics:
+      export:
+        enabled: true

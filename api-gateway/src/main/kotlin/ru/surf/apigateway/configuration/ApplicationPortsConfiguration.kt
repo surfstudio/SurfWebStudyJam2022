@@ -9,4 +9,5 @@ data class ApplicationPortsConfiguration(
         val serviceCorePort: String,
         val externalFilesPort: String,
         val serviceTestingPort: String,
+        val serviceMeetingPort: String,
 )

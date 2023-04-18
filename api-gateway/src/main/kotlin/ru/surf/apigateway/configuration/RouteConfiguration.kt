@@ -12,6 +12,7 @@ class RouteConfiguration(private val applicationPortsConfiguration: ApplicationP
         const val serviceCore: String = "service-core"
         const val externalFiles: String = "service-external-files"
         const val serviceTesting: String = "service-testing"
+        const val serviceMeeting: String = "service-meeting"
     }
 
     @Bean
@@ -22,12 +23,16 @@ class RouteConfiguration(private val applicationPortsConfiguration: ApplicationP
                     .uri(applicationPortsConfiguration.serviceCorePort)
             }
             .route(ApplicationNames.externalFiles) { r ->
-                r.path("/external-files/**").and()
+                r.path("/external-files/**")
                     .uri(applicationPortsConfiguration.externalFilesPort)
             }
             .route(ApplicationNames.serviceTesting) { r ->
                 r.path("/testing/**")
                     .uri(applicationPortsConfiguration.serviceTestingPort)
+            }
+            .route(ApplicationNames.serviceMeeting) { r ->
+                r.path("/meeting/**")
+                    .uri(applicationPortsConfiguration.serviceMeetingPort)
             }
             .build()
     }

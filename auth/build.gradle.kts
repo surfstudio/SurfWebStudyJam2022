@@ -26,6 +26,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
+    implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.3")
     implementation("com.auth0:jwks-rsa:0.21.3")
     implementation("com.auth0:java-jwt:4.2.2")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.2")

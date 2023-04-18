@@ -2,9 +2,9 @@ package ru.surf.core.service.impl
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import ru.surf.core.dto.PostRequestEventDto
-import ru.surf.core.dto.PutRequestEventDto
-import ru.surf.core.dto.ShortResponseEventDto
+import ru.surf.core.dto.event.PostRequestEventDto
+import ru.surf.core.dto.event.PutRequestEventDto
+import ru.surf.core.dto.event.ShortResponseEventDto
 import ru.surf.core.entity.Event
 import ru.surf.core.entity.EventState
 import ru.surf.core.exception.event.EventNotFoundByIdException
