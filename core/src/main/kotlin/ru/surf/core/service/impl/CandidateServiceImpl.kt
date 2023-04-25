@@ -70,7 +70,7 @@ class CandidateServiceImpl(
         candidateRepository.run {
             candidate.let {
                 // TODO в этой ветке ещё нет кастомных исключений, добавить позже
-                it.isApproved = !it.isApproved || throw Exception("candidate already approved!")
+                it.approved = !it.approved || throw Exception("candidate already approved!")
                 save(it)
                 flush()
             }

@@ -15,4 +15,6 @@ interface EventRepository : JpaRepository<Event, UUID> {
     @Query("select e.reportFileId from Event e where e.id = :eventId")
     fun getReportFileId(eventId: UUID): UUID?
 
+    @Query("select e.candidatesReportFileId from Event e where e.id = :eventId")
+    fun getCandidatesReportFileId(eventId: UUID): UUID?
 }

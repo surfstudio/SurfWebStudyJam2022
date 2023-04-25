@@ -26,4 +26,4 @@ services:
   testing:
     url: http://0.0.0.0:8084/testing
   external-files:
-    url: http://0.0.0.0:8181/external-files
+    url: http://0.0.0.0:8181/external-files/files/file

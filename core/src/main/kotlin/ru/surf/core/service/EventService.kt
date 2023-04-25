@@ -7,7 +7,6 @@ import ru.surf.core.entity.Event
 import java.util.*
 
 interface EventService {
-
     fun createEvent(postRequestEventDto: PostRequestEventDto): ShortResponseEventDto
 
     fun deleteEvent(id: UUID)
@@ -18,4 +17,5 @@ interface EventService {
 
     fun getReport(id: UUID): ByteArray
 
+    fun getCandidatesReport(id: UUID): ByteArray
 }

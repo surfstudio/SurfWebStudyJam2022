@@ -71,6 +71,12 @@ class EventServiceImpl(
         return s3FacadeService.getFile(reportFileId)
     }
 
+    override fun getCandidatesReport(id: UUID): ByteArray {
+        val candidatesReportFileId = eventRepository.getCandidatesReportFileId(id) ?: throw EventReportNotFoundException(id)
+
+        return s3FacadeService.getFile(candidatesReportFileId)
+    }
+
     override fun deleteEvent(id: UUID) {
         val eventFromDb = getEventFromDatabase(id)
         eventRepository.deleteById(eventFromDb.id)

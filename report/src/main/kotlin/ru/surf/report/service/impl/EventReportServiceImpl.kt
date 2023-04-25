@@ -2,66 +2,54 @@ package ru.surf.report.service.impl
 
 import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.core.io.ByteArrayResource
-import org.springframework.http.MediaType
-import org.springframework.http.client.MultipartBodyBuilder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
-import ru.surf.report.model.PostResponseDto
-import ru.surf.report.model.Report
+import ru.surf.report.model.EventReport
 import ru.surf.report.repository.*
-import ru.surf.report.service.ReportService
+import ru.surf.report.service.EventReportService
+import ru.surf.report.service.ExternalFilesService
 import ru.surf.testing.sharedDto.CandidateScoresResponseDto
 import java.util.*
 
 @Service
-class ReportServiceImpl(
+class EventReportServiceImpl(
     private val teamRepository: TeamRepository,
     private val eventRepository: EventRepository,
     private val candidateRepository: CandidateRepository,
     private val traineeRepository: TraineeRepository,
+    private val externalFilesService: ExternalFilesService,
     private val webClient: WebClient,
 
     @Value("\${services.testing.url}")
     private val testingServiceUrl: String,
     @Value("\${services.external-files.url}")
     private val externalFilesServiceUrl: String,
-) : ReportService {
+) : EventReportService {
     private lateinit var testResults: CandidateScoresResponseDto
 
-    override fun getReport(eventId: UUID): Report {
-        val report = Report()
+    override fun getReport(eventId: UUID): EventReport {
+        val eventReport = EventReport()
 
         getTestResult(eventId)
 
-        report.eventDescription = eventRepository.getDescriptionById(eventId)
-        report.eventStates = eventRepository.getStatesById(eventId)
-        report.peopleAmountByStates = getPeopleAmountByState(eventId)
-        report.testResults = getTestResultsByGroup()
-        report.teamResults = getTeamsWithAvgScore(eventId)
+        eventReport.eventDescription = eventRepository.getDescriptionById(eventId)
+        eventReport.eventStates = eventRepository.getStatesById(eventId)
+        eventReport.peopleAmountByStates = getPeopleAmountByState(eventId)
+        eventReport.testResults = getTestResultsByGroup()
+        eventReport.teamResults = getTeamsWithAvgScore(eventId)
 
-        return report
+        return eventReport
     }
 
     @Transactional
     override fun saveReport(reportByteArray: ByteArray, eventId: UUID) {
-        val builder = MultipartBodyBuilder()
-        builder.part("file", ByteArrayResource(reportByteArray))
-            .filename("Report.pdf")
-            .contentType(MediaType.APPLICATION_PDF)
-
-        val response: PostResponseDto = runBlocking {
-            webClient.post()
-                .uri("${externalFilesServiceUrl}/files/file")
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromMultipartData(builder.build()))
-                .retrieve()
-                .awaitBody()
-        }
-
+        val response = externalFilesService.saveFile(
+            reportByteArray,
+            "event_report_${eventId}.pdf",
+            externalFilesServiceUrl
+        )
         eventRepository.updateReportFileId(response.fileId, eventId)
     }
 
@@ -81,7 +69,7 @@ class ReportServiceImpl(
             2 to 0,
             3 to 0
         )
-        testResults.scores.forEach() {
+        testResults.scores.forEach {
             when (it.score ?: 0.0) {
                 in 0.00..0.25 -> resultsByGroup[0] = resultsByGroup[0]!! + 1
                 in 0.26..0.50 -> resultsByGroup[1] = resultsByGroup[1]!! + 1

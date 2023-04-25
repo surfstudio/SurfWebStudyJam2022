@@ -76,10 +76,24 @@ class EventController(
 
     @GetMapping("/{id}/report")
     fun getReport(@PathVariable(name = "id") eventId: UUID): ResponseEntity<ByteArray> {
-        val target = eventService.getReport(eventId)
+        val report = eventService.getReport(eventId)
 
         return ResponseEntity.ok()
             .contentType(MediaType.APPLICATION_PDF)
-            .body(target)
+            .body(report)
     }
+
+    @GetMapping("/{id}/candidates/report")
+    fun getCandidatesReport(@PathVariable(name = "id") eventId: UUID): ResponseEntity<ByteArray> {
+        val report = eventService.getCandidatesReport(eventId)
+
+        val header = HttpHeaders()
+        header.contentType = MediaType("application", "force-download")
+        header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report.xlsx")
+
+        return ResponseEntity.ok()
+            .headers(header)
+            .body(report)
+    }
+
 }

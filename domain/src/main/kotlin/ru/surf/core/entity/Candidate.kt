@@ -57,7 +57,7 @@ class Candidate(
         val appliedAt: ZonedDateTime = ZonedDateTime.now(),
 
         @Column(name = "is_approved", nullable = false)
-        var isApproved: Boolean = false,
+        var approved: Boolean = false,
 
         @ManyToOne(cascade = [CascadeType.REFRESH], fetch = FetchType.EAGER)
         @JoinColumn(name = "event_id", referencedColumnName = "id", nullable = false)
@@ -79,7 +79,7 @@ class Candidate(
                         "telegram='$telegram', " +
                         "feedback='$feedback', " +
                         "appliedAt=$appliedAt, " +
-                        "isApproved=$isApproved, " +
+                        "isApproved=$approved, " +
                         "event=${event})"
         }
 }
