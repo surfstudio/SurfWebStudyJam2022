@@ -64,7 +64,7 @@ class EventController(
         val support = UriComponentsBuilder.fromHttpUrl(url)
             .queryParam("file_id", fileId)
         val mapper = ObjectMapper()
-        val forEntity: ResponseEntity<kotlin.collections.List<CandidateExcelDto>> =
+        val forEntity: ResponseEntity<List<CandidateExcelDto>> =
             restTemplate.exchange(
                 support.toUriString(),
                 HttpMethod.GET,

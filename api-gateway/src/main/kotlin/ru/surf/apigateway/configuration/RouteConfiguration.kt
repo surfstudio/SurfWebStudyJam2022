@@ -30,10 +30,6 @@ class RouteConfiguration(private val applicationPortsConfiguration: ApplicationP
                 r.path("/testing/**")
                     .uri(applicationPortsConfiguration.serviceTestingPort)
             }
-            .route(ApplicationNames.serviceMeeting) { r ->
-                r.path("/meeting/**")
-                    .uri(applicationPortsConfiguration.serviceMeetingPort)
-            }
             .build()
     }
 

@@ -6,10 +6,10 @@ import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
-import {TuiRootModule} from '@taiga-ui/core';
+import {TuiLinkModule, TuiNotificationModule, TuiRootModule, TuiTextfieldControllerModule} from '@taiga-ui/core';
 import {TuiButtonModule} from '@taiga-ui/core';
 import {TuiSvgModule} from '@taiga-ui/core';
-import {TuiStepperModule} from '@taiga-ui/kit';
+import {TuiAccordionModule, TuiElasticContainerModule, TuiStepperModule} from '@taiga-ui/kit';
 import {TuiProgressModule} from '@taiga-ui/kit';
 import {TuiIslandModule} from '@taiga-ui/kit';
 import {TuiInputModule} from '@taiga-ui/kit';
@@ -39,6 +39,7 @@ import { TestingStartingComponent } from './component/testing/testing-starting/t
 import { TestingProcessComponent } from './component/testing/testing-process/testing-process.component';
 import { TestingEndedComponent } from './component/testing/testing-ended/testing-ended.component';
 import { TuiRadioLabeledModule } from '@taiga-ui/kit';
+import {ProjectCardComponent} from "./component/card/project-card.component";
 
 @NgModule({
   declarations: [
@@ -53,34 +54,40 @@ import { TuiRadioLabeledModule } from '@taiga-ui/kit';
     TestingStartingComponent,
     TestingProcessComponent,
     TestingEndedComponent,
+    ProjectCardComponent
   ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    AppRoutingModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        AppRoutingModule,
+        FormsModule,
+        ReactiveFormsModule,
+        HttpClientModule,
 
-    TuiRootModule,
-    TuiButtonModule,
-    TuiSvgModule,
-    TuiStepperModule,
-    TuiProgressModule,
-    TuiIslandModule,
-    TuiInputModule,
-    TuiTextAreaModule,
-    TuiErrorModule,
-    TuiFieldErrorPipeModule,
-    TuiScrollbarModule,
-    TuiAlertModule,
-    TuiInputFilesModule,
-    TuiThemeNightModule,
-    TuiModeModule,
-    TuiToggleModule,
-    TuiCheckboxLabeledModule,
-    TuiRadioLabeledModule,
-  ],
+        TuiRootModule,
+        TuiButtonModule,
+        TuiSvgModule,
+        TuiStepperModule,
+        TuiProgressModule,
+        TuiIslandModule,
+        TuiInputModule,
+        TuiTextAreaModule,
+        TuiErrorModule,
+        TuiFieldErrorPipeModule,
+        TuiScrollbarModule,
+        TuiAlertModule,
+        TuiInputFilesModule,
+        TuiThemeNightModule,
+        TuiModeModule,
+        TuiToggleModule,
+        TuiCheckboxLabeledModule,
+        TuiRadioLabeledModule,
+        TuiLinkModule,
+        TuiAccordionModule,
+        TuiElasticContainerModule,
+        TuiTextfieldControllerModule,
+        TuiNotificationModule,
+    ],
   providers: [
     {
       provide: TUI_SANITIZER,
