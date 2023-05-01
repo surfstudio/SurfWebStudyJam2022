@@ -9,18 +9,24 @@ import ru.surf.meeting.service.MeetingService
 import ru.surf.meeting.service.ZoomIntegrationService
 
 @Service
-class MeetingServiceImpl(private val kafkaService: KafkaService,
-                         private val defenceMapper: DefenceMapper,
-                         private val zoomIntegrationService: ZoomIntegrationService) : MeetingService {
+class MeetingServiceImpl(
+    private val kafkaService: KafkaService,
+    private val defenceMapper: DefenceMapper,
+    private val zoomIntegrationService: ZoomIntegrationService
+) : MeetingService {
 
     override fun createMeeting(createDefenceMeetingEvent: CreateDefenceMeetingEvent) =
-            defenceMapper.convertCreateDefenceKafkaEventToListNotificationMailEvents(createDefenceMeetingEvent)
-                    .forEach { kafkaService.sendCoreEvent(it) }
+        defenceMapper.convertCreateDefenceKafkaEventToListNotificationMailEvents(createDefenceMeetingEvent)
+            .forEach { kafkaService.sendCoreEvent(it) }.run {
+                kafkaService.sendCoreEvent(
+                    defenceMapper.CreateDefenceEventToNotificationBotEvent(createDefenceMeetingEvent)
+                )
+            }
 
     override fun cancelMeeting(cancelDefenceMeetingEvent: CancelDefenceMeetingEvent) {
         zoomIntegrationService.deleteZoomMeeting(cancelDefenceMeetingEvent.zoomMeetingId)
         defenceMapper.convertCancelDefenceKafkaEventToListNotificationMailEvents(cancelDefenceMeetingEvent)
-                .forEach { kafkaService.sendCoreEvent(it) }
+            .forEach { kafkaService.sendCoreEvent(it) }
     }
 
 }

@@ -12,6 +12,7 @@ import ru.surf.core.entity.Trainee
 import ru.surf.core.kafkaEvents.CancelDefenceNotificationEvent
 import ru.surf.core.kafkaEvents.CreateDefenceNotificationEvent
 import ru.surf.core.kafkaEvents.EmailType
+import ru.surf.core.kafkaEvents.bot.CreateDefenceNotificationBot
 import ru.surf.core.kafkaEvents.meeting.CancelDefenceMeetingEvent
 import ru.surf.core.kafkaEvents.meeting.CreateDefenceMeetingEvent
 import ru.surf.core.kafkaEvents.meeting.MeetingEvent
@@ -21,7 +22,9 @@ import java.time.ZoneOffset
 @Component
 class DefenceMapperImpl : DefenceMapper {
 
-    override fun convertCreateDefenceKafkaEventToListNotificationMailEvents(createDefenceEvent: CreateDefenceMeetingEvent):
+    override fun convertCreateDefenceKafkaEventToListNotificationMailEvents(
+        createDefenceEvent: CreateDefenceMeetingEvent
+    ):
             List<CreateDefenceNotificationEvent> = createDefenceEvent.candidateParticipants.map {
         transformTraineeToCreateDefenceNotification(
             it,
@@ -47,6 +50,15 @@ class DefenceMapperImpl : DefenceMapper {
             cancelDefenceMeetingEvent
         )
     }.toList()
+
+    override fun CreateDefenceEventToNotificationBotEvent(
+        createDefenceEvent: CreateDefenceMeetingEvent
+    ): CreateDefenceNotificationBot =
+        CreateDefenceNotificationBot(
+            eventName = createDefenceEvent.eventName,
+            date = createDefenceEvent.date,
+            zoomLink = createDefenceEvent.zoomLink
+        )
 
     fun transformTraineeToCreateDefenceNotification(
         trainee: Trainee,

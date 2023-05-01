@@ -77,10 +77,8 @@ create table if not exists defences
     id            uuid default gen_random_uuid() primary key,
     title         varchar(255),
     description   varchar(300),
-    zoom_link     varchar(255),
-    zoom_meeting_id bigint,
-    date_time     timestamp,
-    created_at    timestamp
+    zoom_link    varchar(255),
+    date_time         timestamp
 );
 
 create table if not exists teams

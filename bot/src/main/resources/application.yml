@@ -1,0 +1,3 @@
+telegram:
+  botName: surf_helper_bot
+  token: ${TOKEN}

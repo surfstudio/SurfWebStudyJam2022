@@ -189,8 +189,3 @@ create table if not exists s3files
     checksum      varchar(255),
     expires_at    timestamp with time zone
 );
-
-create table if not exists defences
-(
-    id            uuid default gen_random_uuid() primary key
-);
