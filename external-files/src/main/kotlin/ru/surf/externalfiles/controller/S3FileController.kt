@@ -1,6 +1,5 @@
 package ru.surf.externalfiles.controller
 
-import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -19,10 +18,10 @@ class S3FileController(private val s3FacadeService: S3FacadeService) {
     fun uploadFile(@RequestParam(name = "file") multipartFile: MultipartFile): ResponseEntity<PostResponseDto> =
         ResponseEntity.ok(s3FacadeService.saveFile(multipartFile))
 
+    //    TODO: Сделать автоматическую загрузку файла при вызове эндпоинта
     @GetMapping("/{id}", produces = ["application/pdf"])
-    fun downloadFile(@PathVariable(name = "id") id: UUID): ResponseEntity<ByteArrayResource> {
-        return ResponseEntity.ok(s3FacadeService.getFile(id))
-    }
+    fun downloadFile(@PathVariable(name = "id") id: UUID): ResponseEntity<ByteArray> =
+        ResponseEntity.ok(s3FacadeService.getFile(id))
 
     @DeleteMapping("/{id}")
     fun deleteFile(@PathVariable(name = "id") id: UUID) = s3FacadeService.deleteFile(id)

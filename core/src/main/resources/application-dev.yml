@@ -38,5 +38,20 @@ authService:
   credentialsServiceApi: http://localhost:8085/credentialsServiceApi
 
 externalFiles:
+  s3FacadeServiceApi: http://localhost:8081/external-files/s3FacadeServiceApi
   s3FileServiceApi: http://localhost:8081/external-files/s3FileServiceApi
   s3ResourceServiceApi: http://localhost:8081/external-files/s3ResourceServiceApi
+
+meeting:
+  zoomServiceApi:  http://localhost:8086/meeting/zoomServiceApi
+
+management:
+  endpoints.web.exposure.include: prometheus,health,info
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+  prometheus:
+    metrics:
+      export:
+        enabled: true

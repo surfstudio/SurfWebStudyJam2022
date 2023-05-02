@@ -8,8 +8,10 @@ import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import ru.surf.auth.dto.AccountCredentialsDto
 import ru.surf.auth.service.CredentialsService
-import ru.surf.core.dto.CredentialsDto
+import ru.surf.core.dto.candidate.CredentialsDto
 import ru.surf.core.entity.SurfEmployee
+import ru.surf.core.entity.Team
+import ru.surf.core.exception.surfEmployee.SurfEmployeeNotFoundByIdException
 import ru.surf.core.repository.SurfEmployeeRepository
 import ru.surf.core.service.SurfEmployeeService
 import java.time.ZonedDateTime
@@ -37,7 +39,13 @@ class SurfEmployeeServiceImpl(
     }
 
     override fun getSurfEmployee(id: UUID): SurfEmployee =
-        surfEmployeeRepository.findByIdOrNull(id) ?: throw NoSuchElementException()
+            surfEmployeeRepository.findByIdOrNull(id) ?: throw SurfEmployeeNotFoundByIdException(id)
+
+    // TODO: 16.03.2023 Включить поиск для hr как будет готово
+    override fun generateJuryForTeam(team: Team): List<SurfEmployee> =
+            surfEmployeeRepository.findMentors()
+                    .filter { it.id != team.mentor.id }.shuffled().take(3).toList()
+
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])
     override fun activateSurfEmployee(surfEmployee: SurfEmployee, credentialsDto: CredentialsDto): SurfEmployee =

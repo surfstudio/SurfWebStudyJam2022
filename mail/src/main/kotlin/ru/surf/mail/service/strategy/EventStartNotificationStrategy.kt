@@ -3,10 +3,11 @@ package ru.surf.mail.service.strategy
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Component
 import org.thymeleaf.spring6.SpringTemplateEngine
-import ru.surf.core.kafkaEvents.IMailEvent
+import ru.surf.core.kafkaEvents.CandidateNotificationEvent
+import ru.surf.core.kafkaEvents.MailEvent
 import ru.surf.core.kafkaEvents.EmailType
 import ru.surf.mail.model.Template
-import ru.surf.core.kafkaEvents.CandidateEventNotification
+
 import ru.surf.core.kafkaEvents.GeneralNotificationDto
 
 @Component
@@ -16,8 +17,8 @@ class EventStartNotificationStrategy(
 ) : EmailSendStrategy {
     override fun emailType(): EmailType = EmailType.EVENT_START_NOTIFICATION
 
-    override fun sendEmail(email: IMailEvent) {
-        if (email is CandidateEventNotification) {
+    override fun sendEmail(email: MailEvent) {
+        if (email is CandidateNotificationEvent) {
             email.eventsName.forEach {
                 val message = createMimeMessage(
                     GeneralNotificationDto(

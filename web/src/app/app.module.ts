@@ -6,9 +6,9 @@ import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
-import {TuiRootModule} from '@taiga-ui/core';
 import {TuiButtonModule} from '@taiga-ui/core';
 import {TuiSvgModule} from '@taiga-ui/core';
+import {TuiElasticContainerModule} from '@taiga-ui/kit';
 import {TuiStepperModule} from '@taiga-ui/kit';
 import {TuiProgressModule} from '@taiga-ui/kit';
 import {TuiIslandModule} from '@taiga-ui/kit';
@@ -31,6 +31,11 @@ import {TuiBadgeModule} from '@taiga-ui/kit';
 import {TuiLinkModule} from '@taiga-ui/core';
 import {TuiPdfViewerModule} from '@taiga-ui/kit';
 
+import {TuiNotificationModule} from '@taiga-ui/core';
+import {TuiRootModule,} from '@taiga-ui/core';
+import {TuiTextfieldControllerModule} from '@taiga-ui/core';
+
+
 import {TUI_SANITIZER} from '@taiga-ui/core';
 import {NgDompurifySanitizer} from '@tinkoff/ng-dompurify';
 
@@ -48,6 +53,9 @@ import { TestingEndedComponent } from './component/testing/testing-ended/testing
 import { EventComponent } from './component/event/event.component';
 import { CandidateInfoComponent } from './component/event/candidate-info/candidate-info.component';
 
+import { ProjectCardComponent } from "./component/card/project-card.component";
+
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -62,7 +70,7 @@ import { CandidateInfoComponent } from './component/event/candidate-info/candida
     TestingProcessComponent,
     TestingEndedComponent,
     EventComponent,
-    CandidateInfoComponent,
+    CandidateInfoComponent
   ],
   imports: [
     BrowserModule,
@@ -91,11 +99,16 @@ import { CandidateInfoComponent } from './component/event/candidate-info/candida
     TuiCheckboxLabeledModule,
     TuiRadioLabeledModule,
     TuiAccordionModule,
-	TuiAvatarModule,
-	TuiTabsModule,
-	TuiBadgeModule,
-	TuiLinkModule,
-	TuiPdfViewerModule,
+
+	  TuiAvatarModule,
+	  TuiTabsModule,
+	  TuiBadgeModule,
+	  TuiLinkModule,
+	  TuiPdfViewerModule,
+
+    TuiElasticContainerModule,
+    TuiTextfieldControllerModule,
+    TuiNotificationModule,
   ],
   providers: [
     {

@@ -1,0 +1,78 @@
+<ng-template #errorShow>
+  <div>
+    <tui-notification>
+      Проблемы на сервере
+    </tui-notification>
+  </div>
+</ng-template>
+<div class="useful_links_container" *ngIf="projectCard$ | async as projectCard; else errorShow">
+  <tui-accordion>
+    <tui-accordion-item>
+      Полезные ссылки проекта
+      <ng-template tuiAccordionItemContent>
+        <ul class="tui-list">
+          <li class="tui-list__item">
+            <div class="tui-list__item-title"><a class="link-class"
+                                                 href="{{projectCard.githubLink}}"
+                                                 target="_blank">Github</a>
+            </div>
+          </li>
+          <li class="tui-list__item">
+            <div class="tui-list__item-title"><a class="link-class"
+                                                 href="{{projectCard.miroLink}}"
+                                                 target="_blank">Miro</a>
+            </div>
+          </li>
+          <li class="tui-list__item">
+            <div class="tui-list__item-title"><a class="link-class"
+                                                 href="{{projectCard.trelloLink}}"
+                                                 target="_blank">Trello</a>
+            </div>
+          </li>
+          <li class="tui-list__item">
+            <div class="tui-list__item-title"><a class="link-class"
+                                                 href="{{projectCard.googleDriveStorageLink}}"
+                                                 target="_blank">Google
+              Drive хранилище</a>
+            </div>
+          </li>
+          <li class="tui-list__item">
+            <div class="tui-list__item-title"><a class="link-class"
+                                                 href="{{projectCard.usefulDocumentationLink}}"
+                                                 target="_blank">Полезная
+              документация</a>
+            </div>
+          </li>
+        </ul>
+      </ng-template>
+    </tui-accordion-item>
+  </tui-accordion>
+</div>
+<div class="note-container-header" *ngIf="projectCard$ | async as projectCard">
+  <div class="tui-text_h2">Заметки проекта {{projectCard.eventName}}</div>
+</div>
+<div class="note-container">
+  <form [formGroup]="myForm" novalidate *ngIf="projectCard$ | async as projectCard">
+    <div class="tui-row tui-row_sme">
+      <div class="tui-col_8">
+        <h3 class="tui-form__header tui-form__header_margin-top_none">{{projectCard.title}}</h3>
+        <div class="tui-form__row">
+          <tui-text-area tuiTextfieldSize="l" class="form-control" formControlName="projectNote"
+                         [(ngModel)]="projectNote">
+          </tui-text-area>
+        </div>
+      </div>
+    </div>
+    <div class="tui-form__buttons">
+      <button
+        tuiButton
+        size="l"
+        type="submit"
+        class="tui-form__button"
+        (click)="updateCard()"
+      >
+        <div class="tui-text_h5">Обновить заметку</div>
+      </button>
+    </div>
+  </form>
+</div>

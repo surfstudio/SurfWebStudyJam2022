@@ -8,7 +8,7 @@ data class CandidateAppliedEvent(
     override val subject: String = "Вы зарегистрировались на стажировку в Surf",
 
     val candidate: Candidate
-) : IMailEvent {
+) : MailEvent {
     override fun params(): Map<String, *> {
         return mapOf(
             "eventName" to candidate.event.description,

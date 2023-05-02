@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
-import ru.surf.core.dto.CandidateApprovalDto
-import ru.surf.core.dto.CandidateDto
+import ru.surf.core.dto.candidate.CandidateApprovalDto
+import ru.surf.core.dto.candidate.CandidateDto
 import ru.surf.core.entity.Candidate
 import ru.surf.core.service.CandidateService
 import java.util.*

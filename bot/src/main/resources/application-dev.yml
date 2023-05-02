@@ -1,0 +1,28 @@
+server:
+  port: 8089
+spring:
+  kafka:
+    consumer:
+      client-id: service-bot
+      group-id: 5
+      auto-offset-reset: earliest
+      bootstrap-servers: localhost:9092
+      properties:
+        spring.json.add.type.headers: false
+springdoc:
+  swagger-ui:
+    enabled: true
+telegram:
+  bot-name: surf_helper_bot
+  token: 5920580392:AAGmKPcSneo2KpEXA0G_dCQuhW6bayazv7g
+
+management:
+  endpoints.web.exposure.include: prometheus,health,info
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+  prometheus:
+    metrics:
+      export:
+        enabled: true

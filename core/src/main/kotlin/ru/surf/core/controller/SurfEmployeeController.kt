@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import ru.surf.core.dto.CredentialsDto
+import ru.surf.core.dto.candidate.CredentialsDto
 import ru.surf.core.dto.SurfEmployeeCreationDto
 import ru.surf.core.dto.SurfEmployeeDto
 import ru.surf.core.entity.Account

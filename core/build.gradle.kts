@@ -10,6 +10,7 @@ plugins {
     id("io.spring.dependency-management") version springDependencyManagementVersion
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
+    jacoco
 }
 
 group = "ru.surf"
@@ -22,6 +23,9 @@ repositories {
 
 dependencies {
     val springDocVersion = "2.0.2"
+    val mockkVersion = "1.13.4"
+    val springMockkVersion = "4.0.2"
+    val jUnit5Version = "5.8.1"
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -29,6 +33,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.kafka:spring-kafka")
 
+    implementation("io.micrometer:micrometer-registry-prometheus")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.3")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -37,11 +43,19 @@ dependencies {
 
     runtimeOnly("org.postgresql:postgresql")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    implementation("org.junit.jupiter:junit-jupiter:$jUnit5Version")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude(module = "mockito-core")
+    }
+
+    testImplementation("com.ninja-squad:springmockk:${springMockkVersion}")
+    testImplementation("io.mockk:mockk:${mockkVersion}")
 
     implementation(project(":domain"))
     implementation(project(":auth"))
     implementation(project(":external-files"))
+    implementation(project(":meeting"))
     implementation(project(":remoting"))
 
     devDependencies {
@@ -64,6 +78,21 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required.set(false)
+        csv.required.set(false)
+        html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+    }
 }
 
 tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {

@@ -23,21 +23,22 @@ import java.util.*
 
 
 @Service
-class AuthServiceImpl(@Autowired
-                      private val keycloakConfiguration: KeycloakConfiguration,
+class AuthServiceImpl(
+    @Autowired
+    private val keycloakConfiguration: KeycloakConfiguration,
 
-                      @Autowired
-                      private val restTemplate: RestTemplate,
+    @Autowired
+    private val restTemplate: RestTemplate,
 
-                      @Autowired
-                      private val jwtService: JwtService,
+    @Autowired
+    private val jwtService: JwtService,
 
-                      @Autowired
-                      private val objectConverter: ObjectConverter,
+    @Autowired
+    private val objectConverter: ObjectConverter,
 
-                      @Autowired
-                      @Lazy
-                      private val clientToken: ClientToken
+    @Autowired
+    @Lazy
+    private val clientToken: ClientToken
 ) : AuthService {
     override fun login(accountCredentialsDto: AccountCredentialsDto): AccessTokenDto {
         @Suppress("unused") val request = HttpEntity(object {
@@ -112,11 +113,11 @@ class AuthServiceImpl(@Autowired
 
     private fun validateProfile(token: String) {
         val request = HttpEntity(null,
-                object: LinkedMultiValueMap<String, String>() {
-                    init {
-                        add("Authorization", "Bearer $token")
-                    }
+            object : LinkedMultiValueMap<String, String>() {
+                init {
+                    add("Authorization", "Bearer $token")
                 }
+            }
         )
 
         try {
@@ -127,9 +128,11 @@ class AuthServiceImpl(@Autowired
     }
 
     @Component
-    class ClientToken (@Autowired
-                       private val authServiceImpl: AuthServiceImpl) {
-        @get:Cacheable(cacheNames = ["ClientToken"], cacheManager="timeoutCacheManager")
+    class ClientToken(
+        @Autowired
+        private val authServiceImpl: AuthServiceImpl
+    ) {
+        @get:Cacheable(cacheNames = ["ClientToken"], cacheManager = "timeoutCacheManager")
         val get: String
             get() {
                 with(authServiceImpl) {

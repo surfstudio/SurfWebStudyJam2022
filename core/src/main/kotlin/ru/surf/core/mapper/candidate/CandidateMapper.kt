@@ -1,6 +1,6 @@
 package ru.surf.core.mapper.candidate
 
-import ru.surf.core.dto.CandidateDto
+import ru.surf.core.dto.candidate.CandidateDto
 import ru.surf.core.entity.Candidate
 import ru.surf.core.entity.Event
 

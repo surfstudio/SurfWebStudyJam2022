@@ -3,9 +3,9 @@ package ru.surf.core
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
-import ru.surf.core.configuration.KafkaProducerConfiguration
+import ru.surf.core.configuration.KafkaProducerPropertiesConfiguration
 
-@EnableConfigurationProperties(KafkaProducerConfiguration::class)
+@EnableConfigurationProperties(KafkaProducerPropertiesConfiguration::class)
 @SpringBootApplication
 class CoreApplication
 

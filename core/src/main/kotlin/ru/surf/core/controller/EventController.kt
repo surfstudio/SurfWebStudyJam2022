@@ -1,17 +1,15 @@
 package ru.surf.core.controller
 
-import aj.org.objectweb.asm.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.*
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.client.exchange
 import org.springframework.web.util.UriComponentsBuilder
-import ru.surf.core.dto.FullResponseEventDto
-import ru.surf.core.dto.PostRequestEventDto
-import ru.surf.core.dto.PutRequestEventDto
-import ru.surf.core.dto.ShortResponseEventDto
+import ru.surf.core.dto.event.FullResponseEventDto
+import ru.surf.core.dto.event.PostRequestEventDto
+import ru.surf.core.dto.event.PutRequestEventDto
+import ru.surf.core.dto.event.ShortResponseEventDto
 import ru.surf.core.entity.Candidate
 import ru.surf.core.mapper.event.EventMapper
 import ru.surf.core.service.CandidateService
@@ -66,7 +64,7 @@ class EventController(
         val support = UriComponentsBuilder.fromHttpUrl(url)
             .queryParam("file_id", fileId)
         val mapper = ObjectMapper()
-        val forEntity: ResponseEntity<kotlin.collections.List<CandidateExcelDto>> =
+        val forEntity: ResponseEntity<List<CandidateExcelDto>> =
             restTemplate.exchange(
                 support.toUriString(),
                 HttpMethod.GET,
@@ -74,6 +72,28 @@ class EventController(
                 object : ParameterizedTypeReference<List<CandidateExcelDto>>() {}
             )
         candidateService.notifyCandidates(forEntity.body!!)
+    }
+
+    @GetMapping("/{id}/report")
+    fun getReport(@PathVariable(name = "id") eventId: UUID): ResponseEntity<ByteArray> {
+        val report = eventService.getReport(eventId)
+
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_PDF)
+            .body(report)
+    }
+
+    @GetMapping("/{id}/candidates/report")
+    fun getCandidatesReport(@PathVariable(name = "id") eventId: UUID): ResponseEntity<ByteArray> {
+        val report = eventService.getCandidatesReport(eventId)
+
+        val header = HttpHeaders()
+        header.contentType = MediaType("application", "force-download")
+        header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report.xlsx")
+
+        return ResponseEntity.ok()
+            .headers(header)
+            .body(report)
     }
 
 }

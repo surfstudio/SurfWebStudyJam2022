@@ -2,6 +2,15 @@ server:
   port: 8088
 
 management:
+  endpoints.web.exposure.include: prometheus,health,info
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
   endpoint:
     gateway:
       enabled: true
@@ -25,3 +34,4 @@ spring:
             allowedOrigins: "*"
             allowedMethods: "*"
             allowedHeaders: "*"
+

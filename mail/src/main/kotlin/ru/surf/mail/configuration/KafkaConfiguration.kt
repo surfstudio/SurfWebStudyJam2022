@@ -19,10 +19,8 @@ import org.springframework.util.backoff.FixedBackOff
 @Configuration
 @EnableKafka
 class KafkaConfiguration(
-
-        @Value("\${spring.kafka.bootstrap-servers}")
-        private val bootstrapServers: String
-
+    @Value("\${spring.kafka.bootstrap-servers}")
+    private val bootstrapServers: String
 ) {
 
     @Bean
@@ -35,7 +33,7 @@ class KafkaConfiguration(
         return DefaultKafkaConsumerFactory(
             mapOf(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers,
-                ConsumerConfig.CLIENT_ID_CONFIG to "mail_service",
+                ConsumerConfig.CLIENT_ID_CONFIG to "mail-service",
                 ConsumerConfig.GROUP_ID_CONFIG to "2",
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to "StringDeserializer::class.java",
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to "JsonDeserializer::class.java",
@@ -43,14 +41,14 @@ class KafkaConfiguration(
             ),
             StringDeserializer(),
             JsonDeserializer<Any>().apply {
-                addTrustedPackages("ru.surf.core.kafkaEvents")
+                addTrustedPackages("ru.surf.core.*")
             }
         )
     }
 
     @Bean
     fun errorHandler(): DefaultErrorHandler =
-            DefaultErrorHandler(FixedBackOff())
+        DefaultErrorHandler(FixedBackOff())
 
     @Bean
     fun kafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, Any> =
@@ -58,5 +56,4 @@ class KafkaConfiguration(
             consumerFactory = consumerFactory()
             setCommonErrorHandler(errorHandler())
         }
-
 }

@@ -2,16 +2,18 @@ package ru.surf.core.service.impl
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import ru.surf.core.dto.PostRequestEventDto
-import ru.surf.core.dto.PutRequestEventDto
-import ru.surf.core.dto.ShortResponseEventDto
+import ru.surf.core.dto.event.PostRequestEventDto
+import ru.surf.core.dto.event.PutRequestEventDto
+import ru.surf.core.dto.event.ShortResponseEventDto
 import ru.surf.core.entity.Event
 import ru.surf.core.entity.EventState
 import ru.surf.core.exception.event.EventNotFoundByIdException
+import ru.surf.core.exception.event.EventReportNotFoundException
 import ru.surf.core.mapper.event.EventMapper
 import ru.surf.core.repository.EventRepository
 import ru.surf.core.service.EventService
 import ru.surf.core.service.SurfEmployeeService
+import ru.surf.externalfiles.service.S3FacadeService
 import java.time.ZonedDateTime
 import java.util.*
 
@@ -21,6 +23,7 @@ class EventServiceImpl(
     private val eventMapper: EventMapper,
     private val eventRepository: EventRepository,
     private val surfEmployeeService: SurfEmployeeService,
+    private val s3FacadeService: S3FacadeService
 ) : EventService {
 
     override fun createEvent(postRequestEventDto: PostRequestEventDto): ShortResponseEventDto {
@@ -60,6 +63,18 @@ class EventServiceImpl(
         }
         val persistedEvent = eventRepository.save(eventFromDb)
         return eventMapper.convertFromEventEntityToShortResponseEventDto(persistedEvent)
+    }
+
+    override fun getReport(id: UUID): ByteArray {
+        val reportFileId = eventRepository.getReportFileId(id) ?: throw EventReportNotFoundException(id)
+
+        return s3FacadeService.getFile(reportFileId)
+    }
+
+    override fun getCandidatesReport(id: UUID): ByteArray {
+        val candidatesReportFileId = eventRepository.getCandidatesReportFileId(id) ?: throw EventReportNotFoundException(id)
+
+        return s3FacadeService.getFile(candidatesReportFileId)
     }
 
     override fun deleteEvent(id: UUID) {

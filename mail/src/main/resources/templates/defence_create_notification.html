@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:remove="all">Template for HTML email</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<p>
+    <b th:text="${firstName}">Foo</b>
+    <b th:text="${lastName+','}">Foo</b>
+</p>
+<p>
+    <span>Здравствуйте, вы участвуете в защите проекта</span>
+    <b th:text="${eventName}">Foo</b>
+    <br/>
+    <span>Для участия в защите перейдите по данной ссылке</span>
+    <a th:href="@{${zoomLink}}">Link</a>
+    <br/>
+</p>
+
+<span>Команда Surf.</span>
+
+</body>
+</html>

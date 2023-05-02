@@ -2,6 +2,15 @@ server:
   port: ${PORT}
 
 management:
+  endpoints.web.exposure.include: prometheus,health,info
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
   endpoint:
     gateway:
       enabled: true

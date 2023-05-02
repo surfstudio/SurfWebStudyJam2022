@@ -6,15 +6,16 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import ru.surf.auth.service.CredentialsService
-import ru.surf.core.dto.CandidateApprovalDto
-import ru.surf.core.dto.CandidateDto
-import ru.surf.core.dto.CandidateEventNotificationDto
+import ru.surf.core.dto.candidate.CandidateApprovalDto
+import ru.surf.core.dto.candidate.CandidateDto
+import ru.surf.core.dto.candidate.CandidateEventNotificationDto
 import ru.surf.core.entity.*
 import ru.surf.core.kafkaEvents.CandidateAppliedEvent
 import ru.surf.core.mapper.candidate.CandidateMapper
 import ru.surf.core.repository.CandidateRepository
 import ru.surf.core.repository.EventRepository
 import ru.surf.core.repository.EventTagRepository
+import ru.surf.core.repository.TraineeRepository
 import ru.surf.core.service.CandidateFilterService
 import ru.surf.core.service.CandidateService
 import ru.surf.core.service.EventService
@@ -29,6 +30,7 @@ class CandidateServiceImpl(
     @Autowired private val credentialsService: CredentialsService,
     @Autowired private val s3FileService: S3FileService,
     @Autowired private val candidateRepository: CandidateRepository,
+    @Autowired private val traineeRepository: TraineeRepository,
     @Autowired private val candidateMapper: CandidateMapper,
     @Autowired private val kafkaService: KafkaService,
     @Autowired private val eventService: EventService,
@@ -66,7 +68,7 @@ class CandidateServiceImpl(
         candidateRepository.run {
             candidate.let {
                 // TODO в этой ветке ещё нет кастомных исключений, добавить позже
-                it.isApproved = !it.isApproved || throw Exception("candidate already approved!")
+                it.approved = !it.approved || throw Exception("candidate already approved!")
                 save(it)
                 flush()
             }

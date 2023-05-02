@@ -108,14 +108,14 @@ services:
     image: provectuslabs/kafka-ui
     depends_on:
       kafka-service:
-          condition: service_healthy
+        condition: service_healthy
     environment:
-       SERVER_PORT: 9094
-       KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTERS_0_NAME}
-       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka-service:29092"
-       AUTH_TYPE: LOGIN_FORM
-       SPRING_SECURITY_USER_NAME: ${KAFKA_UI_ADMIN_USERNAME}
-       SPRING_SECURITY_USER_PASSWORD: ${KAFKA_UI_ADMIN_PASSWORD}
+      SERVER_PORT: 9094
+      KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTERS_0_NAME}
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka-service:29092"
+      AUTH_TYPE: LOGIN_FORM
+      SPRING_SECURITY_USER_NAME: ${KAFKA_UI_ADMIN_USERNAME}
+      SPRING_SECURITY_USER_PASSWORD: ${KAFKA_UI_ADMIN_PASSWORD}
     ports:
       - "9094:9094"
     healthcheck:
@@ -126,7 +126,7 @@ services:
     image: confluentinc/cp-kafka:latest
     depends_on:
       kafka-service:
-          condition: service_healthy
+        condition: service_healthy
     entrypoint: [ '/bin/sh', '-c' ]
     command: |
       "
@@ -146,7 +146,7 @@ services:
   minio-service:
     restart: unless-stopped
     image: minio/minio:latest
-    command: 
+    command:
       server --console-address ":9001" /data/
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
@@ -188,20 +188,20 @@ services:
       test: "wget -qO - http://0.0.0.0:80/actuator/health | grep '\"status\":\"UP\"'"
       <<: *healthcheck-params
 
-#  defence-service:
-#    restart: unless-stopped
-#    build:
-#      context: defenceOfProject
-#      dockerfile: Dockerfile
-#    image: defence
-#    environment:
-#      SPRING_PROFILES_ACTIVE: prod
-#      PORT: 80
-#    ports:
-#      - "8086:80"
-#    healthcheck:
-#      test: "wget -qO - http://0.0.0.0:80/actuator/health | grep '\"status\":\"UP\"'"
-#      <<: *healthcheck-params
+  #  defence-service:
+  #    restart: unless-stopped
+  #    build:
+  #      context: defenceOfProject
+  #      dockerfile: Dockerfile
+  #    image: defence
+  #    environment:
+  #      SPRING_PROFILES_ACTIVE: prod
+  #      PORT: 80
+  #    ports:
+  #      - "8086:80"
+  #    healthcheck:
+  #      test: "wget -qO - http://0.0.0.0:80/actuator/health | grep '\"status\":\"UP\"'"
+  #      <<: *healthcheck-params
 
   auth-service:
     restart: unless-stopped
@@ -211,9 +211,9 @@ services:
     image: auth
     depends_on:
       keycloak-service:
-          condition: service_healthy
+        condition: service_healthy
       db-service:
-          condition: service_healthy
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 80
@@ -301,9 +301,9 @@ services:
     image: external-files
     depends_on:
       minio-service:
-          condition: service_healthy
+        condition: service_healthy
       db-service:
-          condition: service_healthy
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 80
@@ -346,8 +346,8 @@ services:
         condition: service_healthy
       report-service:
         condition: service_healthy
-#      defence-service:
-#        condition: service_healthy
+    #      defence-service:
+    #        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 80
@@ -371,7 +371,7 @@ services:
     image: gateway
     depends_on:
       core-service:
-          condition: service_healthy
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 80
@@ -384,6 +384,87 @@ services:
       test: "wget -qO - http://0.0.0.0:80/actuator/health | grep '\"status\":\"UP\"'"
       <<: *healthcheck-params
 
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+    volumes:
+      - grafana:/grafana
+    depends_on:
+      - prometheus
+
+  elasticsearch:
+    image: elasticsearch:8.3.3
+    container_name: elasticsearch
+    environment:
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.type=single-node"
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - elastic
+
+  kibana:
+    image: kibana:8.3.3
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic
+
+  logstash:
+    image: logstash:8.3.3
+    container_name: logstash
+    volumes:
+      - ./elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./elk/logstash/pipeline:/usr/share/logstash/pipeline:ro
+    ports:
+      - "5044:5044"
+      - "5000:5000/tcp"
+      - "5000:5000/udp"
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - elastic
+    depends_on:
+      - elasticsearch
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - "4040:4040"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    command:
+      - '-port=4040'
+
+networks:
+  elastic:
+    driver: bridge
+
 volumes:
   postgres:
   pgadmin:
@@ -393,3 +474,7 @@ volumes:
   kafka_data:
   kafka_secrets:
   minio:
+  grafana:
+  prometheus:
+  elasticsearch_data:
+    driver: local

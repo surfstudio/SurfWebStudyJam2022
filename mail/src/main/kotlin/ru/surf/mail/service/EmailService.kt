@@ -1,7 +1,7 @@
 package ru.surf.mail.service
 
-import ru.surf.core.kafkaEvents.IMailEvent
+import ru.surf.core.kafkaEvents.MailEvent
 
 interface EmailService {
-    fun sendEmail(email: IMailEvent)
+    fun sendEmail(email: MailEvent)
 }
