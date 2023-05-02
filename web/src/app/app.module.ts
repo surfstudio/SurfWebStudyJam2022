@@ -70,7 +70,8 @@ import { ProjectCardComponent } from "./component/card/project-card.component";
     TestingProcessComponent,
     TestingEndedComponent,
     EventComponent,
-    CandidateInfoComponent
+    CandidateInfoComponent,
+    ProjectCardComponent
   ],
   imports: [
     BrowserModule,
