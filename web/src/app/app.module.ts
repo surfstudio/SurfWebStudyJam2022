@@ -23,6 +23,13 @@ import {TuiThemeNightModule} from '@taiga-ui/core';
 import {TuiModeModule} from '@taiga-ui/core';
 import {TuiToggleModule} from '@taiga-ui/kit';
 import {TuiCheckboxLabeledModule} from '@taiga-ui/kit';
+import {TuiRadioLabeledModule} from '@taiga-ui/kit';
+import {TuiAccordionModule} from '@taiga-ui/kit';
+import {TuiAvatarModule} from '@taiga-ui/kit';
+import {TuiTabsModule} from '@taiga-ui/kit';
+import {TuiBadgeModule} from '@taiga-ui/kit';
+import {TuiLinkModule} from '@taiga-ui/core';
+import {TuiPdfViewerModule} from '@taiga-ui/kit';
 
 import {TUI_SANITIZER} from '@taiga-ui/core';
 import {NgDompurifySanitizer} from '@tinkoff/ng-dompurify';
@@ -38,7 +45,8 @@ import { TestingComponent } from './component/testing/testing.component';
 import { TestingStartingComponent } from './component/testing/testing-starting/testing-starting.component';
 import { TestingProcessComponent } from './component/testing/testing-process/testing-process.component';
 import { TestingEndedComponent } from './component/testing/testing-ended/testing-ended.component';
-import { TuiRadioLabeledModule } from '@taiga-ui/kit';
+import { EventComponent } from './component/event/event.component';
+import { CandidateInfoComponent } from './component/event/candidate-info/candidate-info.component';
 
 @NgModule({
   declarations: [
@@ -53,6 +61,8 @@ import { TuiRadioLabeledModule } from '@taiga-ui/kit';
     TestingStartingComponent,
     TestingProcessComponent,
     TestingEndedComponent,
+    EventComponent,
+    CandidateInfoComponent,
   ],
   imports: [
     BrowserModule,
@@ -80,6 +90,12 @@ import { TuiRadioLabeledModule } from '@taiga-ui/kit';
     TuiToggleModule,
     TuiCheckboxLabeledModule,
     TuiRadioLabeledModule,
+    TuiAccordionModule,
+	TuiAvatarModule,
+	TuiTabsModule,
+	TuiBadgeModule,
+	TuiLinkModule,
+	TuiPdfViewerModule,
   ],
   providers: [
     {

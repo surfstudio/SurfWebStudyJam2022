@@ -1,0 +1,72 @@
+@import '~@taiga-ui/core/styles/taiga-ui-local';
+
+
+.candidate {
+  display: flex;
+  flex-flow: column;
+  gap: 1rem;
+}
+
+.tui-island__paragraph {
+  border-bottom: 1px solid var(--tui-base-03);
+  min-height: 8rem;
+  max-height: 8rem;
+}
+
+.candidate_personal_block {
+  display: flex;
+  flex-flow: row;
+  gap: 1rem;
+
+  @media (max-width:699px) {
+    flex-flow: column;
+  };
+
+  @media (min-width:700px) {
+    flex-flow: row;
+  };
+}
+
+.candidate_personal_block__avatar {
+  margin-top: auto;
+  margin-bottom: auto;
+
+  @media (max-width:699px) {
+    margin-left: auto;
+    margin-right: auto;
+  };
+}
+
+.candidate_personal_block__content {
+  /*&>* {
+	margin: 0;
+  }*/
+  display: flex;
+  flex-flow: column;
+  gap: 0.25rem;
+}
+
+.text_ellipsis {
+  overflow-x: hidden; /* Обрезаем все, что не помещается в область */
+  white-space: nowrap; /* Запрещаем перенос строк */
+  text-overflow: ellipsis; /* Добавляем многоточие */
+}
+
+.tabs {
+  margin-top: -1rem;
+}
+
+.step {
+    margin: 0;
+    color: var(--tui-primary-02);
+
+    &:hover {
+        color: var(--tui-link-hover);
+    }
+}
+
+.separator {
+    height: 2rem;
+    color: var(--tui-base-03);
+    margin: 0;
+}

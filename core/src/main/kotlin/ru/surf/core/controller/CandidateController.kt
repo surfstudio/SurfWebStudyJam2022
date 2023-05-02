@@ -24,6 +24,10 @@ class CandidateController(
     fun approve(@PathVariable candidateId: UUID): CandidateApprovalDto =
             candidateService.get(candidateId).let { candidateService.approveCandidate(it) }
 
+    @GetMapping(value = ["/{eventId}"])
+    fun getAllByEventId(@PathVariable eventId: UUID) =
+            candidateService.getAllByEventId(eventId)
+
     @GetMapping
     @PreAuthorize("isAuthenticated")
     fun get(@AuthenticationPrincipal candidate: Candidate): Candidate =

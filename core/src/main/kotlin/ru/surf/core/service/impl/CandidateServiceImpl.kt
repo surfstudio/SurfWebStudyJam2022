@@ -78,6 +78,10 @@ class CandidateServiceImpl(
         Exception("candidate not found")
     }
 
+    override fun getAllByEventId(eventId: UUID): List<Candidate> =
+        candidateRepository.getCandidatesByEventId(eventId)
+
+
     // TODO: 25.02.2023 Скорее всего вынести в отдельный сервис
     override fun notifyCandidates(candidates: List<CandidateExcelDto>) {
         candidates.map { transform(it) }.forEach { kafkaService.sendCoreEvent(it) }

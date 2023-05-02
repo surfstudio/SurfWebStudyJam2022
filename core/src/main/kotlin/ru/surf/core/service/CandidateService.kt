@@ -14,6 +14,8 @@ interface CandidateService {
 
     fun get(candidateId: UUID): Candidate
 
+    fun getAllByEventId(eventId: UUID): List<Candidate>
+
     fun getPreferredCandidates(eventId: UUID): Map<Candidate, List<String>>
 
     fun notifyCandidates(candidates: List<CandidateExcelDto>)

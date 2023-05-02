@@ -2,6 +2,7 @@ import { SFile } from 'entity/s-file'
 
 
 export class Candidate {
+  id: string = '';
   eventId: string = '';
   firstName: string = '';
   lastName: string = '';
