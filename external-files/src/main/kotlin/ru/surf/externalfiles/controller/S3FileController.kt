@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import ru.surf.externalfiles.dto.PostResponseDto
 import ru.surf.externalfiles.service.S3FacadeService
-import java.util.UUID
+import java.util.*
 
 //TODO: реализовать привязку файла к пользователю
 //Пока непонятно в каком виде придет запрос из сервиса core
@@ -19,7 +19,7 @@ class S3FileController(private val s3FacadeService: S3FacadeService) {
         ResponseEntity.ok(s3FacadeService.saveFile(multipartFile))
 
     //    TODO: Сделать автоматическую загрузку файла при вызове эндпоинта
-    @GetMapping("/{id}")
+    @GetMapping("/{id}", produces = ["application/pdf"])
     fun downloadFile(@PathVariable(name = "id") id: UUID): ResponseEntity<ByteArray> =
         ResponseEntity.ok(s3FacadeService.getFile(id))
 

@@ -17,7 +17,11 @@ export class CandidateService {
     this.url = `${environment.SURFWEBSTUDYJAM_API_URL}core/candidates/`;
   }
 
-  public createCandidate(candidate: Candidate): Observable<Candidate> {
+  createCandidate(candidate: Candidate): Observable<Candidate> {
     return this.http.post<Candidate>(this.url, candidate);
+  }
+
+  getAllByEventId(eventId: string): Observable<Candidate[]> {
+    return this.http.get<Candidate[]>(`${this.url}${eventId}`);
   }
 }

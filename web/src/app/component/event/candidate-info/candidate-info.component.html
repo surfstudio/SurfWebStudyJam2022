@@ -1,0 +1,88 @@
+<tui-island class="candidate">
+  <div class="candidate_personal_block">
+    <tui-avatar class="candidate_personal_block__avatar"
+                text="{{ candidate.firstName }} {{ candidate.lastName }}"
+                [rounded]="true"
+                [autoColor]="true"
+    ></tui-avatar>
+    <div class="candidate_personal_block__content">
+      <tui-badge
+        status="success"
+        *ngIf="score > 99"
+        [value]="score+'%'"
+        style="width: 5rem"
+      ></tui-badge>
+      <tui-badge
+        status="warning"
+        *ngIf="score > 93 && score <= 95"
+        [value]="score+'%'"
+        style="width: 5rem"
+      ></tui-badge>
+      <tui-badge
+        status="error"
+        *ngIf="score > 86 && score <= 93"
+        [value]="score+'%'"
+        style="width: 5rem"
+      ></tui-badge>
+      <span style="padding-bottom: 0.5rem;"><b>{{ candidate.firstName }} {{ candidate.lastName }}</b></span>
+      <span class="text_ellipsis"><a icon="tuiIconMail" iconAlign="left" tuiLink href="mailto:{{ candidate.email }}"><i>{{ candidate.email }}</i></a></span>
+      <span class="text_ellipsis"><a icon="tuiIconUser" iconAlign="left" tuiLink href="https://t.me/{{candidate.telegram}}">@{{ candidate.telegram }}</a></span>
+      <span class="text_ellipsis"><a icon="tuiIconCode" iconAlign="left" tuiLink href="http://{{ candidate.vcs }}">{{ candidate.vcs }}</a></span>
+      <button
+        tuiLink
+        type="button"
+        icon="tuiIconDownload"
+        iconAlign="left"
+        (click)="show()"
+      >
+        Посмотреть резюме
+      </button>
+    </div>
+    <ng-template
+      #actions
+      let-content="content"
+    >
+      <a
+        tuiButton
+        shape="rounded"
+        size="s"
+        download
+        [href]="content"
+      >
+        Download
+      </a>
+    </ng-template>
+  </div>
+  <tui-tabs [(activeItemIndex)]="activeItemIndex" [underline]="false" class="tabs">
+    <ng-container *ngFor="let step of ['Образование', 'Опыт', 'Почему выбрал Surf?']; let l = last">
+      <button
+        tuiTab
+        class="step"
+      >
+        {{ step }}
+        <tui-svg
+          *ngIf="!l"
+          src="tuiIconChevronRight"
+          class="separator"
+        ></tui-svg>
+      </button>
+    </ng-container>
+  </tui-tabs>
+  <tui-scrollbar class="tui-island__paragraph" *ngIf="activeItemIndex == 0">
+    <span><b>ВУЗ:</b> {{ candidate.university }}<br/></span>
+    <span><b>Факультет:</b> {{ candidate.faculty }}<br/></span>
+    <span><b>Курс:</b> {{ candidate.course }}<br/></span>
+  </tui-scrollbar>
+  <tui-scrollbar class="tui-island__paragraph" *ngIf="activeItemIndex == 1">
+    <span>{{ candidate.experience }}</span>
+  </tui-scrollbar>
+  <tui-scrollbar class="tui-island__paragraph" *ngIf="activeItemIndex == 2">
+    <span>{{ candidate.feedback }}</span>
+  </tui-scrollbar>
+  <tui-checkbox-labeled
+    [(ngModel)]="pass"
+    size="l"
+  >
+    Проходит
+  </tui-checkbox-labeled>
+</tui-island>

@@ -9,7 +9,7 @@ import ru.surf.auth.dto.AccountCredentialsDto
 import ru.surf.auth.dto.ResetPassphraseDto
 import ru.surf.auth.dto.ResponseAccountIdentityDto
 import ru.surf.auth.entity.AccountIdentity
-import ru.surf.auth.entity.CandidateIdentity
+import ru.surf.auth.entity.ActivationIdentity
 import ru.surf.auth.entity.Credentials
 import ru.surf.auth.repository.CredentialsRepository
 import ru.surf.auth.repository.IdentityRepository
@@ -23,26 +23,26 @@ class CredentialsServiceImpl(
         @Autowired private val authService: AuthService,
         @Autowired private val credentialsRepository: CredentialsRepository,
         @Autowired private val identityRepository: IdentityRepository
-        ) : CredentialsService {
-    override fun createCandidate(candidateId: UUID): UUID {
+) : CredentialsService {
+    override fun createTemporaryIdentity(subjectId: UUID): UUID {
         return credentialsRepository.run {
             identityRepository.run {
-                save(Credentials(identity = save(CandidateIdentity(candidateId))))
+                save(Credentials(identity = save(ActivationIdentity(subjectId))))
             }
         }.identity.let {
-            (it as CandidateIdentity).promotionId
+            (it as ActivationIdentity).activationId
         }
     }
 
-    override fun authenticateCandidate(promotionId: UUID): UUID {
-        return getCredentialsByPromotionId(promotionId).identity.let {
-            (it as CandidateIdentity).candidateId
+    override fun authenticateSubject(activationId: UUID): UUID {
+        return getCredentialsByActivationId(activationId).identity.let {
+            (it as ActivationIdentity).subjectId
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])
-    override fun promoteCandidate(candidateId: UUID, accountCredentialsDto: AccountCredentialsDto) {
-        getCredentialsByCandidateId(candidateId).apply {
+    override fun activateSubject(subjectId: UUID, accountCredentialsDto: AccountCredentialsDto) {
+        getCredentialsBySubjectId(subjectId).apply {
             identity = identityRepository.run {
                 save(AccountIdentity(accountCredentialsDto.identity))
             }
@@ -74,18 +74,18 @@ class CredentialsServiceImpl(
         authService.resetPassword(resetPassphraseDto)
     }
 
-    private fun getCredentialsByPromotionId(promotionId: UUID) : Credentials {
+    private fun getCredentialsByActivationId(activationId: UUID) : Credentials {
         return credentialsRepository.run {
             identityRepository.run {
-                findByIdentity(findByPromotionId(promotionId))
+                findByIdentity(findByActivationId(activationId))
             }
         }
     }
 
-    private fun getCredentialsByCandidateId(candidateId: UUID) : Credentials {
+    private fun getCredentialsBySubjectId(subjectId: UUID) : Credentials {
         return credentialsRepository.run {
             identityRepository.run {
-                findByIdentity(findByCandidateId(candidateId))
+                findByIdentity(findBySubjectId(subjectId))
             }
         }
     }

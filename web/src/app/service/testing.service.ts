@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { Observable } from 'rxjs';
+
+import { of, catchError } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment'
@@ -33,5 +35,17 @@ export class TestingService {
 
   private appendAnswerValues(testInfo: TestInfo): void {
     testInfo.currentQuestion?.answers.forEach(answer => answer.value = false);
+  }
+
+  public getCandidateScore(candidateId: string): Observable<any> {
+    return this.http.get<any>(`${this.url}score/${candidateId}`);
+    /*.pipe(
+      tap((x: any) => {x.score || 0}),
+      catchError(err => of(0))
+    );*/
+  }
+
+  public getAllScores(eventId: string): Observable<any> {
+    return this.http.get<any>(`${this.url}scores/${eventId}`);
   }
 }

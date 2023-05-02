@@ -12,8 +12,8 @@ enum class QuestionType {
     MULTIPLE_CHOICE;
 
     open fun validate(answerVariants: Set<AnswerVariant>): String? =
-                if (answerVariants.isEmpty())
-                    "No answer provided"
-                else
-                    null
+            if (answerVariants.isEmpty())
+                "No answer provided"
+            else
+                null
 }

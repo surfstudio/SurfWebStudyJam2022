@@ -5,12 +5,10 @@ import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
-import ru.surf.auth.dto.AccountCredentialsDto
 import ru.surf.auth.service.CredentialsService
 import ru.surf.core.dto.candidate.CandidateApprovalDto
 import ru.surf.core.dto.candidate.CandidateDto
 import ru.surf.core.dto.candidate.CandidateEventNotificationDto
-import ru.surf.core.dto.candidate.CandidatePromotionDto
 import ru.surf.core.entity.*
 import ru.surf.core.kafkaEvents.CandidateAppliedEvent
 import ru.surf.core.mapper.candidate.CandidateMapper
@@ -74,31 +72,17 @@ class CandidateServiceImpl(
                 save(it)
                 flush()
             }
-            CandidateApprovalDto(credentialsService.createCandidate(candidate.id))
-        }
-
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = [Exception::class])
-    override fun promoteCandidate(candidate: Candidate, candidatePromotionDto: CandidatePromotionDto): Account =
-        // TODO в черновом виде
-        traineeRepository.run {
-            save(Trainee(candidate = candidate)).apply {
-                flush()
-            }
-        }.apply {
-            credentialsService.promoteCandidate(
-                candidate.id,
-                AccountCredentialsDto(
-                    identity = id,
-                    passphrase = candidatePromotionDto.passphrase
-                )
-            )
+            CandidateApprovalDto(credentialsService.createTemporaryIdentity(candidate.id))
         }
 
     override fun get(candidateId: UUID): Candidate = candidateRepository.findById(candidateId).orElseThrow {
         // TODO в этой ветке ещё нет кастомных исключений, добавить позже
         Exception("candidate not found")
     }
+
+    override fun getAllByEventId(eventId: UUID): List<Candidate> =
+        candidateRepository.getCandidatesByEventId(eventId)
+
 
     // TODO: 25.02.2023 Скорее всего вынести в отдельный сервис
     override fun notifyCandidates(candidates: List<CandidateExcelDto>) {

@@ -1,0 +1,61 @@
+<div class="event-component">
+	<h1 *ngIf="event" class="event_title">Event {{ event.title }}</h1>
+
+	<div class="candidates">
+		<div *ngFor="let candidate of candidates">
+      <app-candidate-info
+        [candidate]="candidate"
+      >
+      </app-candidate-info>
+		<!--<tui-accordion
+			[closeOthers]="false"
+		>
+			<tui-accordion-item
+				[disableHover]="true"
+				[showArrow]="false"
+				[disabled]="true"
+				[open]="true"
+			>
+				<ng-template tuiAccordionItemContent>
+					<p><b>Имя:</b> {{ candidate.firstName }}</p>
+					<p><b>Фамилия:</b> {{ candidate.lastName }}</p>
+				</ng-template>
+			</tui-accordion-item>
+			<tui-accordion-item>
+				Образование
+				<ng-template tuiAccordionItemContent>
+					<p><b>ВУЗ:</b> {{ candidate.university }}</p>
+					<p><b>Факультет:</b> {{ candidate.faculty }}</p>
+					<p><b>Курс:</b> {{ candidate.course }}</p>
+				</ng-template>
+			</tui-accordion-item>
+			<tui-accordion-item>
+				Опыт
+				<ng-template tuiAccordionItemContent>
+					<p><b>Опыт:</b> {{ candidate.experience }}</p>
+					<p><b>VCS:</b> {{ candidate.vcs }}</p>
+				</ng-template>
+			</tui-accordion-item>
+			<tui-accordion-item>
+				Контакты
+				<ng-template tuiAccordionItemContent>
+					<p><b>Почта:</b> {{ candidate.email }}</p>
+					<p><b>Телеграм:</b> {{ candidate.telegram }}</p>
+				</ng-template>
+			</tui-accordion-item>
+			<tui-accordion-item>
+				Почему выбрал Surf?
+				<ng-template tuiAccordionItemContent>
+					<p>{{ candidate.feedback }}</p>
+				</ng-template>
+			</tui-accordion-item>
+			<tui-accordion-item>
+				Тестирование
+				<ng-template tuiAccordionItemContent>
+					<p> <b>{{ getCandidateScore(i) }}</b> </p>
+				</ng-template>
+			</tui-accordion-item>
+		</tui-accordion>-->
+		</div>
+	</div>
+</div>

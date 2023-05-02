@@ -14,7 +14,7 @@ class Trainee(
         @JoinColumn(name = "team_id", nullable = true)
         val team: Team? = null,
 
-        ) : Account(email = candidate.email) {
+) : Account(email = candidate.email, role = Role.TRAINEE) {
 
         override fun toString(): String {
                 return "Trainee(candidate=$candidate, team=$team) ${super.toString()}"

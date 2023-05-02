@@ -4,7 +4,7 @@ import ru.surf.core.entity.base.UUIDBasedEntity
 import java.time.ZonedDateTime
 import java.util.*
 import jakarta.persistence.*
-import javax.validation.constraints.Email
+import ru.surf.core.validation.EmailConstraint
 
 @Table(name = "candidates", uniqueConstraints = [
         UniqueConstraint(columnNames = [
@@ -44,7 +44,7 @@ class Candidate(
         var cvFileId: UUID = UUID.randomUUID(),
 
         @Column(name = "email", nullable = false)
-        @Email(regexp = ".+?@.+")
+        @EmailConstraint(regexp = ".+?@.+")
         val email: String = "",
 
         @Column(name = "telegram", nullable = false)

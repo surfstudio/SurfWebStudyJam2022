@@ -13,8 +13,8 @@ import ru.surf.core.security.account.credentials.CredentialsAuthenticationFilter
 import ru.surf.core.security.account.credentials.CredentialsAuthenticationManager
 import ru.surf.core.security.account.token.TokenAuthenticationFilter
 import ru.surf.core.security.account.token.TokenAuthenticationManager
-import ru.surf.core.security.candidate.CandidateAuthenticationFilter
-import ru.surf.core.security.candidate.CandidateAuthenticationManager
+import ru.surf.core.security.activation.ActivationAuthenticationFilter
+import ru.surf.core.security.activation.ActivationAuthenticationManager
 
 
 @Configuration
@@ -22,11 +22,11 @@ import ru.surf.core.security.candidate.CandidateAuthenticationManager
 @EnableMethodSecurity(prePostEnabled = true)
 class SecurityConfiguration(
         @Autowired
-        private val candidateAuthenticationManager: CandidateAuthenticationManager,
+        private val activationAuthenticationManager: ActivationAuthenticationManager,
         @Autowired
         private val credentialsAuthenticationManager: CredentialsAuthenticationManager,
         @Autowired
-        private val tokenAuthenticationManager: TokenAuthenticationManager
+        private val tokenAuthenticationManager: TokenAuthenticationManager,
 ) {
 
     @Bean
@@ -50,8 +50,8 @@ class SecurityConfiguration(
     }
 
     protected val candidateFilter: Filter
-        get() = CandidateAuthenticationFilter().apply {
-            setAuthenticationManager(candidateAuthenticationManager)
+        get() = ActivationAuthenticationFilter().apply {
+            setAuthenticationManager(activationAuthenticationManager)
         }
 
     protected val accountCredentialsFilter: Filter

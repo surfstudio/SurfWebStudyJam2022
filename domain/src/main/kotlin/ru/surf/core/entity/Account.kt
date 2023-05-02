@@ -1,10 +1,10 @@
 package ru.surf.core.entity
 
+import jakarta.persistence.*
 import ru.surf.core.entity.base.UUIDBasedEntity
+import ru.surf.core.validation.EmailConstraint
 import java.time.ZonedDateTime
 import java.util.*
-import jakarta.persistence.*
-import javax.validation.constraints.Email
 
 @Table(name = "accounts")
 @Entity
@@ -16,7 +16,7 @@ class Account(
         override val id: UUID = UUID.randomUUID(),
 
         @Column(name = "email", nullable = false, unique = true)
-        @Email(regexp = ".+?@.+")
+        @EmailConstraint(regexp = ".+?@.+")
         open val email: String = "",
 
         @Enumerated(EnumType.STRING)
@@ -26,7 +26,7 @@ class Account(
         @Column(name = "created_at", nullable = false)
         val createdAt: ZonedDateTime = ZonedDateTime.now(),
 
-        ) : UUIDBasedEntity(id) {
+) : UUIDBasedEntity(id) {
 
     override fun toString(): String {
         return "Account(" +

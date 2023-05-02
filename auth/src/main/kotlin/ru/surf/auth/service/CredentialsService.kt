@@ -8,9 +8,9 @@ import java.util.UUID
 
 
 interface CredentialsService {
-    fun createCandidate(candidateId: UUID): UUID
-    fun authenticateCandidate(promotionId: UUID): UUID
-    fun promoteCandidate(candidateId: UUID, accountCredentialsDto: AccountCredentialsDto)
+    fun createTemporaryIdentity(subjectId: UUID): UUID
+    fun authenticateSubject(activationId: UUID): UUID
+    fun activateSubject(subjectId: UUID, accountCredentialsDto: AccountCredentialsDto)
     fun authenticateAccount(accountCredentialsDto: AccountCredentialsDto): AccessTokenDto
     fun authorizeAccount(accessTokenDto: AccessTokenDto): ResponseAccountIdentityDto
     fun resetAccountPassphrase(resetPassphraseDto: ResetPassphraseDto)
